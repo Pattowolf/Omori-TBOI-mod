@@ -1,0 +1,211 @@
+Omori mod
+
+Ver Alpha 1.0 (07/01/2023, last workshop release)
+OMORI:
+- Sprite overhauls - edited to be more in-line with the OMORI artstyle.
+- Minor damage buff.
+- Now starts with Soul of Lazarus rune.
+
+SUNNY:
+- Sprite overhauls, same as OMORI.
+- Slight speed increase.
+- Now starts with Breath of Life.
+
+Ver Alpha 1.1 (11/27/2023)
+- Added Emotion System
+- Remade a great part of mod's code
+- Changed Omori's stats to base
+- Changed Sunny's stats to base
+- Removed Mom's Knife from Omori
+- Removed Soul of Lazarus from Omori
+
+Ver Alpha 1.2 (12/09/2023)
+- Now Omori has a melee attack (still a prototype)
+- Now Omori will not sucumb on receiving fatal damage (only works once per fatal damage received)
+- Now critic damage tears from happy state will have a different color 
+- Added some helper functions, now mod is sectioned by files and folders (for sake of organization)
+
+Ver Alpha 1.3 (12/09/2023)
+- Added Library of Isaac Scripts
+- Added sound effect for "not sucumb" mechanic
+- Improved fatal damage detection for "not sucumb" mechanic
+- Now omori has a glow that reflects his current emotion
+- Fixed emotions not changing properly on water rooms
+
+Ver Alpha 1.3.1 (12/10/2023)
+- Added emotion titles
+- Fixed a bug regarding glow emotion rendering
+- Readjusted Melee attack charging formula
+    - This also fixed a bug that made melee attack unable to charge while having way too low tears stat
+
+Ver Alpha 1.4 (12/11/2023)
+- Added Birthright Effect for Omori
+    - Adds second and third emotion tiers to emotion rotation
+    - Higher emotion tiers are stronger versions of regular emotions (with pros and cons)
+    - This also has new emotion titles for second and this emotion tiers
+- Fixed a bug that make emotion glow render over player while coliding with grid
+- Decreased shiny knife's sound
+
+Ver Alpha 1.4.1 (12/11/2023)
+- Fixed an issue regarding library of isaac scripts
+
+Ver Alpha 1.5 (12/14/2023)
+- Fully implemented shiny knife
+    - Chargeable melee attack, deals x3 times player's damage on hit
+    - Knife's hitbox scales with player tear range stat
+- Added the New Item Self Help Guide
+    - Active item
+    - It changes player's emotion
+    - When using it player will receive a glow, its color is related to player's emotion
+    - Using it with Car Battery with give second tier emotion
+    - When using it as Omori, it upgrades his current emotion
+        - Using it while Neutral will have no effect
+    - Emotion is reset on new floor
+- Reduced Omori's damage by x0.8 
+- Readjusted happy tears formula, now they should be more common on higher happines stages
+- Fixed an issue with emotion glow giving errors in debug console
+
+Ver Alpha 1.5.1 (12/14/2023)
+- Fixed the whole fucking mod
+
+Ver Alpha 1.6 (12/15/2023)
+- Added Shiny Knife and Self-Help Guide to treasure room pool
+- Added Quality to Shiny Knife and Self-Help Guide
+    - Shiny Knife: Quality 3
+    - Self-Help Guide: Quality 2
+- Added item tags to Shiny Knife and Self-Help Guide 
+    - Shiny Knife: offensive, summonable
+    - Self-Help Guide: offensive
+- Now Shiny Knife will deal critic damage while being happy if not playing as Omori
+- Fixed a bug that make emotion glow to render when no having an emotion when not playing as Omori
+- Now Shiny Knife's charge bar won't render when game is paused or when charge bar option is disabled
+- Added sfx for hitting an enemy with Shiny Knife
+
+Ver Alpha 1.6.1 (12/16/2023)
+- Fixed Shiny Knife's charge bar wrongly rendering on mirror world
+- Centered emotion title when renderong on mirror world
+- Fixed itempools.xml having wrong items 
+- Shiny Knife now can extinguish more fireplaces (no blue ones and its variants)
+- Improved Shiny Knife collision
+
+Ver Alpha 1.6.2 (12/16/2023, last alpha)
+- Rebalanced emotions (to be more faithful to Omori (game) emotion changes)
+    - Happines tear dispersion:  
+        - Happy: 2 > 1
+        - Ecstatic: 3 > 2
+        - Manic: 4 > 3
+    - Sadness speed multiplier:
+        - Sad: 0.6 > 0.8
+        - Depressed: 0.55 > 0.65
+        - Miserable: 0.5 (no changes)
+    - Sadness damage ignore chance:
+        - Sad: 20% > 25%
+        - Depressed: 30% > 35%
+        - Miserable: 50% (no changes)
+    - Anger damage multiplier:
+        - Angry: 1.75 > 1.3
+        - Enraged: 1.875 > 1.5
+        - Furious: 2 (no changes)
+    - Anger double damage chance:
+        - Angry: 15% > 50%
+        - Enraged: 30% > 70%
+        - Furious: 40% > 85%
+    - Anger fire delay multiplier:
+        - Angry: 0.75 > 0.8
+        - Enraged: 0.625 > 0.65
+        - Furious: 0.5 (no changes)
+- Added an special damage multiplier for Omori when being angry (x1.15)
+- Fixed Not Sucumb mechanic being VERY abusable
+- Now Omori can change emotions pressing both shift keys, both CTRL keys and Z
+
+Ver Beta 1.0 (12/20/2023)
+- Sunny rework
+    - Increased HP to 3 hearts
+    - Remove Breath of Life
+    - Added a custom melee attack
+        - Deals x1.5 Sunny's damage
+        - Charges faster than Omori's knife
+    - Sunny will start with Afraid
+        - Afraid will apply a nearly all stats down
+        - Afraid increases melee attack multiplier bt 2.5
+    - If Sunny is surrounded by enemies for 2 seconds, he will become stressed out
+        - stressed out increaes melee attack multiplier by x5, but any received damage will be double
+    - Now Sunny starts with the pocket item Calm Down
+        - Calm down removes emotions from Sunny, also heals 1/2 heart 
+    - If Sunny doesn't feel afraid, being surrounded by enemies for 1.5 will make him feel afraid 
+- Added co-op selection icons
+- Remade Emotion title and emotion glow effect system
+
+Ver Beta 1.0.1 (12/20/2023)
+- Fixed a typo in melee attack script
+
+Ver Beta 1.1 (12/21/2023)
+- Balance
+    - Increased Self-Help Guide cooldown (3 > 6)
+    - Readjusted Omori's knife charge speed (now it's slower)
+    - Increased i-frames from sadness ignore damage (20 > 90)
+- Fixes
+    - Fixed Sunny always taking fatal damage when being stressed out
+    - Fixed Self-Help Guide not applying stat changes when upgrading an emotion as Omori
+    - Fixed Self-Help Guide not upgrading emotions to third stage as Omori
+- Changes
+    - Changed Sunny's melee weapon graphics (now it's forgotten's club, just a test to check if was posible to replaces sprites)
+    - Remade Damage detection (this for sadness damage ignore, anger damage double, not sucumb mechanic and stressed out sunny)
+    - Removed starting key from Sunny
+    - Remade emotion manager
+        - Added following functions
+            - OmoriMod.SetEmotion(player, emotion): Sets the emotion to the second arg (string)
+            - OmoriMod.GetEmotion(player): Returns player's current emotion (string)
+- Misc
+    - Added "art" folder
+
+Ver Beta 1.1.1 (12/22/2023)
+- Fixes
+    - Fixed Emotion Glow not rendering as intended
+    - Fixed Self-Help Guide not applying stat changes to Sunny
+    - Fixed Self-Help Guide not applying stat changes when upgrading an emotion as Omori (for real)
+- Changes
+    - Added sound effects for Sunny when changing to Afraid or Stressed Out emotion
+    - Added emotion glow colors for Afraid and Stressed Out emotions
+
+Ver Beta 1.2 (12/23/2023)
+- Balance
+    - Reduced time for Afraid and Stressed Out to trigger
+        - Afraid: 1.5 secs > 1 sec
+        - Stressed Out: 2 secs > 1.5 secs
+- Fixes
+    - Fixed Emotion Glow rendering white when changing rooms 
+- Changes 
+    - Replaced Calm Down sprite
+    - Replaced Sunny's melee attack graphics (forgotten's club > Violin bow)
+    - Added Birthright effect for Sunny (Overcome)
+        - Replace Calm Down with Overcome
+        - Maintains the same effect as Calm Down
+        - When using Overcome, Sunny's stats will be slightly increased, also he now will have a one time x6 damage multiplier for his bow (only once per use)
+    - Added animations when using a mod's item (except for calm down and overcome)
+    - Added following melee attacks interactions
+        - Poison: Poison an enemy for 3 seconds
+        - Burn: Burn an enemy for 3 seconds
+        - Holy Light: Chance to cast a holy ray over an enemy
+        - Electric: Spawn an electric ray over an enemy
+        - Rock: Melee attack now has a x0.5-x2 random multiplier
+
+Ver Beta 1.3 (12/23/2023, Last beta)
+- Balance
+    - Reduced Stressed Out bow's damage multiplier (x5 > x4)
+- Fixes
+    - Fixed Sunny having 1/3 of bookworm transformation
+    - Fixed Self-Help Guide not reseting player stats when changing rooms 
+    - Fixed Self-Help Guide having general issues regarding its charges
+    - Fixed Self-Help Guide always being in its Happy version when droping and picking up it as other character than Omori
+- Changes
+    - Added following melee attacks interactions
+        - Tech X: Creates a Tech X ring on swing, it's size scales with range
+        - Technology: Shoots a technology ray to a random direction when hitting an enemy
+        - Head of the Keeper: 5% chance to spawn a coin when hitting an enemy
+        - Blood Clot: 50% chance to do 1.1 times more damage
+        - Brimstone: Spawn a brimstone ball on swing 
+        - Explosive: Cast an explosion over an enemy, dealing +50 damage
+        - Mysterious Liquid: Spawn green creep on hitting an enemy
+    - Changed Sunny's HP displayed on character menu
+    - Added backdrop tutorial for Omori and Sunny

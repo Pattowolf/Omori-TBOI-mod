@@ -1,0 +1,68 @@
+--- OMORI ---
+	Stats: 
+		Speed: 1.00
+		Tears: 2.73
+		Damage: 2.80 (x0.8)
+		Range: 6.50
+		ShotSpeed: 1.00
+		Luck: 1.00
+		
+	Description: Omori is a melee-ranged hibrid character who has te hability of control his emotions, each emotion has its own stat and mechanic changes 
+		Shiny Knife:
+			- Chargeable weapon, its speed charge depends on Tears stat, charges while firing tears
+			- Once charged, releasing the fire button will swing the knife, dealing x3 times Omori's damage stat
+			- Has some synergies with a few items
+		Emotions: 
+			- Emotions has the capability of changing Omori's Stats and mechanics, giving a different playstyle depending on his emotion
+				- Emotions are changed when pressing Drop Button, right CTRL, either Shift key and Z key
+				- Neutral: No changes to stats or mechanics
+				- Happy: Increased Speed and luck, fired tears fill have a little deviation, tears will have a chance of being critical damage tears (x2 Omori's damage stat)
+				- Sad: Increased tears, reduced damage and speed, Omori will have a chance to ignore receiving damage
+				- Angry: Increased damage, reduced tears, Omori will have a chance to double receiving damage
+		Birthright (feel more):
+			- Emotions can be upgraded, each emotion stage has the same effect over Omori, but powered
+				- Happy > Ecstatic > Manic
+				- Sad > Depressed > Miserable
+				- Angry > Enraged > Furious
+		Self-Help Guide: 
+			- A 6 charges active that upgrades current Omori's Emotion, changing emotion with emotion change key will reset emotion upgrade
+
+--- SUNNY ---
+	Stats: 
+		Speed: 1.00
+		Tears: 2.73
+		Damage: 2.80 (x0.8)
+		Range: 6.50
+		ShotSpeed: 1.00
+		Luck: 1.00
+
+	Description: Sunny, as the same way as Omori, is a melee-ranged hibrid character, but instead of having full control over his emotions, it seems that this has gotten out of hand:
+		Violin's Bow: 
+			- Chargeable weapon, its speed charge depends on Tears stat, charges while firing tears (charges faster than Omori's knife)
+			- Once charged, releasing the fire button will swing the bow, hitting 3 times, its damage multiplier will vary depending his emotion, but the base is x2 Sunny's Damage
+			- Has some synergies with a few items
+		Emotions:
+			- Just like Omori, Sunny has a sort of emotions that changes his playstyle, but he can't control them at all, so player will need to be wise when emotion gestioning
+				- Afraid: When being afraid, Sunny's stats will receive a negative multiplier/a downgrade, but his bow's damage multiplier will be raised to x3
+				- Stressed Out: Plus the stats reduction from Afraid, now all receiving damage will be double, but his bow's damage multiplier will be raised to x4
+				- If Sunny's Neutral and spends 1.5 seconds near at least one enemy, he will become Afraid
+				- If Sunny's Afraid and spends 2 seconds near at least one enemy, he will become Stressed Out
+		Calm Down:
+			- Sunny's starting active, when using it, restores Sunny's Emotion to Neutral, and heals half red heart
+		Birthright (Gather all your courage): 
+			- Replace Calm Down with Overcome
+				- Restores Sunny's Emotion to Neutral
+				- Heals a full red heart
+				- Raises bow's damage multiplier to x5 (only works once after Overcome use)
+				
+--- AUBREY (DW) --- (WORK IN PROGRESS, EXPECT HER IN v2.0.0)		
+		
+		- Aubrey will start with Pep Talk (3 charges active, it inflicts Happy and its stages)
+		- Aubrey won't receive any penalty from Happiness
+		- On receiving damage, Aubrey will have a change to counter with Mr. Plantegg
+		- Pressing any emotion change for Omori will activate her Headbutt
+			- Aubrey will receive a temporal speed upgrade
+			- Aubrey won't be able to shoot tears
+			- Colliding with an enemy will damage it (just need to think on a good formula)
+			- If enemy doesn't die, Aubrey will take damage
+			- If enemy dies, Aubrey won't receive damage (maybe she would also heal herself, idk)

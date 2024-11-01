@@ -1,0 +1,9 @@
+<costumes anm2root="gfx/characters/">
+	<!-- Omori costumes -->
+	<costume anm2path="costume_omori.anm2" type="none" />
+	<costume anm2path="costume_omori_emotion.anm2" type="none" />
+	
+	<!-- Sunny costumes -->
+	<costume anm2path="costume_omori2.anm2" type="none" />
+	<costume anm2path="costume_omori2_emotion.anm2" type="none" />
+</costumes>    

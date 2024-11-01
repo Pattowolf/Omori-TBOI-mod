@@ -1,0 +1,40 @@
+<!-- Max current ID = 4 (change this when adding a new item) -->
+
+
+<items gfxroot="gfx/items/" version="1">
+	<passive
+		id="1" 
+		name="Shiny Knife" 
+		description="You can see your reflection in the blade" 
+		gfx="ShinyKnife.png"
+		quality="4"
+		tags="offensive summonable"
+	/>
+	<active
+		id="2" 
+		name="Self-Help Guide" 
+		description="A book all about battles, written by HERO. Wow..." 
+		gfx="selfhelpguide.png"
+		quality="2" 
+		maxcharges="3"
+		tags="offensive"
+	/>
+	<active
+		id="3" 
+		name="Calm Down" 
+		description="Take a deep breath" 
+		gfx="calmdown.png"
+		quality="0" 
+		maxcharges="2"
+		hidden="true"
+	/>
+	<active
+		id="4" 
+		name="Overcome" 
+		description="Gather all your courage" 
+		gfx="overcome.png"
+		quality="0" 
+		maxcharges="2"
+		hidden="true"
+	/>
+</items>

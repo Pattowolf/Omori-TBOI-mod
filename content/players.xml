@@ -1,0 +1,54 @@
+<players root="gfx/characters/players/" 
+	portraitroot="gfx/ui/boss/" 
+	nameimageroot="gfx/ui/boss/" 
+	bigportraitroot="gfx/ui/stage/"> 
+	<player 
+		name="Omori" 
+		skin="player_omori.png" 
+		hp="6"
+		skinColor="0" 
+		nameimage="playername_omori.png" 
+		portrait="playerportrait_omori.png" 
+		bigportrait="playerportrait_omori.png" 
+		costumeSuffix="Omori"
+		birthright="Feel more" 
+		pocketActive="Self-Help Guide"
+	/> 
+	<player 
+		name="Sunny" 
+		bSkinParent="Omori" 
+		skin="player_omori2.png" 
+		hp="6"
+		skinColor="-1" 
+		costumeSuffix="Sunny"
+		nameimage="playername_omori2.png" 
+		portrait="playerportrait_omori2.png" 
+		bigportrait="playerportrait_omori2.png" 
+		birthright="Gather all your courage" 
+		pocketActive="Calm Down"
+	/> 
+	<player 
+		name="Aubrey" 
+		skin="player_omori.png" 
+		hp="6"
+		skinColor="0" 
+		nameimage="playername_omori.png" 
+		portrait="playerportrait_omori.png" 
+		bigportrait="playerportrait_omori.png" 
+		birthright="Feel more" 
+		hidden="true"
+	/> 
+	<player 
+		name="Aubrey" 
+		bSkinParent="Aubrey" 
+		skin="player_omori2.png" 
+		hp="6"
+		skinColor="-1" 
+		nameimage="playername_omori2.png" 
+		portrait="playerportrait_omori2.png" 
+		bigportrait="playerportrait_omori2.png" 
+		birthright="Gather all your courage" 
+		pocketActive="105"
+		hidden="true"
+	/> 
+</players>

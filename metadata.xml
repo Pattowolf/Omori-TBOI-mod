@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+    <name>OMORI (Character Mod)</name>
+    <directory>omoricharactermod</directory>
+    <id>3122837906</id>
+    <description>[h1] THIS MOD NOW REQUIRES [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3127536138] REPENTOGON[/url] TO WORK[/h1]
+	
+“You are here again, DREAMER. To what do we owe the occasion?”
+
+—-----------------------------------------------------------------------------------------
+
+After a long hiatus, the OMORI Character Mod returns with a full release and a host of new features to fully merge a faraway dream with the unknown depths below!
+
+From one dream world to the next, fight your way through the basement as the stoic, knife-welding OMORI!
+
+Starting with his trusty SHINY KNIFE in hand, a chargeable melee weapon, OMORI is a well rounded yet powerful combatant who relies on changing EMOTIONS to adapt to his current run!
+
+As OMORI, you have the ability to cycle between three different EMOTIONS, each with their own advantages and disadvantages:
+
+HAPPY: Feeling lucky? While happy, you gain a sizable speed and luck upgrade, as well as the chance for tears to be critical hits, dealing double your current damage! Though, your shots will become inaccurate as a result…
+
+SAD: In a defensive pinch? While sad, you’ll find your speed and damage decreasing… but in return, you gain a large tears upgrade, as well as the chance to ignore any incoming damage!
+
+ANGRY: Or perhaps, you’re looking to put down the hurt? While angry, you gain a damage multiplier to help put down the toughest foes! Consequently, however, you also gain a small tears decrease and the chance to take double damage when hit…
+
+Though, that’s not the end of your EMOTIONS… Utilizing OMORI’s second starting item, SELF-HELP GUIDE, you can upgrade your currently selected emotion up to two times, increasing both the positive and negative effects of each for maximum adaptability!
+
+Lastly, OMORI has one more trick up his lack of sleeves… Upon taking fatal damage in a room for the first time, OMORI will not succumb, surviving with the last of your HP and giving you a last chance.
+
+
+
+But that's not all...
+
+
+
+SUNNY, the similarly stoic DREAMER makes his appearance as well, although his knife seems to have already been taken by an absent minded friend of his… He’ll have to rely on his VIOLIN BOW once more to dispel the demons of the depths…
+
+Though, getting up close and personal comes at a risk… For SUNNY has EMOTIONS as well, but of a less helpful and more involuntary variety. Staying close to enemies for too long will have SUNNY become AFRAID, leading to a large all stats down. Stay close for longer, and you’ll soon become STRESSED OUT, compounding the all stats down with an increase in all damage taken.
+
+SUNNY has a way to counteract these EMOTIONS through the use of his pocket active item, CALM DOWN, which will dispel AFRAID or STRESSED OUT, restoring your stats and even healing you in the process. Be sure to manage your charges wisely so as to not find yourself in an unfortunate situation…
+
+—-----------------------------------------------------------------------------------------
+
+“This place has changed a great deal since you were last here. Will you be able to find your way out, or will you finally lose yourself?”
+
+
+—-----------------------------------------------------------------------------------------
+
+This mod wouldn’t have been possible without the help of Kotry and their programming knowledge, along with all of the support the previous version of the mod was shown! Thank you, all! If you enjoyed the mod, please send some support in Kotry's way!
+
+Furthermore, aspects of this mod are subject to change, as we plan to continue updating this into the future! Be sure to give me your feedback and bug reports in the comments below. Thanks again! Have fun!
+
+For more information about how character works, check out our [url=https://pastebin.com/raw/69MQMT4V] pastebin[/url]
+
+All characters represented belong to OMOCAT and the rest of the OMORI Team.
+</description>
+    <version>1.12</version>
+    <visibility>Public</visibility>
+    <tag id="Lua"/>
+    <tag id="Items"/>
+    <tag id="Active Items"/>
+    <tag id="Player Characters"/>
+</metadata>

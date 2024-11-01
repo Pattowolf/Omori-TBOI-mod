@@ -1,0 +1,67 @@
+<sounds root="sfx/">
+	<sound name="Blade Slash">
+		<sample weight="1" path="BlaseSlash.wav" />
+	</sound>
+	<sound name="Heartbeat">
+		<sample weight="1" path="OmoriHeartbeat.wav" />
+	</sound>
+	<sound name="Bow Slash">
+		<sample weight="1" path="ViolinBowSlash.wav" />
+	</sound>
+	<sound name="Omori Fear">
+		<sample weight="1" path="OmoriFear.wav" />
+	</sound>
+	<sound name="Calm Down">
+		<sample weight="1" path="Calm Down.wav" />
+	</sound>
+	<sound name="Overcome">
+		<sample weight="1" path="Overcome.wav" />
+	</sound>
+	<sound name="Right In The Heart">
+		<sample weight="1" path="CritDamage.wav" />
+	</sound>
+	<sound name="Fail Attack">
+		<sample weight="1" path="MissAttack.wav" />
+	</sound>
+	
+	
+	<!-- Emotions -->
+	<sound name="Back to Neutral">
+		<sample weight="1" path="BA_calm_down.wav" />
+	</sound>
+	<sound name="Happy Upgrade">
+		<sample weight="1" path="BA_stat_up_1.wav" />
+	</sound>
+	<sound name="Happy Upgrade 2">
+		<sample weight="1" path="BA_happy.wav" />
+	</sound>
+	<sound name="Happy Upgrade 3">
+		<sample weight="1" path="BA_happy_level_2.wav" />
+	</sound>
+	<sound name="Sad Upgrade">
+		<sample weight="1" path="BA_Stat_Down.wav" />
+	</sound>
+	<sound name="Sad Upgrade 2">
+		<sample weight="1" path="BA_sad.wav" />
+	</sound>
+	<sound name="Sad Upgrade 3">
+		<sample weight="1" path="BA_sad_level_2.wav" />
+	</sound>
+	<sound name="Angry Upgrade">
+		<sample weight="1" path="GEN_exclamation.wav" />
+	</sound>
+	<sound name="Angry Upgrade 2">
+		<sample weight="1" path="BA_angry.wav" />
+	</sound>
+	<sound name="Angry Upgrade 3">
+		<sample weight="1" path="BA_angry_stage_2.wav" />
+	</sound>
+	
+	<!-- D -->
+	<sound name="deadseascrolls_pop">
+        <sample weight="1" path="deadseascrolls/pop.wav" />
+    </sound>
+    <sound name="deadseascrolls_whoosh">
+        <sample weight="1" path="deadseascrolls/whoosh.wav" />
+    </sound>
+</sounds>
