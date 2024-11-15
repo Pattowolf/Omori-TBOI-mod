@@ -1,5 +1,5 @@
 <AnimatedActor>
-	<Info CreatedBy="robot" CreatedOn="05/05/2024 02:20:07 p. m." Version="108" Fps="30"/>
+	<Info CreatedBy="robot" CreatedOn="12/11/2024 09:00:42 p. m." Version="111" Fps="30"/>
 	<Content>
 		<Spritesheets>
 			<Spritesheet Path="costumes_Omori\neutral.png" Id="0"/>

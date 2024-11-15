@@ -157,12 +157,6 @@ mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, mod.OnShootHappyTear)
 -- Stats Manager
 function mod:OmoStats(player, flag)
 	if player:GetPlayerType() ~= OmoriMod.Enums.PlayerType.PLAYER_OMORI_B then
-	
-		if flag == CacheFlag.CACHE_WEAPON then
-	
-
-		end
-	
 		if flag == CacheFlag.CACHE_DAMAGE then
 			local EmotionDamageMult = 1
 			local damageMult = 1

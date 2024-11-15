@@ -1,6 +1,11 @@
-local game = Game()
-local modrng = RNG()
-local sfx = SFXManager()
+local enums = OmoriMod.Enums
+local utils = enums.Utils
+local game = utils.Game
+local sfx = utils.SFX
+local modrng = utils.RNG
+local tables = enums.Tables
+
+local sounds = enums.SoundEffect
 
 function OmoriMod.GetScreenCenter()
 	local room = game:GetRoom()
@@ -13,7 +18,7 @@ end
 
 function OmoriMod:Round(number, decimalPlaces)
 	decimalPlaces = decimalPlaces or 0
-	local mult = 10^(decimalPlaces)
+	local mult = 10 ^ (decimalPlaces)
 	return math.floor(number * mult + 0.5) / mult
 end
 
@@ -26,30 +31,17 @@ function OmoriMod:ExponentialFunction(number, coeffcient, power)
 end
 
 function OmoriMod:GetAceleration(entity)
-	local VelX = math.abs(entity.Velocity.X)
-	local VelY = math.abs(entity.Velocity.Y)
+	local normalizedVelocity = entity.Velocity:Normalized()
+	local NewVelValue = entity.Velocity * normalizedVelocity
 	
-	local acel = VelX + VelY
+	local acel = NewVelValue.X + NewVelValue.Y
 	
-	return OmoriMod:Round(acel, 2)
+	return TSIL.Utils.Math.Round(acel, 2)
 end
 
 function OmoriMod.SwitchCase(value, tables)
-	if tables[value] then
-        if type(tables[value]) == "function" then
-            return tables[value]()
-        else
-            return tables[value]
-        end
-    end
-    if tables["_"] then
-        if type(tables["_"]) == "function" then
-            return tables["_"]()
-        else
-            return tables["_"]
-        end
-    end
-    return nil
+    local value = tables[value] or tables["_"]
+    return type(value) == "function" and value() or value
 end
 
 function OmoriMod.randomNumber(x, y, rng)
@@ -76,6 +68,25 @@ function OmoriMod.randomfloat(x, y, rng)
     return math.floor((rng:RandomInt(y - x + 1)) + x) / 1000
 end
 
+function OmoriMod:IsOmori(player, tainted)
+	return player:GetPlayerType() == (tainted and OmoriMod.Enums.PlayerType.PLAYER_OMORI_B or OmoriMod.Enums.PlayerType.PLAYER_OMORI)
+end
+
+function OmoriMod:IsAnyOmori(player)
+	return OmoriMod:IsOmori(player, true) or OmoriMod:IsOmori(player, false)
+end
+
+function OmoriMod:IsEmotionChangeTriggered(player)
+	local emotionChange =
+	Input.IsButtonTriggered(Keyboard.KEY_Z, player.ControllerIndex) or
+	Input.IsButtonTriggered(Keyboard.KEY_LEFT_SHIFT, player.ControllerIndex) or
+	Input.IsButtonTriggered(Keyboard.KEY_RIGHT_SHIFT, player.ControllerIndex) or
+	Input.IsButtonTriggered(Keyboard.KEY_RIGHT_CONTROL, player.ControllerIndex) or
+	Input.IsActionTriggered(ButtonAction.ACTION_DROP, player.ControllerIndex)  
+	
+	return emotionChange
+end
+
 function OmoriMod.tearsUp(firedelay, val, IsMult)
     local currentTears = 30 / (firedelay + 1)
     local newTears = currentTears + val
@@ -97,70 +108,56 @@ end
 
 function OmoriMod.GetEmotion(player)
 	local playerData = OmoriMod:GetData(player)
-	local returnEmotion
-
-	if player:GetPlayerType() == OmoriMod.Enums.PlayerType.PLAYER_OMORI then
-		returnEmotion = playerData.OmoriCurrentEmotion 
-	elseif player:GetPlayerType() == OmoriMod.Enums.PlayerType.PLAYER_OMORI_B then	
-		returnEmotion = playerData.SunnyCurrentEmotion 
-	else
-		returnEmotion = playerData.PlayerEmotion 
-	end
 	
-	return returnEmotion
+	if OmoriMod:IsOmori(player, false) then
+		return playerData.OmoriCurrentEmotion
+	elseif OmoriMod:IsOmori(player, true) then	
+		return playerData.SunnyCurrentEmotion
+	else
+		return playerData.PlayerEmotion
+	end
 end
 
 function OmoriMod.DoHappyTear(tear)
 	local player = OmoriMod.GetPlayerFromAttack(tear)
-	local HappyTearChance = 0
-	local HappyTearVelChange = 0
 	local doubleHitChance = OmoriMod.randomNumber(1, 100, modrng)
 	
 	local birthrightDamageMult = 1
 	local birthrightVelMult = 1
 	
-	if player:GetPlayerType() == OmoriMod.Enums.PlayerType.PLAYER_OMORI and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
+	if OmoriMod:IsOmori(player, false) and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
 		birthrightDamageMult = 1.25
 		birthrightVelMult = 1.15
 	end
 	
-	local happyTier = {
-		["Happy"] = function()
-			HappyTearVelChange = 1
-			HappyTearChance = 25
-		end,
-		["Ecstatic"] = function()
-			HappyTearVelChange = 2
-			HappyTearChance = 38
-		end,
-		["Manic"] = function()
-			HappyTearVelChange = 3
-			HappyTearChance = 50
-		end,
-	}
-	local variable = OmoriMod.SwitchCase(OmoriMod.GetEmotion(player), happyTier)
+	local emotion = OmoriMod.GetEmotion(player)
 	
-
-	local newVec = {
-		X = OmoriMod.randomfloat(-HappyTearVelChange, HappyTearVelChange, modrng) * birthrightVelMult,
-		Y = OmoriMod.randomfloat(-HappyTearVelChange, HappyTearVelChange, modrng) * birthrightVelMult,
+	local isHappy = OmoriMod.SwitchCase(emotion, tables.HappinessTiers) or false
+	
+	if not isHappy then return end
+	
+	local HappyTier = {
+		["Happy"] = {VelMult = 1, HappyChance = 25},
+		["Ecstatic"] = {VelMult = 2, HappyChance = 38},
+		["Manic"] = {VelMult = 3, HappyChance = 50},
 	}
 
-	if HappyTearVelChange ~= 0 then
-		if not player:HasCollectible(CollectibleType.COLLECTIBLE_LUDOVICO_TECHNIQUE) then
-			tear.Velocity = tear.Velocity + Vector(newVec.X, newVec.Y)
-		end
+	local VelChange = OmoriMod.SwitchCase(emotion, HappyTier).VelMult 
+	local HappyCritChance = OmoriMod.SwitchCase(emotion, HappyTier).HappyChance 
+	
+	if not player:HasCollectible(CollectibleType.COLLECTIBLE_LUDOVICO_TECHNIQUE) then
+		tear.Velocity = tear.Velocity + (RandomVector() * VelChange) * birthrightVelMult
+	end
 		
-		if doubleHitChance <= (HappyTearChance * birthrightDamageMult) + player.Luck then
-			tear.CollisionDamage = tear.CollisionDamage * 2
-			tear.Color = Color(0.8, 0.8, 0.8, 1, 255/255, 200/255, 100/255)
-		else
-			tear.Color = Color.Default
-		end
+	if doubleHitChance <= (HappyCritChance * birthrightDamageMult) + player.Luck then
+		tear.CollisionDamage = tear.CollisionDamage * 2
+		tear.Color = Color(0.8, 0.8, 0.8, 1, 255/255, 200/255, 100/255)
+	else
+		tear.Color = Color.Default
 	end
 end
 
-function OmoriMod:IsShinyKnife(entity, rotation)
+function OmoriMod:IsShinyKnife(entity)
 	return entity.Type == EntityType.ENTITY_EFFECT and entity.Variant == OmoriMod.Enums.EffectVariant.EFFECT_SHINY_KNIFE
 end
 
@@ -193,72 +190,40 @@ function OmoriMod:GiveKnife(player, rotation)
     end
 end
 
+local EmotionChange = {
+	["Neutral"] = {suffix = "neutral", sound = sounds.SOUND_BACK_NEUTRAL},
+	["Happy"] = {suffix = "happy", sound = sounds.SOUND_HAPPY_UPGRADE},
+	["Ecstatic"] = {suffix = "ecstatic", sound = sounds.SOUND_HAPPY_UPGRADE_2},
+	["Manic"] = {suffix = "manic", sound = sounds.SOUND_HAPPY_UPGRADE_3},
+	["Sad"] = {suffix = "sad", sound = sounds.SOUND_SAD_UPGRADE},
+	["Depressed"] = {suffix = "depressed", sound = sounds.SOUND_SAD_UPGRADE_2},
+	["Miserable"] = {suffix = "miserable", sound = sounds.SOUND_SAD_UPGRADE_3},
+	["Angry"] = {suffix = "angry", sound = sounds.SOUND_ANGRY_UPGRADE},
+	["Enraged"] = {suffix = "enraged", sound = sounds.SOUND_ANGRY_UPGRADE_2},
+	["Furious"] = {suffix = "furious", sound = sounds.SOUND_ANGRY_UPGRADE_3},
+}
+
 function OmoriMod:OmoriChangeEmotionEffect(player, playSound)
+	if not OmoriMod:IsOmori(player, tainted) then return end
+
 	playSound = playSound or false
-	local newEmotion = ""
-	local EmotionSoundEffect 
 	local spriteRoot = "gfx/characters/costumes_Omori/"
-	
-	if player:GetPlayerType() ~= OmoriMod.Enums.PlayerType.PLAYER_OMORI then
-		return
-	end
 		
-	local changeEmotionBirthright = {
-		["Neutral"] = function()
-			newEmotion = "neutral"
-			EmotionSoundEffect = OmoriMod.Enums.SoundEffect.SOUND_BACK_NEUTRAL
-		end,
-		["Happy"] = function()
-			newEmotion = "happy"
-			EmotionSoundEffect = OmoriMod.Enums.SoundEffect.SOUND_HAPPY_UPGRADE
-		end,
-		["Ecstatic"] = function()
-			newEmotion = "ecstatic"
-			EmotionSoundEffect = OmoriMod.Enums.SoundEffect.SOUND_HAPPY_UPGRADE_2
-		end,
-		["Manic"] = function()
-			newEmotion = "manic"
-			EmotionSoundEffect = OmoriMod.Enums.SoundEffect.SOUND_HAPPY_UPGRADE_3
-		end,
-		["Sad"] = function()
-			newEmotion = "sad"
-			EmotionSoundEffect = OmoriMod.Enums.SoundEffect.SOUND_SAD_UPGRADE
-		end,
-		["Depressed"] = function()
-			newEmotion = "depressed"
-			EmotionSoundEffect = OmoriMod.Enums.SoundEffect.SOUND_SAD_UPGRADE_2
-		end,
-		["Miserable"] = function()
-			newEmotion = "miserable"
-			EmotionSoundEffect = OmoriMod.Enums.SoundEffect.SOUND_SAD_UPGRADE_3
-		end,
-		["Angry"] = function()
-			newEmotion = "angry"
-			EmotionSoundEffect = OmoriMod.Enums.SoundEffect.SOUND_ANGRY_UPGRADE
-		end,
-		["Enraged"] = function()
-			newEmotion = "enraged"
-			EmotionSoundEffect = OmoriMod.Enums.SoundEffect.SOUND_ANGRY_UPGRADE_2
-		end,
-		["Furious"] = function()
-			newEmotion = "furious"
-			EmotionSoundEffect = OmoriMod.Enums.SoundEffect.SOUND_ANGRY_UPGRADE_3
-		end,
-	}
-	OmoriMod.SwitchCase(OmoriMod.GetEmotion(player), changeEmotionBirthright)
+	local emotion = OmoriMod.GetEmotion(player)
 		
-	player:AddNullCostume(OmoriMod.Enums.NullItemID.ID_OMORI_EMOTION)
-	
+	local EmotionSuffix = OmoriMod.SwitchCase(emotion, EmotionChange).suffix
+	local EmotionSound = OmoriMod.SwitchCase(emotion, EmotionChange).sound	
+			
 	local EmotionCostume = player:GetCostumeSpriteDescs()[3]
 	
 	if EmotionCostume == nil then return end
 	
 	local EmotionCostumeSprite = EmotionCostume:GetSprite()
 
-	EmotionCostumeSprite:ReplaceSpritesheet(0, spriteRoot .. newEmotion .. ".png", true)
+	EmotionCostumeSprite:ReplaceSpritesheet(0, spriteRoot .. EmotionSuffix .. ".png", true)
 		
-	if EmotionSoundEffect ~= nil and playSound == true then
-		sfx:Play(EmotionSoundEffect, 2, 0, false, pitch, 0)
+	if EmotionSound ~= nil and playSound == true then
+		sfx:Play(EmotionSound, 2, 0, false, pitch, 0)
 	end
 end
 
@@ -268,9 +233,7 @@ end
 
 function OmoriMod:IsKnifeUser(player)
 	return 
-	player:HasCollectible(OmoriMod.Enums.CollectibleType.COLLECTIBLE_SHINY_KNIFE) or player:GetPlayerType() == OmoriMod.Enums.PlayerType.PLAYER_OMORI or 
-	player:GetPlayerType() == OmoriMod.Enums.PlayerType.PLAYER_OMORI_B
-
+	player:HasCollectible(OmoriMod.Enums.CollectibleType.COLLECTIBLE_SHINY_KNIFE) or OmoriMod:IsAnyOmori(player)
 end
 
 function OmoriMod:SunnyChangeEmotionEffect(player, playSound)
@@ -348,23 +311,19 @@ function OmoriMod:SunnyChangeEmotionEffect(player, playSound)
 	end
 end
 
-function OmoriMod.SetEmotion(player, emotion, playSound)
-	playSound = playSound or true
-
+function OmoriMod.SetEmotion(player, emotion)
 	local playerData = OmoriMod:GetData(player)
-	if type(emotion) == "string" then
-		if player:GetPlayerType() == OmoriMod.Enums.PlayerType.PLAYER_OMORI then
-			playerData.OmoriCurrentEmotion = emotion
-		elseif player:GetPlayerType() == OmoriMod.Enums.PlayerType.PLAYER_OMORI_B then	
-			playerData.SunnyCurrentEmotion = emotion
-		else
-			playerData.PlayerEmotion = emotion
-		end
-		
-		player:AddCacheFlags(CacheFlag.CACHE_DAMAGE | CacheFlag.CACHE_SPEED | CacheFlag.CACHE_FIREDELAY | CacheFlag.CACHE_LUCK, true)
+	if type(emotion) ~= "string" then return end
+	
+	if OmoriMod:IsOmori(player, false) then
+		playerData.OmoriCurrentEmotion = emotion
+	elseif OmoriMod:IsOmori(player, true) then	
+		playerData.SunnyCurrentEmotion = emotion
 	else
-		return nil
+		playerData.PlayerEmotion = emotion
 	end
+		
+	player:AddCacheFlags(CacheFlag.CACHE_DAMAGE | CacheFlag.CACHE_SPEED | CacheFlag.CACHE_FIREDELAY | CacheFlag.CACHE_LUCK, true)
 end
 
 local LINE_SPRITE = Sprite()
@@ -409,7 +368,9 @@ function OmoriMod.GetPlayerFromAttack(entity)
 		if check then
 			if check.Type == EntityType.ENTITY_PLAYER then
 				return OmoriMod:GetPtrHashEntity(check):ToPlayer()
-			elseif check.Type == EntityType.ENTITY_FAMILIAR and check.Variant == FamiliarVariant.INCUBUS then
+			elseif check.Type == EntityType.ENTITY_FAMILIAR and check.Variant == FamiliarVariant.INCUBUS
+			
+			then
 				local data = OmoriMod:GetData(entity)
 				data.IsIncubusTear = true
 				return check:ToFamiliar().Player:ToPlayer()
@@ -439,7 +400,6 @@ function OmoriMod:ReplaceGlowSprite(player, effect)
 	local Glow = OmoriMod.SwitchCase(OmoriMod.GetEmotion(player), emotionGlow) or "Neutral"
 	glowSprite:ReplaceSpritesheet(0, GlowRoot .. Glow .. ".png", true)
 end
-
 
 -----------------------------------
 --Helper Functions (thanks piber)--

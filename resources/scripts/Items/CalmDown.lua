@@ -1,30 +1,29 @@
 local mod = OmoriMod
-local game = Game()
-local CalmDown = {}
 local sfx = SFXManager()
 
-function CalmDown:ReliefSunny(id, RNG, player, flags, slot, CustomData)
+local enums = OmoriMod.Enums
+local utils = enums.Utils
+local sfx = utils.SFX
+
+function mod:ReliefSunny(_, _, player)
 	local playerData = OmoriMod:GetData(player)
 	
-	if player:GetPlayerType() == OmoriMod.Enums.PlayerType.PLAYER_OMORI_B then
-		if OmoriMod.GetEmotion(player) ~= "Neutral" then
-			OmoriMod.SetEmotion(player, "Neutral")
-		end
+	if not OmoriMod:IsOmori(player, true) then return end
+	
+	OmoriMod.SetEmotion(player, "Neutral")
+				
+	playerData.AfraidCounter = 90
+	playerData.StressCounter = 150
+	playerData.TriggerAfraid = false
+	playerData.TriggerStress = false
+	player:AddHearts(1)
 		
-		-- local heartsToAdd = 
+	OmoriMod:SunnyChangeEmotionEffect(player, true)
 		
-		playerData.AfraidCounter = 90
-		playerData.StressCounter = 150
-		playerData.TriggerAfraid = false
-		playerData.TriggerStress = false
-		player:AddHearts(1)
+	sfx:Play(OmoriMod.Enums.SoundEffect.SOUND_CALM_DOWN)
 		
-		OmoriMod:SunnyChangeEmotionEffect(player, true)
-		
-		sfx:Play(OmoriMod.Enums.SoundEffect.SOUND_CALM_DOWN)
-		
-		return true 
-	end
+	return true 
 end
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, CalmDown.ReliefSunny, OmoriMod.Enums.CollectibleType.COLLECTIBLE_CALM_DOWN)
+
+mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.ReliefSunny, OmoriMod.Enums.CollectibleType.COLLECTIBLE_CALM_DOWN)
 
