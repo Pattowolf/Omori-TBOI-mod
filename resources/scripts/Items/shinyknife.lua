@@ -200,9 +200,14 @@ function ShinyKnife:GivingKnife(player)
         playerData.GivenKnife = false
     end
     OmoriMod:GiveKnife(player, DIRECTION_TO_DEGREES[player:GetHeadDirection()])
-
+	
+	-- local knife = OmoriMod:GetShinyKnife()
+	-- print(knife.SpawnerEntity.Position)
+	
+	-- knife.Position = knife.SpawnerEntity.Position
+	
     for _, effect in pairs(Isaac.GetRoomEntities()) do
-        if effect.Type == EntityType.ENTITY_EFFECT and (effect.Variant == OmoriMod.Enums.EffectVariant.EFFECT_SHINY_KNIFE or effect.Variant == OmoriMod.Enums.EffectVariant.EFFECT_EMOTION_GLOW) then
+		if OmoriMod:IsShinyKnife(effect) then
             local knifeOwner = effect.SpawnerEntity:ToPlayer()
             effect.Position = knifeOwner.Position
         end

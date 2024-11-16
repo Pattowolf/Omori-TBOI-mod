@@ -28,9 +28,6 @@ OmoriMod.saveManager.Init(OmoriMod)
 
 -- Globals end
 
-OmoriMod.costumeProtector = include("resources.scripts.characterCostumeProtector")
-OmoriMod.costumeProtector:Init(OmoriMod)
-
 
 
 -- if REPENTOGON then

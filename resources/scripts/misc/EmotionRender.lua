@@ -33,6 +33,8 @@ function mod:RenderEmotionTitle()
 	if game:IsPaused() then return end
 	
 	for _, player in ipairs(players) do
+		if OmoriMod.GetEmotion(player) == nil then return end
+	
 		local pos = Isaac.WorldToScreen(player.Position)
 		local XPositionAlter = -0.2
 		local y = pos.Y - (-1 * player.SpriteScale.Y * 1) - (1) * (1) - 50
@@ -77,6 +79,8 @@ function mod:EmotionGlow(player)
 	playerData = OmoriMod:GetData(player)
 	
 	local emotionGlow = playerData.EmotionGlow
+	
+	if OmoriMod.GetEmotion(player) == nil then return end
 	
 	if not emotionGlow then
 		playerData.EmotionGlow = Isaac.Spawn(

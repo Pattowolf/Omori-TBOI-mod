@@ -36,7 +36,7 @@ OmoriMod.Enums = {
 	},
 	CollectibleType = {
 		COLLECTIBLE_SHINY_KNIFE = Isaac.GetItemIdByName("Shiny Knife"),
-		COLLECTIBLE_SELF_HELP_GUIDE = Isaac.GetItemIdByName("Self-Help Guide"),
+		COLLECTIBLE_EMOTION_CHART = Isaac.GetItemIdByName("Emotion Chart"),
 		COLLECTIBLE_CALM_DOWN = Isaac.GetItemIdByName("Calm Down"),
 		COLLECTIBLE_OVERCOME = Isaac.GetItemIdByName("Overcome"),
 	},
@@ -57,13 +57,13 @@ OmoriMod.Enums = {
 			["Ecstatic"] = true,
 			["Manic"] = true,
 		},
-		SelfHelpSpriteFrame = {
+		EmotionChartFrame = {
 			Neutral = 0,
 			Happy = 1,
 			Sad = 2,
 			Angry = 3,
 		},
-		SelfHelpEmotionUpgradesOmori = {
+		EmotionUpgradesOmori = {
 			["Happy"] = "Ecstatic",
 			["Ecstatic"] = "Manic",
 			["Sad"] = "Depressed",
@@ -71,7 +71,7 @@ OmoriMod.Enums = {
 			["Angry"] = "Enraged",
 			["Enraged"] = "Furious",
 		},
-		SelfHelpEmotionUpgradesOmoriCarBattery = {
+		EmotionUpgradesOmoriCarBattery = {
 			["Happy"] = "Manic",
 			["Ecstatic"] = "Manic",
 			["Sad"] = "Miserable",
@@ -79,13 +79,13 @@ OmoriMod.Enums = {
 			["Angry"] = "Furious",
 			["Enraged"] = "Furious",
 		},
-		SelfHelpEmotionUpgrades = {
+		EmotionUpgrades = {
 			["Neutral"] = "Happy",
 			["Happy"] = "Sad",
 			["Sad"] = "Angry",
 			["Angry"] = "Happy",
 		},
-		SelfHelpEmotionUpgradesCarBattery = {
+		EmotionUpgradesCarBattery = {
 			["Neutral"] = "Ecstatic",
 			["Happy"] = "Depressed",
 			["Sad"] = "Enraged",
@@ -105,7 +105,36 @@ OmoriMod.Enums = {
 			["Manic"] = "Sad",
 			["Miserable"] = "Angry",
 			["Furious"] = "Neutral",
-		}
+		},
+		DamageAlterEmotions = {
+			["Sad"] = { EmotionDamageMult = 0.75, damageMult = 1, birthrightMult = 0.9 },
+			["Depressed"] = { EmotionDamageMult = 0.625, damageMult = 1, birthrightMult = 0.9 },
+			["Miserable"] = { EmotionDamageMult = 0.5, damageMult = 1, birthrightMult = 0.9 },
+			["Angry"] = { EmotionDamageMult = 1.3, damageMult = 1.2, birthrightMult = 1.15 },
+			["Enraged"] = { EmotionDamageMult = 1.6, damageMult = 1.2, birthrightMult = 1.15 },
+			["Furious"] = { EmotionDamageMult = 2, damageMult = 1.2, birthrightMult = 1.15 },
+		},
+		TearsAlterEmotions = {
+			["Sad"] = { tearsMult = 1.3, birthrightMult = 1.2 },
+			["Depressed"] = { tearsMult = 1.4, birthrightMult = 1.2 },
+			["Miserable"] = { tearsMult = 1.5, birthrightMult = 1.2 },
+			["Angry"] = { tearsMult = 0.8, birthrightMult = 0.9 },
+			["Enraged"] = { tearsMult = 0.75, birthrightMult = 0.9 },
+			["Furious"] = { tearsMult = 0.65, birthrightMult = 0.9 },
+		},
+		SpeedAlterEmotions = {
+			["Happy"] = { speedMult = 1.25, birthrightMult = 1.1 },
+			["Ecstatic"] = { speedMult = 1.375, birthrightMult = 1.1 },
+			["Manic"] = { speedMult = 1.5, birthrightMult = 1.1 },
+			["Sad"] = { speedMult = 0.8, birthrightMult = 0.9 },
+			["Depressed"] = { speedMult = 0.7, birthrightMult = 0.9 },
+			["Miserable"] = { speedMult = 0.6, birthrightMult = 0.9 },
+		},
+		LuckAlterEmotions = {
+			["Happy"] = 1,
+			["Ecstatic"] = 2,
+			["Manic"] = 3,
+		},
 	},
 	Misc = {
 		SelfHelpRenderPos = Vector(16, 16),

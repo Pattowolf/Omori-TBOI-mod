@@ -12,7 +12,7 @@
 		bigportrait="playerportrait_omori.png" 
 		costumeSuffix="Omori"
 		birthright="Feel more" 
-		pocketActive="Self-Help Guide"
+		pocketActive="Emotion Chart"
 	/> 
 	<player 
 		name="Sunny" 

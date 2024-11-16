@@ -1,5 +1,5 @@
 <AnimatedActor>
-	<Info CreatedBy="Unknown" CreatedOn="15/11/2024 01:30:41 p. m." Version="6" Fps="29"/>
+	<Info CreatedBy="Unknown" CreatedOn="15/11/2024 01:42:20 p. m." Version="7" Fps="29"/>
 	<Content>
 		<Spritesheets>
 			<Spritesheet Path="collectibles\EmotionChart.png" Id="0"/>

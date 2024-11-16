@@ -12,9 +12,9 @@
 	/>
 	<active
 		id="2" 
-		name="Self-Help Guide" 
-		description="A book all about battles, written by HERO. Wow..." 
-		gfx="selfhelpguide.png"
+		name="Emotion Chart" 
+		description="A guide about emotions" 
+		gfx="emotion_chart.png"
 		quality="2" 
 		maxcharges="3"
 		tags="offensive"

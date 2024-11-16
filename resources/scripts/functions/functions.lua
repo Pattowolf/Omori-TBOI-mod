@@ -106,18 +106,6 @@ function OmoriMod.TearsPerSecond(player)
 	return OmoriMod:Round(30 / (player.MaxFireDelay + 1), 2)
 end
 
-function OmoriMod.GetEmotion(player)
-	local playerData = OmoriMod:GetData(player)
-	
-	if OmoriMod:IsOmori(player, false) then
-		return playerData.OmoriCurrentEmotion
-	elseif OmoriMod:IsOmori(player, true) then	
-		return playerData.SunnyCurrentEmotion
-	else
-		return playerData.PlayerEmotion
-	end
-end
-
 function OmoriMod.DoHappyTear(tear)
 	local player = OmoriMod.GetPlayerFromAttack(tear)
 	local doubleHitChance = OmoriMod.randomNumber(1, 100, modrng)
@@ -161,6 +149,14 @@ function OmoriMod:IsShinyKnife(entity)
 	return entity.Type == EntityType.ENTITY_EFFECT and entity.Variant == OmoriMod.Enums.EffectVariant.EFFECT_SHINY_KNIFE
 end
 
+function OmoriMod:GetShinyKnife()
+	for _, entity in ipairs(Isaac.GetRoomEntities()) do
+		if OmoriMod:IsShinyKnife(entity) then
+			return entity:ToEffect()
+		end
+	end
+end
+
 function OmoriMod:GiveKnife(player, rotation)
 	local playerData = OmoriMod:GetData(player)
 	if OmoriMod:IsKnifeUser(player) then
@@ -190,6 +186,7 @@ function OmoriMod:GiveKnife(player, rotation)
     end
 end
 
+local spriteRoot = "gfx/characters/costumes_Omori/"
 local EmotionChange = {
 	["Neutral"] = {suffix = "neutral", sound = sounds.SOUND_BACK_NEUTRAL},
 	["Happy"] = {suffix = "happy", sound = sounds.SOUND_HAPPY_UPGRADE},
@@ -203,12 +200,8 @@ local EmotionChange = {
 	["Furious"] = {suffix = "furious", sound = sounds.SOUND_ANGRY_UPGRADE_3},
 }
 
-function OmoriMod:OmoriChangeEmotionEffect(player, playSound)
-	if not OmoriMod:IsOmori(player, tainted) then return end
-
-	playSound = playSound or false
-	local spriteRoot = "gfx/characters/costumes_Omori/"
-		
+function OmoriMod:OmoriChangeEmotionEffect(player)
+	if not OmoriMod:IsOmori(player, tainted) then return end	
 	local emotion = OmoriMod.GetEmotion(player)
 		
 	local EmotionSuffix = OmoriMod.SwitchCase(emotion, EmotionChange).suffix
@@ -221,10 +214,7 @@ function OmoriMod:OmoriChangeEmotionEffect(player, playSound)
 	local EmotionCostumeSprite = EmotionCostume:GetSprite()
 
 	EmotionCostumeSprite:ReplaceSpritesheet(0, spriteRoot .. EmotionSuffix .. ".png", true)
-		
-	if EmotionSound ~= nil and playSound == true then
-		sfx:Play(EmotionSound, 2, 0, false, pitch, 0)
-	end
+	sfx:Play(EmotionSound, 2, 0, false, pitch, 0)
 end
 
 function OmoriMod:playerHasTearFlag(player, TearFlag)
@@ -315,15 +305,14 @@ function OmoriMod.SetEmotion(player, emotion)
 	local playerData = OmoriMod:GetData(player)
 	if type(emotion) ~= "string" then return end
 	
-	if OmoriMod:IsOmori(player, false) then
-		playerData.OmoriCurrentEmotion = emotion
-	elseif OmoriMod:IsOmori(player, true) then	
-		playerData.SunnyCurrentEmotion = emotion
-	else
-		playerData.PlayerEmotion = emotion
-	end
+	playerData.PlayerEmotion = emotion
 		
 	player:AddCacheFlags(CacheFlag.CACHE_DAMAGE | CacheFlag.CACHE_SPEED | CacheFlag.CACHE_FIREDELAY | CacheFlag.CACHE_LUCK, true)
+end
+
+function OmoriMod.GetEmotion(player)
+	local playerData = OmoriMod:GetData(player)
+	return playerData.PlayerEmotion 
 end
 
 local LINE_SPRITE = Sprite()
