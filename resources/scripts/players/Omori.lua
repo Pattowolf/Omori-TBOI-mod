@@ -1,22 +1,23 @@
 local mod = OmoriMod
 
 local enums = OmoriMod.Enums
-local utils = enums.Utils
+local costumes = enums.NullItemID
 
 function mod:OmoriInit(player)
-	local playerData = OmoriMod:GetData(player)
-	if player:GetPlayerType() == OmoriMod.Enums.PlayerType.PLAYER_OMORI then
-		player:AddNullCostume(OmoriMod.Enums.NullItemID.ID_OMORI)
-		player:AddNullCostume(OmoriMod.Enums.NullItemID.ID_OMORI_EMOTION)
+	if OmoriMod:IsOmori(player, false) then
+		player:AddNullCostume(costumes.ID_OMORI)
+		player:AddNullCostume(costumes.ID_OMORI_EMOTION)
 	end
 end
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, mod.OmoriInit)
 
 function mod:PreAddOmoriCostume(itemconfig, player)	
+	if not OmoriMod:IsOmori(player, false) then return end
+
 	local costume = itemconfig.Costume
 	local ID = costume.ID
 		
-	if ID == OmoriMod.Enums.NullItemID.ID_OMORI or ID == OmoriMod.Enums.NullItemID.ID_OMORI_EMOTION then return end
+	if ID == costumes.ID_OMORI or ID == costumes.ID_OMORI_EMOTION then return end
 	
 	return true
 end
@@ -30,6 +31,8 @@ local overrideWeapons = {
 function mod:OmoUpdate(player)
 	if not OmoriMod:IsKnifeUser(player) then return end
 		
+	-- print(OmoriMod:IsPlayerShooting(player))
+		
 	local weapon = player:GetWeapon(1)
 	
 	if weapon == nil then return end
@@ -42,19 +45,5 @@ function mod:OmoUpdate(player)
 		player:EnableWeaponType(WeaponType.WEAPON_TEARS, true)
 		player:SetWeapon(newWeapon, 1)
 	end
-	
-	local knife = OmoriMod:GetShinyKnife()
 end
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.OmoUpdate)
-
-function mod:onRoomEnter()
-	local players = PlayerManager.GetPlayers()
-	for _, player in ipairs(players) do
-		local playerData = OmoriMod:GetData(player)
-		
-		if playerData.RenderEmotionGlow == true then
-			playerData.RenderEmotionGlow = false
-		end
-	end
-end
-mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.onRoomEnter)

@@ -31,9 +31,7 @@ function mod:RenderSelfGuideMode(p, slot, offset, alpha, scale, chrgOffset)
 		local SelfHelpAnimFrame = OmoriMod.SwitchCase(OmoriMod.GetEmotion(p), EmotionChartSetFrame) or 0
 		local pkitem = p:GetPocketItem(0)
 		local ispocketactive = (pkitem:GetSlot() == 3 and pkitem:GetType() == 2)
-		
-		print(ispocketactive)
-		
+
 		if slot == ActiveSlot.SLOT_SECONDARY or (OmoriMod:IsOmori(p, false) and not ispocketactive) then
 			renderPos = renderPos / 2
 			renderScale = renderScale / 2
@@ -79,9 +77,7 @@ function mod:SelfelpGuideUseOmori(_, _, player, flags)
 end
 mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.SelfelpGuideUseOmori, OmoriMod.Enums.CollectibleType.COLLECTIBLE_EMOTION_CHART)
 
-function mod:OnSelfHelpGuideTaking(_, _, _, _, _, player)
-	local playerData = OmoriMod:GetData(player)
-	
+function mod:OnSelfHelpGuideTaking(_, _, _, _, _, player)	
 	if OmoriMod:IsAnyOmori(player) then return end 
 	if OmoriMod.GetEmotion(player) == nil then
 		OmoriMod.SetEmotion(player, "Happy")

@@ -13,7 +13,7 @@ function OmoriMod.GetScreenCenter()
 	local rx = pos.X + 60 * 26 / 40
 	local ry = pos.Y + 140 * (26 / 40)
 			
-	return Vector(rx*2 + 13*26, ry*2 + 7*26) / 2
+	return Vector(rx * 2 + 13 * 26, ry * 2 + 7 * 26) / 2
 end 
 
 function OmoriMod:Round(number, decimalPlaces)
@@ -22,21 +22,13 @@ function OmoriMod:Round(number, decimalPlaces)
 	return math.floor(number * mult + 0.5) / mult
 end
 
-function OmoriMod:ExponentialFunction(number, coeffcient, power)
-	if number ~= 0 then
-		local xp = (coeffcient * number ^ power)/number
-		return xp
-	end
-	return 0
-end
-
 function OmoriMod:GetAceleration(entity)
 	local normalizedVelocity = entity.Velocity:Normalized()
 	local NewVelValue = entity.Velocity * normalizedVelocity
 	
 	local acel = NewVelValue.X + NewVelValue.Y
 	
-	return TSIL.Utils.Math.Round(acel, 2)
+	return OmoriMod:Round(acel, 2)
 end
 
 function OmoriMod.SwitchCase(value, tables)
@@ -149,41 +141,40 @@ function OmoriMod:IsShinyKnife(entity)
 	return entity.Type == EntityType.ENTITY_EFFECT and entity.Variant == OmoriMod.Enums.EffectVariant.EFFECT_SHINY_KNIFE
 end
 
-function OmoriMod:GetShinyKnife()
-	for _, entity in ipairs(Isaac.GetRoomEntities()) do
-		if OmoriMod:IsShinyKnife(entity) then
-			return entity:ToEffect()
-		end
-	end
-end
-
-function OmoriMod:GiveKnife(player, rotation)
+function OmoriMod:GiveKnife(player)
 	local playerData = OmoriMod:GetData(player)
 	if OmoriMod:IsKnifeUser(player) then
-        if playerData.GivenKnife ~= true then
-            local knife =
-                Isaac.Spawn(
-                EntityType.ENTITY_EFFECT,
-                OmoriMod.Enums.EffectVariant.EFFECT_SHINY_KNIFE,
-                0,
-                player.Position,
-                Vector.Zero,
-                player
-            ):ToEffect()	
-			local knifesprite = knife:GetSprite()
+		local knife = playerData.ShinyKnife
+		if not knife then
+			playerData.ShinyKnife = Isaac.Spawn(
+				EntityType.ENTITY_EFFECT,
+				OmoriMod.Enums.EffectVariant.EFFECT_SHINY_KNIFE,
+				0,
+				player.Position,
+				Vector.Zero,
+				player
+			):ToEffect()
 			
-			OmoriMod:replaceKnifeSprite(player, knife)
-			
-			knifesprite.Rotation = rotation
-
-			if player:GetHeadDirection() == 0 or player:GetHeadDirection() == 1 or knifesprite:IsPlaying("Swing") or player:IsHoldingItem() == true then
-				knife.DepthOffset = -10
-			else
-				knife.DepthOffset = 1
-			end
-            playerData.GivenKnife = true
-        end
+			playerData.ShinyKnife.SpriteRotation = OmoriMod.SwitchCase(player:GetHeadDirection(), tables.DirectionToDegrees)
+		end
     end
+end
+
+function OmoriMod:GetAimingDirection(player)
+    if player:HasCollectible(CollectibleType.COLLECTIBLE_MARKED) or
+            player:HasCollectible(CollectibleType.COLLECTIBLE_ANALOG_STICK) or
+            player:HasCollectible(CollectibleType.COLLECTIBLE_EYE_OF_THE_OCCULT) or
+            player:HasCollectible(CollectibleType.COLLECTIBLE_EPIC_FETUS) or
+            player:HasCollectible(CollectibleType.COLLECTIBLE_LUDOVICO_TECHNIQUE)
+    then
+        return player:GetAimDirection()
+    end
+
+    return tables.DirectionToVector[player:GetFireDirection()]
+end
+
+function OmoriMod:IsPlayerShooting(player)
+	return OmoriMod:GetAimingDirection(player).X ~= 0 or OmoriMod:GetAimingDirection(player).Y ~= 0
 end
 
 local spriteRoot = "gfx/characters/costumes_Omori/"
@@ -222,8 +213,7 @@ function OmoriMod:playerHasTearFlag(player, TearFlag)
 end
 
 function OmoriMod:IsKnifeUser(player)
-	return 
-	player:HasCollectible(OmoriMod.Enums.CollectibleType.COLLECTIBLE_SHINY_KNIFE) or OmoriMod:IsAnyOmori(player)
+	return player:HasCollectible(OmoriMod.Enums.CollectibleType.COLLECTIBLE_SHINY_KNIFE) or OmoriMod:IsAnyOmori(player)
 end
 
 function OmoriMod:SunnyChangeEmotionEffect(player, playSound)
@@ -394,26 +384,6 @@ end
 --Helper Functions (thanks piber)--
 -----------------------------------
 
-function OmoriMod:GetPlayers(ignoreCoopBabies)
-
-	if ignoreCoopBabies == nil then
-		ignoreCoopBabies = true
-	end
-
-	local players = {}
-
-	for i = 0, Game():GetNumPlayers() - 1, 1 do
-		local player = Game():GetPlayer(i)
-
-		if not ignoreCoopBabies or player.Variant ~= 1 then
-			table.insert(players, player)
-		end
-	end
-
-	return players
-	
-end
-
 function OmoriMod:GetPtrHashEntity(entity)
 	if entity then
 		if entity.Entity then
@@ -428,72 +398,9 @@ function OmoriMod:GetPtrHashEntity(entity)
 	return nil
 end
 
----comment
----@param entity Entity
----@return table
 function OmoriMod:GetData(entity)
-	if entity and entity.GetData then
-		local data = entity:GetData()
-		if not data.OmoriMod then
-			data.OmoriMod = {}
-		end
-		return data.OmoriMod
-	end
-	return nil
-end
-
-function OmoriMod:Contains(list, x)
-	for _, v in pairs(list) do
-		if v == x then return true end
-	end
-	return false
-end
-
---ripairs stuff from revel
-function ripairs_it(t,i)
-	i=i-1
-	local v=t[i]
-	if v==nil then return v end
-	return i,v
-end
-function ripairs(t)
-	return ripairs_it, t, #t+1
-end
-
---- Executes a function for each key-value pair of a table
-function OmoriMod:ForEach(toIterate, funct)
-	for index, value in pairs(toIterate) do
-		funct(index, value)
-	end
-end
-
---filters a table given a predicate
-function OmoriMod:Filter(toFilter, predicate)
-	local filtered = {}
-
-	for index, value in pairs(toFilter) do
-		if predicate(index, value) then
-			filtered[#filtered+1] = value
-		end
-	end
-
-	return filtered
-end
-
---returns a list of all players that have a certain item
-function OmoriMod:GetPlayersByCollectible(collectibleId)
-	local players = OmoriMod:GetPlayers()
-
-	return OmoriMod:Filter(players, function(_, player)
-		return player:HasCollectible(collectibleId)
-	end)
-end
-
---returns a list of all players that have a certain item effect (useful for actives)
-function OmoriMod:GetPlayersWithCollectibleEffect(collectibleId)
-	local players = OmoriMod:GetPlayers()
-
-	return OmoriMod:Filter(players, function(_, player)
-		return player:GetEffects():HasCollectibleEffect(collectibleId)
-	end)
+	local data = entity:GetData()
+	data.OmoriMod = data.OmoriMod or {}
+	
+	return data.OmoriMod
 end

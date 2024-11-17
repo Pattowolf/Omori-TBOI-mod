@@ -1,106 +1,72 @@
 local mod = OmoriMod
 local enums = OmoriMod.Enums
-
 local utils = enums.Utils
 local tables = enums.Tables
-
-local game = utils.Game
 local modrng = utils.RNG
-local sfx = utils.SFX
 
-local dp_tookDamage = false
+local DBFlag = false
 
 function mod:dp_onStart()
-	dp_tookDamage = false
+	DBFlag = false
 end
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, mod.dp_onStart)
 
 function mod:EmotionDamageManager(player, damage, flags, source, cooldown)
+	local emotion = OmoriMod.GetEmotion(player)
+	
+	local SadIgnore = OmoriMod.SwitchCase(emotion, tables.SadnessIgnoreDamageChance)
+	local AngerDouble = OmoriMod.SwitchCase(emotion, tables.AngerDoubleDamageChance)
+	
+	if not SadIgnore and not AngerDouble then return end
+	
 	local CustomDamageTrigger = OmoriMod.randomNumber(1, 100, modrng)
-	
-	local birthrightSadMult = 1
-	local birthrightAngryMult = 1
-	
-	if player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
-		birthrightSadMult = 1.25
-		birthrightAngryMult = 1.1
+	local hasBirthright = player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)
+	local hasBlindRage = player:HasTrinket(TrinketType.TRINKET_BLIND_RAGE)		
+		
+	if SadIgnore then
+		local birthrightSadMult = hasBirthright and 1.25 or 1
+		SadIgnore = math.ceil(SadIgnore * birthrightSadMult)	
+		if CustomDamageTrigger <= SadIgnore then
+			local baseiFrames = hasBlindRage and 120 or 60
+			local iFramesMult = 1 + (SadIgnore / 100)
+			local sadIframes = math.ceil(iFramesMult * baseiFrames)
+			player:SetMinDamageCooldown(sadIframes)	
+		end
 	end
 	
-	local sadTier = {
-		["Sad"] = 25,
-		["Depressed"] = 35,
-		["Miserable"] = 50,
-	}
-				
-	local angryTier = {
-		["Angry"] = 50,
-		["Enraged"] = 70,
-		["Furious"] = 85,
-	}
-		
-	local SadIgnoreChance = OmoriMod.SwitchCase(OmoriMod.GetEmotion(player), sadTier) or 0
-	local AngryDoubleChance = OmoriMod.SwitchCase(OmoriMod.GetEmotion(player), angryTier) or 0
-	
-	if player:GetPlayerType() == OmoriMod.Enums.PlayerType.PLAYER_OMORI_B then
-		if OmoriMod.GetEmotion(player) == "Afraid" or OmoriMod.GetEmotion(player) == "StressedOut" then
-			if dp_tookDamage == false then
-				dp_tookDamage = true
+	if AngerDouble then
+		local birthrightAngryMult = hasBirthright and 1.1 or 1
+		AngerDouble = math.ceil(AngerDouble * birthrightAngryMult)
+		if CustomDamageTrigger <= AngerDouble then
+			if DBFlag == false then
+				DBFlag = true
 				player:TakeDamage(damage * 2, flags, source, cooldown)
 				return false
 			end
 		end
-	else
-		if player:GetDamageCooldown() == 0 then	
-			if (CustomDamageTrigger <= math.ceil(SadIgnoreChance * birthrightSadMult)) and (SadIgnoreChance > 0) then
-				local baseiFrames = 60
-				local iFramesMult = 1 + (SadIgnoreChance / 100)			
-				local chanceToRemoveCharge = OmoriMod.randomNumber(1, 100, rng)
-						
-				if player:HasTrinket(TrinketType.TRINKET_BLIND_RAGE) then
-					baseiFrames = 120
-				end
-
-				if chanceToRemoveCharge <= math.ceil(SadIgnoreChance * birthrightSadMult) then
-					local randomSlotSelect = OmoriMod.randomNumber(1, 3)
-					
-					local possiblePockets = {
-						[1] = ActiveSlot.SLOT_PRIMARY,
-						[2] = ActiveSlot.SLOT_SECONDARY,
-						[3] = ActiveSlot.SLOT_POCKET,
-					}
-				
-					local SlotMain = ActiveSlot.SLOT_PRIMARY
-					local SlotPocket = ActiveSlot.SLOT_POCKET
-					
-					local activeCharge = player:GetActiveCharge(ActiveSlot.SLOT_PRIMARY)
-					if activeCharge > 0 then
-						sfx:Play(SoundEffect.SOUND_BATTERYDISCHARGE, 1, 0, false, 1, 0)
-						Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.HEART, 3, player.Position + Vector(0, 10), Vector.Zero, player)
-						player:SetActiveCharge(activeCharge - 1, ActiveSlot.SLOT_PRIMARY)
-						game:GetHUD():FlashChargeBar(player, ActiveSlot.SLOT_PRIMARY)
-					end
-					return false
-				end
-				player:SetMinDamageCooldown(baseiFrames * iFramesMult)	
-			elseif (CustomDamageTrigger <= AngryDoubleChance) and (AngryDoubleChance > 0) then
-				if dp_tookDamage == false then
-					dp_tookDamage = true
-					player:TakeDamage(damage * 2, flags, source, cooldown)
-					return false
-				end
-			end
-		end
 	end
+	
+	DBFlag = false
 end
 mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_TAKE_DMG, mod.EmotionDamageManager)
+
+function mod:SetSadnessKnockback(tear)	
+	local player = OmoriMod.GetPlayerFromAttack(tear)
+	local SadMult = OmoriMod.SwitchCase(OmoriMod.GetEmotion(player), tables.SadnessKnockbackMult)
+	local birthrightMult = player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) and 1.25 or 1
+	
+	if not SadMult then return end
+	if tear.FrameCount == 1 then		
+		tear.Mass = tear.Mass * (1 + SadMult) * birthrightMult
+	end
+end
+mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, mod.SetSadnessKnockback)
 
 function mod:OnShootHappyTear(tear)
 	OmoriMod.DoHappyTear(tear)	
 end
 mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, mod.OnShootHappyTear)
--- Happy tears Manager end
 
--- Stats Manager
 function mod:OmoStats(player, flag)
 	local currentEmotion = OmoriMod.GetEmotion(player)
 	local hasBirthright = player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)
@@ -162,6 +128,8 @@ function mod:OmoStats(player, flag)
 			if not LuckAdded then return end
 			
 			player.Luck = player.Luck + (LuckAdded + birthrightAdd)
+		elseif flag == CacheFlag.CACHE_TEARFLAG then
+			
 		end
 	else
 		if currentEmotion == "Afraid" then

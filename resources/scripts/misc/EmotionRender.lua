@@ -1,5 +1,4 @@
 local mod = OmoriMod
-
 local enums = OmoriMod.Enums
 local utils = enums.Utils
 local tables = enums.Tables
@@ -33,7 +32,8 @@ function mod:RenderEmotionTitle()
 	if game:IsPaused() then return end
 	
 	for _, player in ipairs(players) do
-		if OmoriMod.GetEmotion(player) == nil then return end
+		local emotion = OmoriMod.GetEmotion(player)
+		if emotion == nil then return end
 	
 		local pos = Isaac.WorldToScreen(player.Position)
 		local XPositionAlter = -0.2
@@ -50,11 +50,10 @@ function mod:RenderEmotionTitle()
 			playerData.EmotionTitle = Sprite()
 			playerData.EmotionTitle:Load("gfx/EmotionTitle.anm2")
 		end
-		
-		
+				
 		local emotionRoot = "gfx/Emotions" .. emotionLangSuffix .. ".png"
 		playerData.EmotionTitle:ReplaceSpritesheet(0, emotionRoot, true)
-		playerData.EmotionTitle:Play(OmoriMod.GetEmotion(player), true)
+		playerData.EmotionTitle:Play(emotion, true)
 		playerData.EmotionTitle:Render(Vector(x, y), Vector.Zero, Vector.Zero)
 	end
 end
@@ -71,7 +70,7 @@ function mod:ChangeEmotionLogic(player)
 	local newEmotion = OmoriMod.SwitchCase(OmoriMod.GetEmotion(player), tables.EmotionToChange) or "Neutral"
 		
 	OmoriMod.SetEmotion(player, newEmotion)
-	OmoriMod:OmoriChangeEmotionEffect(player, true)
+	OmoriMod:OmoriChangeEmotionEffect(player)
 end
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.ChangeEmotionLogic)
 

@@ -1,6 +1,4 @@
 local mod = OmoriMod
-local sfx = SFXManager()
-
 local enums = OmoriMod.Enums
 local utils = enums.Utils
 local sfx = utils.SFX

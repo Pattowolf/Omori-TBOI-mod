@@ -57,6 +57,21 @@ OmoriMod.Enums = {
 			["Ecstatic"] = true,
 			["Manic"] = true,
 		},
+		SadnessKnockbackMult = {
+			["Sad"] = 0.5 * 1/3,
+			["Depressed"] = 0.5 * 2/3,
+			["Miserable"] = 0.5,
+		},
+		SadnessIgnoreDamageChance = {
+			["Sad"] = 25,
+			["Depressed"] = 35,
+			["Miserable"] = 50,
+		},
+		AngerDoubleDamageChance = {
+			["Angry"] = 50,
+			["Enraged"] = 70,
+			["Furious"] = 85,
+		},
 		EmotionChartFrame = {
 			Neutral = 0,
 			Happy = 1,
@@ -134,6 +149,20 @@ OmoriMod.Enums = {
 			["Happy"] = 1,
 			["Ecstatic"] = 2,
 			["Manic"] = 3,
+		},
+		DirectionToDegrees = {
+			[Direction.NO_DIRECTION] = 0,
+			[Direction.RIGHT] = 0,
+			[Direction.DOWN] = 90,
+			[Direction.LEFT] = 180,
+			[Direction.UP] = 270
+		},
+		DirectionToVector = {
+			[Direction.NO_DIRECTION] = Vector.Zero,
+			[Direction.RIGHT] = Vector(1, 0),
+			[Direction.DOWN] = Vector(0, 1),
+			[Direction.LEFT] = Vector(-1, 0),
+			[Direction.UP] = Vector(0, -1)
 		},
 	},
 	Misc = {
