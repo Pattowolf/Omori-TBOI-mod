@@ -1,40 +1,11 @@
 local mod = OmoriMod
 local enums = OmoriMod.Enums
 local tables = enums.Tables
-
--- local Mod = mod
-local ShinyKnife = {}
--- local sfx = SFXManager()
--- local rng = RNG()
-
-local VECTOR_ZERO = Vector.Zero
-local DIRECTION_TO_DEGREES = {
-    [Direction.NO_DIRECTION] = 0,
-    [Direction.RIGHT] = 0,
-    [Direction.DOWN] = 90,
-    [Direction.LEFT] = 180,
-    [Direction.UP] = 270
-}
-local DIRECTION_TO_VECTOR = {
-    [Direction.NO_DIRECTION] = VECTOR_ZERO,
-    [Direction.RIGHT] = Vector(1, 0),
-    [Direction.DOWN] = Vector(0, 1),
-    [Direction.LEFT] = Vector(-1, 0),
-    [Direction.UP] = Vector(0, -1)
-}
-
-local function getAimDirection(player)
-    if player:HasCollectible(CollectibleType.COLLECTIBLE_MARKED) or
-            player:HasCollectible(CollectibleType.COLLECTIBLE_ANALOG_STICK) or
-            player:HasCollectible(CollectibleType.COLLECTIBLE_EYE_OF_THE_OCCULT) or
-            player:HasCollectible(CollectibleType.COLLECTIBLE_EPIC_FETUS) or
-            player:HasCollectible(CollectibleType.COLLECTIBLE_LUDOVICO_TECHNIQUE)
-    then
-        return player:GetAimDirection()
-    end
-
-    return DIRECTION_TO_VECTOR[player:GetFireDirection()]
-end
+local utils = enums.Utils
+local sfx = utils.SFX
+local rng = utils.RNG
+local OmoriModCallbacks = enums.Callbacks
+local misc = enums.Misc
 
 local function getWeaponDMG(player)
     local playerData = OmoriMod:GetData(player)
@@ -66,8 +37,6 @@ end
 local function donthasAnyVeganMilk (player)
 	return not (player:HasCollectible(CollectibleType.COLLECTIBLE_SOY_MILK) or player:HasCollectible(CollectibleType.COLLECTIBLE_ALMOND_MILK))
 end
-
-local WEAPON_KNOCKBACK_VELOCITY = Vector(20, 0)
 
 -- function ShinyKnife:RenderShinyKnifeCharge()
     -- for i = 0, Game():GetNumPlayers() - 1 do
@@ -179,7 +148,7 @@ function OmoriMod:replaceKnifeSprite(player, knife)
 	end
 end
 
-function ShinyKnife:OnKnifeRemoving()
+function mod:OnKnifeRemoving()
     for i = 0, Game():GetNumPlayers() do
         local player = Isaac.GetPlayer(i)
         local playerData = OmoriMod:GetData(player)
@@ -195,9 +164,9 @@ function ShinyKnife:OnKnifeRemoving()
 		-- end
     end
 end
-mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, ShinyKnife.OnKnifeRemoving)
+mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.OnKnifeRemoving)
 
-function ShinyKnife:GivingKnife(player)
+function mod:GivingKnife(player)
     local playerData = OmoriMod:GetData(player)
 
     OmoriMod:GiveKnife(player)
@@ -225,7 +194,7 @@ function ShinyKnife:GivingKnife(player)
 		end
 	end
 end
-OmoriMod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, ShinyKnife.GivingKnife)
+OmoriMod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.GivingKnife)
 
 function OmoriMod:ForceHeadDirLudo(player, frames)
 	local playerData = OmoriMod:GetData(player)
@@ -252,6 +221,12 @@ function mod:ShinyKnifeUpdate(knife)
 	local isShooting = OmoriMod:IsPlayerShooting(player)
 	local aimDegrees = OmoriMod:GetAimingDirection(player):GetAngleDegrees() 
 	
+	local multiShot = player:GetMultiShotParams(WeaponType.WEAPON_TEARS)
+	
+	local frame = knifesprite:GetFrame()
+	
+	local isIdle = knifesprite:IsPlaying("Idle")
+	
 	knife:FollowParent(player) 	
 	
 	if not knifesprite:IsPlaying("Swing") then
@@ -259,39 +234,148 @@ function mod:ShinyKnifeUpdate(knife)
 	end
 	
 	playerData.shinyKnifeCharge = playerData.shinyKnifeCharge or 0
-	playerData.ExtraSwings = playerData.ExtraSwings or 3
+	knifeData.Swings = knifeData.Swings or 1
 	
+	local HasMarked = player:GetMarkedTarget() ~= nil
+		
 	if isShooting then
-		playerData.shinyKnifeCharge = math.min(playerData.shinyKnifeCharge + 5, 100)
-		
-		if player:HasCollectible(CollectibleType.COLLECTIBLE_SOY_MILK) then
+		if player:HasCollectible(CollectibleType.COLLECTIBLE_SOY_MILK) and isIdle then
 			knifesprite:Play("Swing")
+			Isaac.RunCallback(OmoriModCallbacks.KNIFE_SWING_TRIGGER, knife)
 		end
-		playerData.ExtraSwings = 3
+		if isIdle then
+			playerData.shinyKnifeCharge = math.min(playerData.shinyKnifeCharge + 5, 100)
+			knifeData.Swings = multiShot:GetNumTears()
+			
+			if HasMarked and playerData.shinyKnifeCharge == 100 and knifeData.Swings > 0 and isIdle then
+				knifesprite:Play("Swing")
+				Isaac.RunCallback(OmoriModCallbacks.KNIFE_SWING_TRIGGER, knife)
+				playerData.shinyKnifeCharge = 0
+			end
+		end
 	else
-		if playerData.shinyKnifeCharge == 100 then
+		if playerData.shinyKnifeCharge == 100 and knifeData.Swings > 0 and isIdle then
 			knifesprite:Play("Swing")
+			Isaac.RunCallback(OmoriModCallbacks.KNIFE_SWING_TRIGGER, knife)
+			knifeData.Swings = knifeData.Swings - 1
+		end 
+		
+		if playerData.shinyKnifeCharge ~= 100 then
+			playerData.shinyKnifeCharge = 0
 		end
-		playerData.shinyKnifeCharge = 0
-		-- playerData.ExtraSwings = 3
 	end
 	
-	if knifesprite:IsFinished("Swing") then
-		knifesprite:Play("Idle")
-		if playerData.ExtraSwings > 1 then
-			knifesprite:Play("Swing")
-			-- playerData.ExtraSwings = playerData.ExtraSwings - 1
-		else
-			
-		end	
-		
-		
+	if knifesprite:IsPlaying("Swing") then
+		Isaac.RunCallback(OmoriModCallbacks.KNIFE_SWING, knife)
 	end
 		
-	print(playerData.shinyKnifeCharge, playerData.ExtraSwings)
+	if knifesprite:IsFinished("Swing") then
+		knifesprite:Play("Idle")		
+		knifeData.HitBlacklist = {}
+		
+		if knifeData.Swings == 0 and knifesprite:IsPlaying("Idle") then
+			playerData.shinyKnifeCharge = 0
+		end
+		knifeData.IsCriticAtack = false
+		knife.Color = Color.Default
+	end	
 end
 mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, mod.ShinyKnifeUpdate, OmoriMod.Enums.EffectVariant.EFFECT_SHINY_KNIFE)
 
+function mod:OnKnifeSwingTrigger(knife)
+	sfx:Play(OmoriMod.Enums.SoundEffect.SOUND_BLADE_SLASH, 1, 0, false, 1, 0)
+	
+	local knifeData = OmoriMod:GetData(knife)
+	local CriticDamageChance = OmoriMod.randomNumber(1, 100, rng) 
+	local player = knife.SpawnerEntity:ToPlayer()
+	
+	local emotion = OmoriMod.GetEmotion(player)
+	
+	knifeData.IsCriticAtack = knifeData.IsCriticAtack or false
+
+	if tables.HappinessTiers[emotion] == nil then return end
+		
+	local criticChance = OmoriMod.SwitchCase(emotion, tables.HappyKnifeCriticChance)
+				
+	if CriticDamageChance <= criticChance then
+		knifeData.IsCriticAtack = true
+		knife.Color = misc.CriticColor
+	else
+		knifeData.IsCriticAtack = false
+	end
+end
+mod:AddCallback(OmoriModCallbacks.KNIFE_SWING_TRIGGER, mod.OnKnifeSwingTrigger)
+
+function mod:OnKnifeSwing(knife)
+	local knifeData = OmoriMod:GetData(knife)	
+	
+	knifeData.HitBlacklist = knifeData.HitBlacklist or {} 
+		
+	for i = 1, 2 do
+		local capsule = knife:GetNullCapsule("KnifeHit" .. i)
+		local capsulePosition = capsule:GetPosition() 
+		
+		for _, entity in ipairs(Isaac.FindInCapsule(capsule, 0xFFFFFFFF)) do
+			if entity:IsActiveEnemy() and entity:IsVulnerableEnemy() then
+				if not knifeData.HitBlacklist[GetPtrHash(entity)] then
+					local ret = Isaac.RunCallback(OmoriModCallbacks.KNIFE_HIT_ENEMY, knife, entity)					
+					entity:TakeDamage(ret.Damage, ret.Flags, EntityRef(knife), ret.CountDown)
+					knifeData.HitBlacklist[GetPtrHash(entity)] = true
+				end
+			end	
+		end
+	end
+end
+mod:AddCallback(OmoriModCallbacks.KNIFE_SWING, mod.OnKnifeSwing)
+
+function mod:OnDamagingWithShinyKnife(knife, entity)
+	local player = knife.SpawnerEntity:ToPlayer()
+	local knifeData = OmoriMod:GetData(knife)
+	
+	local emotion = OmoriMod.GetEmotion(player)
+	
+	local DamageParams = {
+		Damage = getWeaponDMG(player),
+		Flags = 0,
+		CountDown = 0,
+	}
+
+	local IsHappy = OmoriMod.SwitchCase(emotion, tables.HappinessTiers)
+	
+	if IsHappy then
+		if knifeData.IsCriticAtack then
+			DamageParams.Damage = DamageParams.Damage * 2
+			sfx:Play(OmoriMod.Enums.SoundEffect.SOUND_RIGHT_IN_THE_HEART, 1, 0, false, 1, 0)
+		else
+			local failChance = OmoriMod.SwitchCase(emotion, tables.HappinessFailChance)
+			
+			if failChance then
+				local failTriggerChance = OmoriMod.randomNumber(1, 100, rng)
+				if failTriggerChance <= failChance then	
+					sfx:Play(OmoriMod.Enums.SoundEffect.SOUND_MISS_ATTACK, 1, 0, false, 1, 0)
+					DamageParams.Damage = 0
+				end
+			end
+		end
+	end
+	
+	if DamageParams.Damage > 0 then 
+		sfx:Play(SoundEffect.SOUND_MEATY_DEATHS, 1, 0, false, 1, 0)
+	end
+	
+	local birthrightMult = (OmoriMod:IsOmori(player, false) and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) and 1.2) or 1
+		
+	-- print(birthrightMult)
+		
+	local sadKnockbackMult = (OmoriMod.SwitchCase(emotion, tables.SadnessKnockbackMult) or 1) * birthrightMult or 1
+		
+	local resizer = (20 * sadKnockbackMult) * (player.ShotSpeed)
+		
+	entity.Velocity = (entity.Position - player.Position):Resized(resizer) 
+	
+	return DamageParams
+end
+mod:AddCallback(OmoriModCallbacks.KNIFE_HIT_ENEMY, mod.OnDamagingWithShinyKnife)
 -- function ShinyKnife:KnifeEffectUpdate(knife)
     -- local knifesprite = knife:GetSprite()
     -- local player = knife.SpawnerEntity:ToPlayer()

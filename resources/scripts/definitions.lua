@@ -45,6 +45,11 @@ OmoriMod.Enums = {
 		SFX = SFXManager(),
 		RNG = RNG(),
 	},
+	Callbacks = {
+		KNIFE_SWING = "OmoriModCallbacks_KNIFE_SWING",
+		KNIFE_SWING_TRIGGER = "OmoriModCallbacks_KNIFE_SWING_TRIGGER",
+		KNIFE_HIT_ENEMY = "OmoriModCallbacks_KNIFE_HIT_ENEMY",
+	},
 	Tables = {
 		NoDischargeEmotions = {
 			["Neutral"] = true,
@@ -56,6 +61,11 @@ OmoriMod.Enums = {
 			["Happy"] = true,
 			["Ecstatic"] = true,
 			["Manic"] = true,
+		},
+		HappinessFailChance = {
+			["Happy"] = 10,
+			["Ecstatic"] = 20,
+			["Manic"] = 30,
 		},
 		SadnessKnockbackMult = {
 			["Sad"] = 0.5 * 1/3,
@@ -72,6 +82,16 @@ OmoriMod.Enums = {
 			["Enraged"] = 70,
 			["Furious"] = 85,
 		},
+		HappynessCriticDamageChance = {
+			["Happy"] = {VelMult = 1, HappyChance = 25},
+			["Ecstatic"] = {VelMult = 2, HappyChance = 38},
+			["Manic"] = {VelMult = 3, HappyChance = 50},
+		},
+		HappyKnifeCriticChance = {
+            ["Happy"] = 25,
+            ["Ecstatic"] = 40,
+            ["Manic"] = 60,
+        },
 		EmotionChartFrame = {
 			Neutral = 0,
 			Happy = 1,
@@ -164,10 +184,16 @@ OmoriMod.Enums = {
 			[Direction.LEFT] = Vector(-1, 0),
 			[Direction.UP] = Vector(0, -1)
 		},
+		SadnessKnockbackMult = {
+			["Sad"] = 1.25,
+			["Depressed"] = 1.375,
+			["Miserable"] = 1.5,
+		},
 	},
 	Misc = {
 		SelfHelpRenderPos = Vector(16, 16),
 		SelfHelpRenderScale = Vector.One,
+		CriticColor = Color(0.8, 0.8, 0.8, 1, 255/255, 200/255, 100/255),
 	},
 }
 -- Globals end
