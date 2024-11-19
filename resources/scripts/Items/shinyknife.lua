@@ -219,7 +219,7 @@ function mod:ShinyKnifeUpdate(knife)
     local playerData = OmoriMod:GetData(player)
 	
 	local isShooting = OmoriMod:IsPlayerShooting(player)
-	local aimDegrees = OmoriMod:GetAimingDirection(player):GetAngleDegrees() 
+	local aimDegrees = player:GetAimDirection():GetAngleDegrees() 
 	
 	local multiShot = player:GetMultiShotParams(WeaponType.WEAPON_TEARS)
 	
@@ -229,8 +229,23 @@ function mod:ShinyKnifeUpdate(knife)
 	
 	knife:FollowParent(player) 	
 	
+	knifeData.Aiming = knifeData.Aiming or 0
+	
+	-- if knifesprite:IsPlaying("Idle") then
+	if isShooting then
+		knifeData.Aiming = aimDegrees
+	else
+		if isIdle and knifeData.Swings < 1 then
+			knifeData.Aiming = OmoriMod.SwitchCase(player:GetHeadDirection(), tables.DirectionToDegrees)
+		end
+	end
+	-- end
+	
+	-- print(knifeData.Aiming)
+	
 	if not knifesprite:IsPlaying("Swing") then
-		knife.SpriteRotation = (isShooting and aimDegrees) or OmoriMod.SwitchCase(player:GetHeadDirection(), tables.DirectionToDegrees)
+		knife.SpriteRotation = knifeData.Aiming
+		-- knife.SpriteRotation = (isShooting and knifeData.Aiming) or OmoriMod.SwitchCase(player:GetHeadDirection(), tables.DirectionToDegrees)
 	end
 	
 	playerData.shinyKnifeCharge = playerData.shinyKnifeCharge or 0
@@ -245,7 +260,10 @@ function mod:ShinyKnifeUpdate(knife)
 		end
 		if isIdle then
 			playerData.shinyKnifeCharge = math.min(playerData.shinyKnifeCharge + 5, 100)
-			knifeData.Swings = multiShot:GetNumTears()
+			
+			if knifeData.Swings < 1 then
+				knifeData.Swings = multiShot:GetNumTears()
+			end
 			
 			if HasMarked and playerData.shinyKnifeCharge == 100 and knifeData.Swings > 0 and isIdle then
 				knifesprite:Play("Swing")
@@ -274,11 +292,17 @@ function mod:ShinyKnifeUpdate(knife)
 		knifeData.HitBlacklist = {}
 		
 		if knifeData.Swings == 0 and knifesprite:IsPlaying("Idle") then
+			-- if isShooting and knifeData.Swings > 0 then
+				-- print(knifeData.Swings, "apdjasopid")
+				-- knifesprite:Play("Swing")		
+			-- end
 			playerData.shinyKnifeCharge = 0
 		end
 		knifeData.IsCriticAtack = false
 		knife.Color = Color.Default
 	end	
+	
+	print(playerData.shinyKnifeCharge, knifesprite:GetAnimation(), knifeData.Swings)
 end
 mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, mod.ShinyKnifeUpdate, OmoriMod.Enums.EffectVariant.EFFECT_SHINY_KNIFE)
 

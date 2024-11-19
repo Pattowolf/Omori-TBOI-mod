@@ -336,6 +336,49 @@ function OmoriMod.MakeVector(x)
 	return Vector(math.cos(math.rad(x)),math.sin(math.rad(x)))
 end
 
+function OmoriMod:InputBuffer(player, action, MaxTime, MaxTriggers)
+	local Table = {}
+	local playerData = OmoriMod:GetData(player)
+	
+	playerData.BufferCount = playerData.BufferCount or 0
+	playerData.BufferTimer = playerData.BufferTimer or 0
+	
+	if Input.IsActionTriggered(action, player.ControllerIndex) then
+		-- local count = 0
+		playerData.BufferCount = playerData.BufferCount + 1		
+		-- print(playerData.BufferCount)
+		Table[playerData.BufferCount] = action
+		-- print(Table[playerData.BufferCount])
+	end
+	
+	if playerData.BufferCount >= 1 then
+		if playerData.BufferTimer >= MaxTime or playerData.BufferCount == MaxTriggers then
+			playerData.BufferCount = 0 
+			playerData.BufferTimer = 0
+		end
+	end
+	
+	return playerData.BufferCount
+end
+
+function OmoriMod:InputBufferTimer(player)
+	local playerData = OmoriMod:GetData(player)
+	
+	playerData.BufferCount = playerData.BufferCount or 0
+	playerData.BufferTimer = playerData.BufferTimer or 0
+	
+	if playerData.BufferCount >= 1 then
+		playerData.BufferTimer = playerData.BufferTimer + 1
+	end
+	
+	if playerData.BufferTimer > 0 then
+		print("Timer:", playerData.BufferTimer)
+		print("Count:", playerData.BufferCount)
+	end
+end
+OmoriMod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, OmoriMod.InputBufferTimer)
+
+
 function OmoriMod.GetPlayerFromAttack(entity)
 	for i=1, 3 do
 		local check = nil
