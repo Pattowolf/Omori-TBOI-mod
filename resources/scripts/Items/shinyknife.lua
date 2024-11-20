@@ -237,6 +237,8 @@ function mod:ShinyKnifeUpdate(knife)
 	else
 		if isIdle and knifeData.Swings < 1 then
 			knifeData.Aiming = OmoriMod.SwitchCase(player:GetHeadDirection(), tables.DirectionToDegrees)
+		elseif knifeData.Swings > 0 and isIdle then
+			knifeData.Aiming = OmoriMod.SwitchCase(player:GetHeadDirection(), tables.DirectionToDegrees)
 		end
 	end
 	-- end
@@ -244,7 +246,10 @@ function mod:ShinyKnifeUpdate(knife)
 	-- print(knifeData.Aiming)
 	
 	if not knifesprite:IsPlaying("Swing") then
+		
 		knife.SpriteRotation = knifeData.Aiming
+		
+		-- if not 
 		-- knife.SpriteRotation = (isShooting and knifeData.Aiming) or OmoriMod.SwitchCase(player:GetHeadDirection(), tables.DirectionToDegrees)
 	end
 	
@@ -283,6 +288,13 @@ function mod:ShinyKnifeUpdate(knife)
 		end
 	end
 	
+	-- if isShooting and playerData.shinyKnifeCharge == 100 and knifeData.Swings > 0 then
+		-- print("adsiasd")
+		-- knifesprite:Play("Swing")
+		-- Isaac.RunCallback(OmoriModCallbacks.KNIFE_SWING_TRIGGER, knife)
+		-- knifeData.Swings = knifeData.Swings - 1
+	-- end
+	
 	if knifesprite:IsPlaying("Swing") then
 		Isaac.RunCallback(OmoriModCallbacks.KNIFE_SWING, knife)
 	end
@@ -297,6 +309,10 @@ function mod:ShinyKnifeUpdate(knife)
 				-- knifesprite:Play("Swing")		
 			-- end
 			playerData.shinyKnifeCharge = 0
+		elseif knifeData.Swings > 0 and knifesprite:IsPlaying("Idle") and isShooting then
+			knifesprite:Play("Swing")
+			knifeData.Swings = knifeData.Swings - 1
+			Isaac.RunCallback(OmoriModCallbacks.KNIFE_SWING_TRIGGER, knife)
 		end
 		knifeData.IsCriticAtack = false
 		knife.Color = Color.Default
@@ -389,7 +405,7 @@ function mod:OnDamagingWithShinyKnife(knife, entity)
 	
 	local birthrightMult = (OmoriMod:IsOmori(player, false) and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) and 1.2) or 1
 		
-	-- print(birthrightMult)
+	print(birthrightMult)
 		
 	local sadKnockbackMult = (OmoriMod.SwitchCase(emotion, tables.SadnessKnockbackMult) or 1) * birthrightMult or 1
 		
@@ -400,6 +416,7 @@ function mod:OnDamagingWithShinyKnife(knife, entity)
 	return DamageParams
 end
 mod:AddCallback(OmoriModCallbacks.KNIFE_HIT_ENEMY, mod.OnDamagingWithShinyKnife)
+
 -- function ShinyKnife:KnifeEffectUpdate(knife)
     -- local knifesprite = knife:GetSprite()
     -- local player = knife.SpawnerEntity:ToPlayer()
