@@ -100,6 +100,9 @@ end
 
 function OmoriMod.DoHappyTear(tear)
 	local player = OmoriMod.GetPlayerFromAttack(tear)
+
+	if not player then return end
+
 	local doubleHitChance = OmoriMod.randomNumber(1, 100, modrng)
 	
 	local birthrightDamageMult = 1
@@ -177,6 +180,11 @@ function OmoriMod:IsPlayerShooting(player)
 	return OmoriMod:GetAimingDirection(player).X ~= 0 or OmoriMod:GetAimingDirection(player).Y ~= 0
 end
 
+function OmoriMod:IsPlayerMoving(player)
+	return player:GetMovementVector().X ~= 0 or player:GetMovementVector().Y ~= 0
+end
+
+
 local spriteRoot = "gfx/characters/costumes_Omori/"
 local EmotionChange = {
 	["Neutral"] = {suffix = "neutral", sound = sounds.SOUND_BACK_NEUTRAL},
@@ -192,7 +200,7 @@ local EmotionChange = {
 }
 
 function OmoriMod:OmoriChangeEmotionEffect(player)
-	if not OmoriMod:IsOmori(player, tainted) then return end	
+	if not OmoriMod:IsOmori(player, false) then return end	
 	local emotion = OmoriMod.GetEmotion(player)
 		
 	local EmotionSuffix = OmoriMod.SwitchCase(emotion, EmotionChange).suffix
@@ -205,7 +213,7 @@ function OmoriMod:OmoriChangeEmotionEffect(player)
 	local EmotionCostumeSprite = EmotionCostume:GetSprite()
 
 	EmotionCostumeSprite:ReplaceSpritesheet(0, spriteRoot .. EmotionSuffix .. ".png", true)
-	sfx:Play(EmotionSound, 2, 0, false, pitch, 0)
+	sfx:Play(EmotionSound, 2, 0, false, 1, 0)
 end
 
 function OmoriMod:playerHasTearFlag(player, TearFlag)

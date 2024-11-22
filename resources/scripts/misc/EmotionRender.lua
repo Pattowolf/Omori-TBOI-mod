@@ -48,7 +48,7 @@ function mod:RenderEmotionTitle()
 		
 		if not playerData.EmotionTitle then
 			playerData.EmotionTitle = Sprite()
-			playerData.EmotionTitle:Load("gfx/EmotionTitle.anm2")
+			playerData.EmotionTitle:Load("gfx/EmotionTitle.anm2", true)
 		end
 				
 		local emotionRoot = "gfx/Emotions" .. emotionLangSuffix .. ".png"
@@ -75,7 +75,7 @@ end
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.ChangeEmotionLogic)
 
 function mod:EmotionGlow(player)
-	playerData = OmoriMod:GetData(player)
+	PlayerData = OmoriMod:GetData(player)
 	
 	local emotionGlow = playerData.EmotionGlow
 	

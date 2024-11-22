@@ -8,7 +8,7 @@ if not REPENTOGON then
     local font = Font()
     font:Load("font/pftempestasevencondensed.fnt")
 
-    mod:AddCallback(ModCallbacks.MC_POST_RENDER, function()
+    OmoriMod:AddCallback(ModCallbacks.MC_POST_RENDER, function()
         local text = "REPENTOGON is missing"
         local text2 = "check repentogon.com"
         font:DrawStringScaledUTF8(text, Isaac.GetScreenWidth()/1.1 - font:GetStringWidthUTF8(text)/2, Isaac.GetScreenHeight()/1.2, 1, 1, KColor(2,.5,.5,1), 1, true )
@@ -18,11 +18,13 @@ if not REPENTOGON then
     return
 end
 
+
+
 local myFolder = "resources.scripts.OmoriLibraryOfIsaac"
 local LOCAL_TSIL = require(myFolder .. ".TSIL")
 LOCAL_TSIL.Init(myFolder)
 
-OmoriMod.saveManager = include("resources.scripts.misc.save_manager") 
+OmoriMod.saveManager = include("resources.scripts.misc.save_manager")
 OmoriMod.saveManager.Init(OmoriMod)
 
 

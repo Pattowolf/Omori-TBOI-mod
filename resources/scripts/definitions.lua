@@ -46,9 +46,10 @@ OmoriMod.Enums = {
 		RNG = RNG(),
 	},
 	Callbacks = {
-		KNIFE_SWING = "OmoriModCallbacks_KNIFE_SWING",
-		KNIFE_SWING_TRIGGER = "OmoriModCallbacks_KNIFE_SWING_TRIGGER",
-		KNIFE_HIT_ENEMY = "OmoriModCallbacks_KNIFE_HIT_ENEMY",
+		KNIFE_SWING = "OmoriModCallbacks_KNIFE_SWING", -- Fires everytime Knife is swinging 
+		KNIFE_SWING_TRIGGER = "OmoriModCallbacks_KNIFE_SWING_TRIGGER", -- Fires on Swing's first frame
+		KNIFE_HIT_ENEMY = "OmoriModCallbacks_KNIFE_HIT_ENEMY",-- Fires on knife colliding with enemies
+		KNIFE_ENTITY_COLLISION = "OmoriModCallbacks_KNIFE_ENTITY_COLLISION", -- Fires on knife colliding with non-enemy entities
 	},
 	Tables = {
 		NoDischargeEmotions = {
@@ -66,11 +67,6 @@ OmoriMod.Enums = {
 			["Happy"] = 10,
 			["Ecstatic"] = 20,
 			["Manic"] = 30,
-		},
-		SadnessKnockbackMult = {
-			["Sad"] = 0.5 * 1/3,
-			["Depressed"] = 0.5 * 2/3,
-			["Miserable"] = 0.5,
 		},
 		SadnessIgnoreDamageChance = {
 			["Sad"] = 25,

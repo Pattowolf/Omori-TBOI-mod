@@ -226,35 +226,38 @@ function mod:ShinyKnifeUpdate(knife)
 	local frame = knifesprite:GetFrame()
 	
 	local isIdle = knifesprite:IsPlaying("Idle")
+	local isSwinging = knifesprite:IsPlaying("Swing")
 	
 	knife:FollowParent(player) 	
-	
-	knifeData.Aiming = knifeData.Aiming or 0
-	
+		
 	-- if knifesprite:IsPlaying("Idle") then
-	if isShooting then
-		knifeData.Aiming = aimDegrees
-	else
-		if isIdle and knifeData.Swings < 1 then
-			knifeData.Aiming = OmoriMod.SwitchCase(player:GetHeadDirection(), tables.DirectionToDegrees)
-		elseif knifeData.Swings > 0 and isIdle then
-			knifeData.Aiming = OmoriMod.SwitchCase(player:GetHeadDirection(), tables.DirectionToDegrees)
-		end
-	end
+	-- if isShooting then
+		-- knifeData.Aiming = aimDegrees
+	-- else
+	
+		-- if not isIdle then
+			-- knifeData.Aiming = 90
+		-- end
+	-- end
 	-- end
 	
 	-- print(knifeData.Aiming)
 	
-	if not knifesprite:IsPlaying("Swing") then
-		
-		knife.SpriteRotation = knifeData.Aiming
-		
-		-- if not 
-		-- knife.SpriteRotation = (isShooting and knifeData.Aiming) or OmoriMod.SwitchCase(player:GetHeadDirection(), tables.DirectionToDegrees)
-	end
+	-- print(knifeData.Aiming)
+	
+	-- print(knifeData.Aiming)
+	
+	-- if not isSwinging then
+		-- if isShooting then
+			-- knife.SpriteRotation = knifeData.Aiming
+		-- end
+		-- if not isShooting then
+			-- knife.SpriteRotation = player:GetSmoothBodyRotation()
+		-- end
+	-- end
 	
 	playerData.shinyKnifeCharge = playerData.shinyKnifeCharge or 0
-	knifeData.Swings = knifeData.Swings or 1
+	playerData.Swings = playerData.Swings or 1
 	
 	local HasMarked = player:GetMarkedTarget() ~= nil
 		
@@ -266,34 +269,27 @@ function mod:ShinyKnifeUpdate(knife)
 		if isIdle then
 			playerData.shinyKnifeCharge = math.min(playerData.shinyKnifeCharge + 5, 100)
 			
-			if knifeData.Swings < 1 then
-				knifeData.Swings = multiShot:GetNumTears()
+			if playerData.Swings < 1 then
+				playerData.Swings = multiShot:GetNumTears()
 			end
 			
-			if HasMarked and playerData.shinyKnifeCharge == 100 and knifeData.Swings > 0 and isIdle then
+			if HasMarked and playerData.shinyKnifeCharge == 100 and playerData.Swings > 0 and isIdle then
 				knifesprite:Play("Swing")
+				playerData.Swings = playerData.Swings - 1
 				Isaac.RunCallback(OmoriModCallbacks.KNIFE_SWING_TRIGGER, knife)
-				playerData.shinyKnifeCharge = 0
 			end
 		end
 	else
-		if playerData.shinyKnifeCharge == 100 and knifeData.Swings > 0 and isIdle then
+		if playerData.shinyKnifeCharge == 100 and playerData.Swings > 0 and isIdle then
 			knifesprite:Play("Swing")
+			playerData.Swings = playerData.Swings - 1
 			Isaac.RunCallback(OmoriModCallbacks.KNIFE_SWING_TRIGGER, knife)
-			knifeData.Swings = knifeData.Swings - 1
 		end 
 		
 		if playerData.shinyKnifeCharge ~= 100 then
 			playerData.shinyKnifeCharge = 0
 		end
 	end
-	
-	-- if isShooting and playerData.shinyKnifeCharge == 100 and knifeData.Swings > 0 then
-		-- print("adsiasd")
-		-- knifesprite:Play("Swing")
-		-- Isaac.RunCallback(OmoriModCallbacks.KNIFE_SWING_TRIGGER, knife)
-		-- knifeData.Swings = knifeData.Swings - 1
-	-- end
 	
 	if knifesprite:IsPlaying("Swing") then
 		Isaac.RunCallback(OmoriModCallbacks.KNIFE_SWING, knife)
@@ -303,24 +299,57 @@ function mod:ShinyKnifeUpdate(knife)
 		knifesprite:Play("Idle")		
 		knifeData.HitBlacklist = {}
 		
-		if knifeData.Swings == 0 and knifesprite:IsPlaying("Idle") then
-			-- if isShooting and knifeData.Swings > 0 then
-				-- print(knifeData.Swings, "apdjasopid")
-				-- knifesprite:Play("Swing")		
-			-- end
+		if playerData.Swings == 0 and knifesprite:IsPlaying("Idle") then
 			playerData.shinyKnifeCharge = 0
-		elseif knifeData.Swings > 0 and knifesprite:IsPlaying("Idle") and isShooting then
+		elseif playerData.Swings > 0 and knifesprite:IsPlaying("Idle") and isShooting then
 			knifesprite:Play("Swing")
-			knifeData.Swings = knifeData.Swings - 1
+			playerData.Swings = playerData.Swings - 1
 			Isaac.RunCallback(OmoriModCallbacks.KNIFE_SWING_TRIGGER, knife)
 		end
 		knifeData.IsCriticAtack = false
 		knife.Color = Color.Default
 	end	
-	
-	print(playerData.shinyKnifeCharge, knifesprite:GetAnimation(), knifeData.Swings)
 end
 mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, mod.ShinyKnifeUpdate, OmoriMod.Enums.EffectVariant.EFFECT_SHINY_KNIFE)
+
+function mod:AAAAA(player)
+
+end
+mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.AAAAA)
+
+function mod:KnifeRender(knife)
+	local knifesprite = knife:GetSprite()
+    local player = knife.SpawnerEntity:ToPlayer()
+    local knifeData = OmoriMod:GetData(knife)
+    local playerData = OmoriMod:GetData(player)
+	
+	local isShooting = OmoriMod:IsPlayerShooting(player)
+	local aimDegrees = player:GetAimDirection():GetAngleDegrees() 
+	
+	local multiShot = player:GetMultiShotParams(WeaponType.WEAPON_TEARS)
+	
+	local frame = knifesprite:GetFrame()
+	
+	local myPointer = EntityPtr(Isaac.GetPlayer())
+
+	-- if OmoriMod:GetAceleration(entity) < 0.1 then
+	
+	-- end
+	
+	-- print(OmoriMod:GetAceleration(player))
+	
+	local isIdle = knifesprite:IsPlaying("Idle")
+	local isSwinging = knifesprite:IsPlaying("Swing")
+	
+	knife:FollowParent(player) 	
+	
+	knifeData.Aiming = knifeData.Aiming or 0
+	
+	knife.SpriteRotation = player:GetSmoothBodyRotation()
+	
+	-- print(knife.SpriteRotation, knifeData.Aiming)
+end
+mod:AddCallback(ModCallbacks.MC_POST_EFFECT_RENDER, mod.KnifeRender, OmoriMod.Enums.EffectVariant.EFFECT_SHINY_KNIFE)
 
 function mod:OnKnifeSwingTrigger(knife)
 	sfx:Play(OmoriMod.Enums.SoundEffect.SOUND_BLADE_SLASH, 1, 0, false, 1, 0)
@@ -330,6 +359,9 @@ function mod:OnKnifeSwingTrigger(knife)
 	local player = knife.SpawnerEntity:ToPlayer()
 	
 	local emotion = OmoriMod.GetEmotion(player)
+	
+	-- local aimDegrees = player:GetAimDirection():GetAngleDegrees() 
+	-- print(aimDegrees)
 	
 	knifeData.IsCriticAtack = knifeData.IsCriticAtack or false
 
@@ -351,22 +383,45 @@ function mod:OnKnifeSwing(knife)
 	
 	knifeData.HitBlacklist = knifeData.HitBlacklist or {} 
 		
+	knife.SpriteRotation = knifeData.Aiming
+		
 	for i = 1, 2 do
 		local capsule = knife:GetNullCapsule("KnifeHit" .. i)
 		local capsulePosition = capsule:GetPosition() 
 		
-		for _, entity in ipairs(Isaac.FindInCapsule(capsule, 0xFFFFFFFF)) do
-			if entity:IsActiveEnemy() and entity:IsVulnerableEnemy() then
-				if not knifeData.HitBlacklist[GetPtrHash(entity)] then
-					local ret = Isaac.RunCallback(OmoriModCallbacks.KNIFE_HIT_ENEMY, knife, entity)					
+		for _, entity in ipairs(Isaac.FindInCapsule(capsule)) do
+			if entity:ToPlayer() or entity:ToTear() then return end
+		
+			if not knifeData.HitBlacklist[GetPtrHash(entity)] then
+				if entity:ToNPC() then
+					local ret = Isaac.RunCallback(OmoriModCallbacks.KNIFE_HIT_ENEMY, knife, entity)
 					entity:TakeDamage(ret.Damage, ret.Flags, EntityRef(knife), ret.CountDown)
-					knifeData.HitBlacklist[GetPtrHash(entity)] = true
+				else
+					Isaac.RunCallback(OmoriModCallbacks.KNIFE_ENTITY_COLLISION, knife, entity)	
 				end
-			end	
+				
+				knifeData.HitBlacklist[GetPtrHash(entity)] = true
+			end
 		end
 	end
 end
 mod:AddCallback(OmoriModCallbacks.KNIFE_SWING, mod.OnKnifeSwing)
+
+function mod:KnifeColliding(knife, entity)
+	local familiar = entity:ToFamiliar()
+	
+	if not familiar then return end
+	
+	if familiar.Variant ~= FamiliarVariant.CUBE_BABY then return end
+	
+	entity.Velocity = (entity.Position - knife.Position):Resized(20) 
+end
+mod:AddCallback(OmoriModCallbacks.KNIFE_ENTITY_COLLISION, mod.KnifeColliding)
+
+function mod:FamUpd(fam)
+	-- fam:Shoot()
+end
+mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, mod.FamUpd)
 
 function mod:OnDamagingWithShinyKnife(knife, entity)
 	local player = knife.SpawnerEntity:ToPlayer()
@@ -404,9 +459,7 @@ function mod:OnDamagingWithShinyKnife(knife, entity)
 	end
 	
 	local birthrightMult = (OmoriMod:IsOmori(player, false) and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) and 1.2) or 1
-		
-	print(birthrightMult)
-		
+	
 	local sadKnockbackMult = (OmoriMod.SwitchCase(emotion, tables.SadnessKnockbackMult) or 1) * birthrightMult or 1
 		
 	local resizer = (20 * sadKnockbackMult) * (player.ShotSpeed)
@@ -1090,92 +1143,92 @@ mod:AddCallback(OmoriModCallbacks.KNIFE_HIT_ENEMY, mod.OnDamagingWithShinyKnife)
 -- end
 -- mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, ShinyKnife.KnifeEffectUpdate, OmoriMod.Enums.EffectVariant.EFFECT_SHINY_KNIFE)
 
-function mod:FakeLudoUpdate(tear)
-	local tearData = OmoriMod:GetData(tear)
-    local player = OmoriMod.GetPlayerFromAttack(tear)
-    local playerData = OmoriMod:GetData(player)
+-- function mod:FakeLudoUpdate(tear)
+	-- local tearData = OmoriMod:GetData(tear)
+    -- local player = OmoriMod.GetPlayerFromAttack(tear)
+    -- local playerData = OmoriMod:GetData(player)
 
-	if player then
-		if OmoriMod:IsKnifeUser(player) then
-			if tearData.IsFakeLudoTear and tearData.IsFakeLudoTear == true then
-				tear.Height = -23
+	-- if player then
+		-- if OmoriMod:IsKnifeUser(player) then
+			-- if tearData.IsFakeLudoTear and tearData.IsFakeLudoTear == true then
+				-- tear.Height = -23
 				
-				local damageDiv = 3.5
-				if player:GetPlayerType() == OmoriMod.Enums.PlayerType.PLAYER_OMORI then
-					damageDiv = 2.8
-				end
+				-- local damageDiv = 3.5
+				-- if player:GetPlayerType() == OmoriMod.Enums.PlayerType.PLAYER_OMORI then
+					-- damageDiv = 2.8
+				-- end
 				
-				multScale = math.max((player.Damage / damageDiv), 1)
+				-- multScale = math.max((player.Damage / damageDiv), 1)
 				
-				tear.Scale = 1.85 * multScale
-				tear:AddTearFlags(player.TearFlags | TearFlags.TEAR_BOUNCE)
+				-- tear.Scale = 1.85 * multScale
+				-- tear:AddTearFlags(player.TearFlags | TearFlags.TEAR_BOUNCE)
 				
-				tearData.HitByKnife = tearData.HitByKnife or false
+				-- tearData.HitByKnife = tearData.HitByKnife or false
 				
-				if tearData.HitByKnife and tearData.HitByKnife == true then
-					local damageCap = math.min(player.Damage * 12, player.Damage * OmoriMod:GetAceleration(tear)) 
-					tear.CollisionDamage = damageCap
+				-- if tearData.HitByKnife and tearData.HitByKnife == true then
+					-- local damageCap = math.min(player.Damage * 12, player.Damage * OmoriMod:GetAceleration(tear)) 
+					-- tear.CollisionDamage = damageCap
 					
-					if OmoriMod:GetAceleration(tear) >= 0 and OmoriMod:GetAceleration(tear) < 2 then
-						tearData.HitByKnife = false
-					end
-					tear:MultiplyFriction(0.975)
-				else
-					tear:MultiplyFriction(0.7)
-					tear.Velocity = tear.Velocity + (((player.Position - tear.Position):Normalized() * (player.Position - tear.Position):Length() / 40)) 
+					-- if OmoriMod:GetAceleration(tear) >= 0 and OmoriMod:GetAceleration(tear) < 2 then
+						-- tearData.HitByKnife = false
+					-- end
+					-- tear:MultiplyFriction(0.975)
+				-- else
+					-- tear:MultiplyFriction(0.7)
+					-- tear.Velocity = tear.Velocity + (((player.Position - tear.Position):Normalized() * (player.Position - tear.Position):Length() / 40)) 
 					
-					tear.CollisionDamage = player.Damage
+					-- tear.CollisionDamage = player.Damage
 					
-					local distance = tear.Position:Distance(player.Position)
+					-- local distance = tear.Position:Distance(player.Position)
 					
-					local carajo = 0.7 * (distance / 65)
+					-- local carajo = 0.7 * (distance / 65)
 					
-					if distance <= 65 then
-						tear:MultiplyFriction(math.min(carajo, 0.95))
-					end
-				end
+					-- if distance <= 65 then
+						-- tear:MultiplyFriction(math.min(carajo, 0.95))
+					-- end
+				-- end
 				
-				OmoriMod.DoHappyTear(tear)
-			end
-		end
-	end
-end
-mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, mod.FakeLudoUpdate)
+				-- OmoriMod.DoHappyTear(tear)
+			-- end
+		-- end
+	-- end
+-- end
+-- mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, mod.FakeLudoUpdate)
 
-function mod:GodTearUpdate(tear)
-    local tearData = OmoriMod:GetData(tear)
-    local player = OmoriMod.GetPlayerFromAttack(tear)
-    local playerData = OmoriMod:GetData(player)
+-- function mod:GodTearUpdate(tear)
+    -- local tearData = OmoriMod:GetData(tear)
+    -- local player = OmoriMod.GetPlayerFromAttack(tear)
+    -- local playerData = OmoriMod:GetData(player)
 	
-	if player then
-		local shoot = {
-			l = Input.IsActionPressed(ButtonAction.ACTION_SHOOTLEFT, player.ControllerIndex),
-			r = Input.IsActionPressed(ButtonAction.ACTION_SHOOTRIGHT, player.ControllerIndex),
-			u = Input.IsActionPressed(ButtonAction.ACTION_SHOOTUP, player.ControllerIndex),
-			d = Input.IsActionPressed(ButtonAction.ACTION_SHOOTDOWN, player.ControllerIndex)
-		}
+	-- if player then
+		-- local shoot = {
+			-- l = Input.IsActionPressed(ButtonAction.ACTION_SHOOTLEFT, player.ControllerIndex),
+			-- r = Input.IsActionPressed(ButtonAction.ACTION_SHOOTRIGHT, player.ControllerIndex),
+			-- u = Input.IsActionPressed(ButtonAction.ACTION_SHOOTUP, player.ControllerIndex),
+			-- d = Input.IsActionPressed(ButtonAction.ACTION_SHOOTDOWN, player.ControllerIndex)
+		-- }
 
-		tearData.TearLastPos = tear.Position
+		-- tearData.TearLastPos = tear.Position
 
-		local isShooting = (shoot.l or shoot.r or shoot.u or shoot.d)
-		if OmoriMod:IsKnifeUser(player) then
-			if tearData.TearFromKnife ~= nil then
-				for _, knife in pairs(Isaac.GetRoomEntities()) do
-					if knife.Type == EntityType.ENTITY_EFFECT and knife.Variant == EffectVariant.EFFECT_SHINY_KNIFE then
-						local knifesprite = knife:GetSprite()
-						if knifesprite:IsPlaying("Swing") then
-							tear.Position = player.Position + playerData.Aiming:Resized(30 * knife.SpriteScale.X)
-							tear.Height = -23
-						else
-							tear:Remove()
-						end
-					end
-				end
-			end
-		end
-	end
-end
-mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, mod.GodTearUpdate)
+		-- local isShooting = (shoot.l or shoot.r or shoot.u or shoot.d)
+		-- if OmoriMod:IsKnifeUser(player) then
+			-- if tearData.TearFromKnife ~= nil then
+				-- for _, knife in pairs(Isaac.GetRoomEntities()) do
+					-- if knife.Type == EntityType.ENTITY_EFFECT and knife.Variant == EffectVariant.EFFECT_SHINY_KNIFE then
+						-- local knifesprite = knife:GetSprite()
+						-- if knifesprite:IsPlaying("Swing") then
+							-- tear.Position = player.Position + playerData.Aiming:Resized(30 * knife.SpriteScale.X)
+							-- tear.Height = -23
+						-- else
+							-- tear:Remove()
+						-- end
+					-- end
+				-- end
+			-- end
+		-- end
+	-- end
+-- end
+-- mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, mod.GodTearUpdate)
 
 function mod:tearsAdjustment(player, flag)
     if OmoriMod:IsKnifeUser(player) then
