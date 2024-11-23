@@ -210,7 +210,6 @@ function OmoriMod:GameStartedFunction()
 	setRNG()
 end
 OmoriMod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, OmoriMod.GameStartedFunction)
-OmoriMod:AddCallback(ModCallbacks.MC_PRE_MOD_UNLOAD, OmoriMod.GameStartedFunction)
 
 function OmoriMod:SetObjects()
 	OmoriMod.Enums.Utils.Room = game:GetRoom()

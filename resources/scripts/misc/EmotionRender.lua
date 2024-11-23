@@ -32,6 +32,9 @@ function mod:RenderEmotionTitle()
 	if game:IsPaused() then return end
 	
 	for _, player in ipairs(players) do
+		local playerData = OmoriMod:GetData(player)
+	
+		
 		local emotion = OmoriMod.GetEmotion(player)
 		if emotion == nil then return end
 	
@@ -75,7 +78,7 @@ end
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.ChangeEmotionLogic)
 
 function mod:EmotionGlow(player)
-	PlayerData = OmoriMod:GetData(player)
+	local playerData = OmoriMod:GetData(player)
 	
 	local emotionGlow = playerData.EmotionGlow
 	

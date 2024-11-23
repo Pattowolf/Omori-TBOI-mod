@@ -18,52 +18,13 @@ if not REPENTOGON then
     return
 end
 
-
-
-local myFolder = "resources.scripts.OmoriLibraryOfIsaac"
+local myFolder = "resources.scripts.omori_library_of_isaac"
 local LOCAL_TSIL = require(myFolder .. ".TSIL")
 LOCAL_TSIL.Init(myFolder)
 
 OmoriMod.saveManager = include("resources.scripts.misc.save_manager")
 OmoriMod.saveManager.Init(OmoriMod)
 
-
--- Globals end
-
-
-
--- if REPENTOGON then
--- include("resources.scripts.EID")
 include("include")
 
--- function mod:setRNGseed(isContinue)
-	-- modrng:SetSeed(game:GetSeeds():GetStartSeed(), 35)
-	-- for key, player in pairs(OmoriMod:GetPlayers()) do
-		-- OmoriMod.SetEmotion(player, OmoriMod.saveManager.GetRunSave().PlayerEmotion)
-	-- end
--- end
--- mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, mod.setRNGseed)
-
--- function mod:OnGameExit(bool)
-	-- for key, player in pairs(OmoriMod:GetPlayers()) do
-		-- OmoriMod.saveManager.GetRunSave().PlayerEmotion = OmoriMod.GetEmotion(player)
-	-- end
--- end
--- mod:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, mod.OnGameExit)
-
-
 include("resources/scripts/dss/deadseascrolls")
--- end
-
--- function mod:HealthStuff(player, amount, healthtype, optArg)
-	-- print(amount)
-	-- player:AddCacheFlags(CacheFlag.CACHE_DAMAGE, true)
--- end
--- mod:AddCallback(ModCallbacks.MC_POST_PLAYER_ADD_HEARTS, mod.HealthStuff)
-
--- function mod:AddDamageOnHearts(player, cacheFlags)
-	-- if cacheFlags == CacheFlag.CACHE_DAMAGE then
-		-- player.Damage = player.Damage * (player:GetHearts())
-	-- end
--- end
--- mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.AddDamageOnHearts)

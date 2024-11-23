@@ -1,17 +1,24 @@
 local mod = OmoriMod
-local sfx = SFXManager()
+
+local enums = OmoriMod.Enums
 local enemyRadius = 80
+local costumes = enums.NullItemID
 
 function mod:SunnyInit(player)
+
+    if not OmoriMod:IsOmori(player, true) then return end
+
 	local playerData = OmoriMod:GetData(player)
-    if player:GetPlayerType() == OmoriMod.Enums.PlayerType.PLAYER_OMORI_B then	
-		playerData.AfraidCounter = playerData.AfraidCounter or 90
-        playerData.StressCounter = playerData.StressCounter or 150
-        playerData.TriggerAfraid = playerData.TriggerAfraid or false
-        playerData.TriggerStress = playerData.TriggerStress or false
+    
+	playerData.AfraidCounter = playerData.AfraidCounter or 90
+    playerData.StressCounter = playerData.StressCounter or 150
+    playerData.TriggerAfraid = playerData.TriggerAfraid or false
+    playerData.TriggerStress = playerData.TriggerStress or false
 	
-        player:AddNullCostume(OmoriMod.Enums.NullItemID.ID_SUNNY)
-    end
+    player:AddNullCostume(costumes.ID_SUNNY)
+    player:AddNullCostume(costumes.ID_SUNNY_EMOTION)
+
+    OmoriMod.SetEmotion(player, "Neutral")
 end
 mod:AddCallback(TSIL.Enums.CustomCallback.POST_PLAYER_INIT_LATE, mod.SunnyInit)
 
@@ -41,17 +48,18 @@ function mod:SunnyStressingOut(player)
             playerData.StressCounter = 150
         end
         
-        if playerData.AfraidCounter == 1 then
-            OmoriMod.SetEmotion(player, "Afraid")
-            OmoriMod:SunnyChangeEmotionEffect(player, true)
-			playerData.AfraidCounter = 0
-        end
+        local emotions = {
+            Afraid = "AfraidCounter",
+            StressedOut = "StressCounter"
+        }
         
-        if playerData.StressCounter == 1 then
-            OmoriMod.SetEmotion(player, "StressedOut")
-            OmoriMod:SunnyChangeEmotionEffect(player, true)
-			playerData.StressCounter = 0
-        end
+        for emotion, counter in pairs(emotions) do
+            if playerData[counter] == 1 then
+                OmoriMod.SetEmotion(player, emotion)
+                OmoriMod:SunnyChangeEmotionEffect(player)
+                playerData[counter] = 0
+            end
+        end        
     end
 end
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.SunnyStressingOut)

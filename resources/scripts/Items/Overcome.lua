@@ -37,7 +37,7 @@ function mod:GatherYourCorage(_, _, player)
 		playerData.IncreasedBowDamage = true
 	end
 		
-	OmoriMod:SunnyChangeEmotionEffect(player, true)
+	OmoriMod:SunnyChangeEmotionEffect(player)
 	sfx:Play(OmoriMod.Enums.SoundEffect.SOUND_OVERCOME)
 		
 	return true

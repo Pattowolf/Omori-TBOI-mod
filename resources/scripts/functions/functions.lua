@@ -100,9 +100,6 @@ end
 
 function OmoriMod.DoHappyTear(tear)
 	local player = OmoriMod.GetPlayerFromAttack(tear)
-
-	if not player then return end
-
 	local doubleHitChance = OmoriMod.randomNumber(1, 100, modrng)
 	
 	local birthrightDamageMult = 1
@@ -186,7 +183,7 @@ end
 
 
 local spriteRoot = "gfx/characters/costumes_Omori/"
-local EmotionChange = {
+local OmoriEmotionChange = {
 	["Neutral"] = {suffix = "neutral", sound = sounds.SOUND_BACK_NEUTRAL},
 	["Happy"] = {suffix = "happy", sound = sounds.SOUND_HAPPY_UPGRADE},
 	["Ecstatic"] = {suffix = "ecstatic", sound = sounds.SOUND_HAPPY_UPGRADE_2},
@@ -200,20 +197,20 @@ local EmotionChange = {
 }
 
 function OmoriMod:OmoriChangeEmotionEffect(player)
-	if not OmoriMod:IsOmori(player, false) then return end	
+	if not OmoriMod:IsOmori(player, false) then return end
 	local emotion = OmoriMod.GetEmotion(player)
-		
-	local EmotionSuffix = OmoriMod.SwitchCase(emotion, EmotionChange).suffix
-	local EmotionSound = OmoriMod.SwitchCase(emotion, EmotionChange).sound	
+	
+	local emotionTable = OmoriMod.SwitchCase(emotion, OmoriEmotionChange)
+
+	local EmotionSuffix = emotionTable.suffix
+	local EmotionSound = emotionTable.sound	
 			
 	local EmotionCostume = player:GetCostumeSpriteDescs()[3]
-	
-	if EmotionCostume == nil then return end
 	
 	local EmotionCostumeSprite = EmotionCostume:GetSprite()
 
 	EmotionCostumeSprite:ReplaceSpritesheet(0, spriteRoot .. EmotionSuffix .. ".png", true)
-	sfx:Play(EmotionSound, 2, 0, false, 1, 0)
+	sfx:Play(EmotionSound, 2, 0, false, pitch, 0)
 end
 
 function OmoriMod:playerHasTearFlag(player, TearFlag)
@@ -224,79 +221,47 @@ function OmoriMod:IsKnifeUser(player)
 	return player:HasCollectible(OmoriMod.Enums.CollectibleType.COLLECTIBLE_SHINY_KNIFE) or OmoriMod:IsAnyOmori(player)
 end
 
-function OmoriMod:SunnyChangeEmotionEffect(player, playSound)
-	playSound = playSound or false
-	local color = "" 
+local SunnyEmotionChange = {
+	["Neutral"] = {suffix = "neutral", sound = sounds.SOUND_BACK_NEUTRAL, pitch = 1},
+	["Afraid"] = {suffix = "afraid", sound = sounds.SOUND_OMORI_FEAR, pitch = 1},
+	["StressedOut"] = {suffix = "stressedout", sound = sounds.SOUND_OMORI_FEAR, pitch = 0.8},
+}
+local sunnyEmotionSpriteRoot = "gfx/characters/costumes_Sunny/"
+local sunnyBodyRoot = "gfx/characters/players/costume_omori_body2"
+local sunnyHairRoot = "gfx/characters/players/costume_omori_head2"
+
+function OmoriMod:SunnyChangeEmotionEffect(player)
+	if not OmoriMod:IsOmori(player, true) then return end
+	local emotion = OmoriMod.GetEmotion(player)
+	local emotionTable = OmoriMod.SwitchCase(emotion, SunnyEmotionChange)
+
 	local playerSprite = player:GetSprite()
-	local pitch = 1
+
+	local Suffix = emotionTable.suffix
+	local Sound = emotionTable.sound
+	local Pitch = emotionTable.pitch
+
+	local EmotionSpriteDesc = player:GetCostumeSpriteDescs()[3]
+	local EmotionSprite = EmotionSpriteDesc:GetSprite()
+
+	local color = emotion ~= "Neutral" and "_bw" or ""
 	
-	local emotionCostume = ""
-	local emotionspriteRoot = "gfx/characters/costumes_Sunny/"
-	
-	if player:GetPlayerType() ~= OmoriMod.Enums.PlayerType.PLAYER_OMORI_B then
-		return
+	for i = 1, 2 do
+		local SunnySpriteDesc = player:GetCostumeSpriteDescs()[i]
+		local SunnySprite = SunnySpriteDesc:GetSprite()
+		local path = (i == 1 and sunnyBodyRoot or sunnyHairRoot) .. color .. ".png"
+		for j = 0, 1 do
+			SunnySprite:ReplaceSpritesheet(j, path, true)
+		end
 	end
-	
-	local changeEmotionBirthright = {
-		["Neutral"] = function()
-			emotionCostume = "neutral"
-			EmotionSoundEffect = OmoriMod.Enums.SoundEffect.SOUND_BACK_NEUTRAL
-			pitch = 1
-		end,
-		["Afraid"] = function()
-			emotionCostume = "afraid_bw"
-			EmotionSoundEffect = OmoriMod.Enums.SoundEffect.SOUND_OMORI_FEAR
-			pitch = 1
-		end,
-		["StressedOut"] = function()
-			emotionCostume = "stressedout_bw"
-			EmotionSoundEffect = OmoriMod.Enums.SoundEffect.SOUND_OMORI_FEAR
-			pitch = 0.8
-		end, 
-	}
-		
-	OmoriMod.SwitchCase(OmoriMod.GetEmotion(player), changeEmotionBirthright)
-		
-	player:AddNullCostume(OmoriMod.Enums.NullItemID.ID_SUNNY_EMOTION)
-		
-	if EmotionSoundEffect ~= nil and playSound == true then
-		sfx:Play(EmotionSoundEffect, 2, 0, false, pitch, 0)
-	end
-		
-	if OmoriMod.GetEmotion(player) ~= "Neutral" then
-		color = "_bw"
-	end
-		
-	local playerSpriteRoot = "gfx/characters/players/"
-	local suffix = ""
-		
-	for i = 1, 3 do
-		local costumeSpriteDesc = player:GetCostumeSpriteDescs()[i]
-		local costumeSprite = costumeSpriteDesc:GetSprite()
-			
-		local iterator = {
-			[1] = function()
-				suffix = "costume_omori_body2"
-				for i = 0, 1 do
-					costumeSprite:ReplaceSpritesheet(i, playerSpriteRoot .. suffix .. color .. ".png", true)
-				end
-			end,
-			[2] = function()
-				suffix = "costume_omori_head2"
-				for i = 0, 1 do
-					costumeSprite:ReplaceSpritesheet(i, playerSpriteRoot .. suffix .. color .. ".png", true)
-				end
-			end,
-			[3] = function()
-				costumeSprite:ReplaceSpritesheet(0, emotionspriteRoot .. emotionCostume .. ".png", true)
-			end	
-		}
-		OmoriMod.SwitchCase(i, iterator)
-	end
-		
+
+	EmotionSprite:ReplaceSpritesheet(0, sunnyEmotionSpriteRoot .. Suffix .. ".png", true)
+
 	for i = 0, 14 do
 		playerSprite:ReplaceSpritesheet(i, "gfx/characters/players/player_omori2" .. color .. ".png", true)
 	end
+
+	sfx:Play(Sound, 1, 0, false, Pitch, 0)
 end
 
 function OmoriMod.SetEmotion(player, emotion)
