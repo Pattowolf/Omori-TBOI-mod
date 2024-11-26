@@ -11,10 +11,15 @@ function mod:dp_onStart()
 end
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, mod.dp_onStart)
 
+---@param player EntityPlayer
+---@param damage integer
+---@param flags integer
+---@param source EntityRef
+---@param cooldown integer
 function mod:EmotionDamageManager(player, damage, flags, source, cooldown)
 	local emotion = OmoriMod.GetEmotion(player)
 	
-	local SadIgnore = OmoriMod.SwitchCase(emotion, tables.SadnessIgnoreDamageChance)
+	local SadIgnore = OmoriMod.SwitchCase(emotion, tables.SadnessIgnoreDamageChance) 
 	local AngerDouble = OmoriMod.SwitchCase(emotion, tables.AngerDoubleDamageChance)
 	
 	if not SadIgnore and not AngerDouble then return end
@@ -50,8 +55,13 @@ function mod:EmotionDamageManager(player, damage, flags, source, cooldown)
 end
 mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_TAKE_DMG, mod.EmotionDamageManager)
 
+---comment
+---@param tear EntityTear
 function mod:SetSadnessKnockback(tear)	
 	local player = OmoriMod.GetPlayerFromAttack(tear)
+
+	if not player then return end
+
 	local SadMult = OmoriMod.SwitchCase(OmoriMod.GetEmotion(player), tables.SadnessKnockbackMult)
 	local birthrightMult = player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) and 1.25 or 1
 	

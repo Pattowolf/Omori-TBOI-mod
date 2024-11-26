@@ -131,23 +131,6 @@ end
 -- end
 -- OmoriMod:AddCallback(ModCallbacks.MC_POST_RENDER, ShinyKnife.RenderShinyKnifeCharge)
 
-function OmoriMod:replaceKnifeSprite(player, knife)
-	local knifesprite = knife:GetSprite()
-	local knifeReplaceSprite = "ShinyKnife"
-	
-	if player:GetPlayerType() ~= OmoriMod.Enums.PlayerType.PLAYER_OMORI_B then
-		if player:HasCollectible(CollectibleType.COLLECTIBLE_MOMS_KNIFE) then
-			knifeReplaceSprite = "RedKnife"
-		end
-	else
-		knifeReplaceSprite = "ViolinBow"
-	end
-
-	for i = 0, 1 do
-		knifesprite:ReplaceSpritesheet(i, "gfx/effects/" .. knifeReplaceSprite.. ".png", true)
-	end
-end
-
 function mod:OnKnifeRemoving()
     for i = 0, Game():GetNumPlayers() do
         local player = Isaac.GetPlayer(i)
@@ -222,23 +205,23 @@ function mod:ShinyKnifeUpdate(knife)
 	local aimDegrees = player:GetAimDirection():GetAngleDegrees() 
 	
 	local multiShot = player:GetMultiShotParams(WeaponType.WEAPON_TEARS)
+	local numTears = multiShot:GetNumTears()
 	
 	local frame = knifesprite:GetFrame()
 	
 	local isIdle = knifesprite:IsPlaying("Idle")
 	local isSwinging = knifesprite:IsPlaying("Swing")
 	
+	local finishedSwing = knifesprite:IsFinished("Swing")
+
+	local baseSwings = OmoriMod:IsOmori(player, true) and 2 or 0
+
 	knife:FollowParent(player) 	
 		
-	-- if knifesprite:IsPlaying("Idle") then
-	-- if isShooting then
-		-- knifeData.Aiming = aimDegrees
-	-- else
-	
-		-- if not isIdle then
-			-- knifeData.Aiming = 90
-		-- end
-	-- end
+	-- if isIdle then
+		if isShooting then
+			knifeData.Aiming = aimDegrees
+		end
 	-- end
 	
 	-- print(knifeData.Aiming)
@@ -247,14 +230,16 @@ function mod:ShinyKnifeUpdate(knife)
 	
 	-- print(knifeData.Aiming)
 	
-	-- if not isSwinging then
-		-- if isShooting then
-			-- knife.SpriteRotation = knifeData.Aiming
-		-- end
-		-- if not isShooting then
-			-- knife.SpriteRotation = player:GetSmoothBodyRotation()
-		-- end
-	-- end
+	
+	print(finishedSwing)
+
+	if finishedSwing == true then
+		if isShooting then
+			knife.SpriteRotation = knifeData.Aiming
+		end
+	end
+
+	print(knifeData.Aiming)
 	
 	playerData.shinyKnifeCharge = playerData.shinyKnifeCharge or 0
 	playerData.Swings = playerData.Swings or 1
@@ -270,7 +255,9 @@ function mod:ShinyKnifeUpdate(knife)
 			playerData.shinyKnifeCharge = math.min(playerData.shinyKnifeCharge + 5, 100)
 			
 			if playerData.Swings < 1 then
-				playerData.Swings = multiShot:GetNumTears()
+				
+
+				playerData.Swings = numTears + baseSwings
 			end
 			
 			if HasMarked and playerData.shinyKnifeCharge == 100 and playerData.Swings > 0 and isIdle then
@@ -311,45 +298,6 @@ function mod:ShinyKnifeUpdate(knife)
 	end	
 end
 mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, mod.ShinyKnifeUpdate, OmoriMod.Enums.EffectVariant.EFFECT_SHINY_KNIFE)
-
-function mod:AAAAA(player)
-
-end
-mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.AAAAA)
-
-function mod:KnifeRender(knife)
-	local knifesprite = knife:GetSprite()
-    local player = knife.SpawnerEntity:ToPlayer()
-    local knifeData = OmoriMod:GetData(knife)
-    local playerData = OmoriMod:GetData(player)
-	
-	local isShooting = OmoriMod:IsPlayerShooting(player)
-	local aimDegrees = player:GetAimDirection():GetAngleDegrees() 
-	
-	local multiShot = player:GetMultiShotParams(WeaponType.WEAPON_TEARS)
-	
-	local frame = knifesprite:GetFrame()
-	
-	local myPointer = EntityPtr(Isaac.GetPlayer())
-
-	-- if OmoriMod:GetAceleration(entity) < 0.1 then
-	
-	-- end
-	
-	-- print(OmoriMod:GetAceleration(player))
-	
-	local isIdle = knifesprite:IsPlaying("Idle")
-	local isSwinging = knifesprite:IsPlaying("Swing")
-	
-	knife:FollowParent(player) 	
-	
-	knifeData.Aiming = knifeData.Aiming or 0
-	
-	knife.SpriteRotation = player:GetSmoothBodyRotation()
-	
-	-- print(knife.SpriteRotation, knifeData.Aiming)
-end
-mod:AddCallback(ModCallbacks.MC_POST_EFFECT_RENDER, mod.KnifeRender, OmoriMod.Enums.EffectVariant.EFFECT_SHINY_KNIFE)
 
 function mod:OnKnifeSwingTrigger(knife)
 	sfx:Play(OmoriMod.Enums.SoundEffect.SOUND_BLADE_SLASH, 1, 0, false, 1, 0)
@@ -460,7 +408,7 @@ function mod:OnDamagingWithShinyKnife(knife, entity)
 	
 	local birthrightMult = (OmoriMod:IsOmori(player, false) and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) and 1.2) or 1
 	
-	local sadKnockbackMult = (OmoriMod.SwitchCase(emotion, tables.SadnessKnockbackMult) or 1) * birthrightMult or 1
+	local sadKnockbackMult = (OmoriMod.SwitchCase(emotion, tables.SadnessKnockbackMult) or 1) * (birthrightMult or 1)
 		
 	local resizer = (20 * sadKnockbackMult) * (player.ShotSpeed)
 		
