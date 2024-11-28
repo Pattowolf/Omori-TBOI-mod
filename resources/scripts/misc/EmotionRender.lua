@@ -34,7 +34,6 @@ function mod:RenderEmotionTitle()
 	for _, player in ipairs(players) do
 		local playerData = OmoriMod:GetData(player)
 	
-		
 		local emotion = OmoriMod.GetEmotion(player)
 		if emotion == nil then return end
 	
@@ -64,13 +63,14 @@ mod:AddCallback(ModCallbacks.MC_POST_RENDER, mod.RenderEmotionTitle)
 
 function mod:ChangeEmotionLogic(player)
 	if not OmoriMod:IsOmori(player, false) then return end
-		
-	if OmoriMod.GetEmotion(player) == nil then
+	local emotion = OmoriMod.GetEmotion(player)
+
+	if emotion == nil then
 		OmoriMod.SetEmotion(player, "Neutral")
 	end
 	
 	if not OmoriMod:IsEmotionChangeTriggered(player) then return end
-	local newEmotion = OmoriMod.SwitchCase(OmoriMod.GetEmotion(player), tables.EmotionToChange) or "Neutral"
+	local newEmotion = tables.EmotionToChange[emotion] or "Neutral"
 		
 	OmoriMod.SetEmotion(player, newEmotion)
 	OmoriMod:OmoriChangeEmotionEffect(player)
@@ -79,7 +79,6 @@ mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.ChangeEmotionLogic)
 
 function mod:EmotionGlow(player)
 	local playerData = OmoriMod:GetData(player)
-	
 	local emotionGlow = playerData.EmotionGlow
 	
 	if OmoriMod.GetEmotion(player) == nil then return end
@@ -104,7 +103,6 @@ mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.EmotionGlow)
 
 function OmoriMod:RemoveEmotionGlow()
 	local players = PlayerManager.GetPlayers()
-	
 	for _, player in ipairs(players) do
 		local playerData = OmoriMod:GetData(player)
 		

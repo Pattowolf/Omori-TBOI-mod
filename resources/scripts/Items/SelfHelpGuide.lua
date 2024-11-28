@@ -4,6 +4,7 @@ local enums = OmoriMod.Enums
 local tables = enums.Tables 
 local misc = enums.Misc
 local emotionFrame = tables.EmotionChartFrame
+local items = enums.CollectibleType
 
 local EmotionChartSetFrame = {
 	["Neutral"] = emotionFrame.Neutral,
@@ -21,14 +22,14 @@ local EmotionChartSetFrame = {
 local SelfSprite = Sprite()
 SelfSprite:Load('gfx/items/emotionChart.anm2', true)
 
-function mod:RenderSelfGuideMode(p, slot, offset, alpha, scale, chrgOffset)
+function mod:RenderSelfGuideMode(p, slot, offset)
 	local item = p:GetActiveItem(slot)
-	
+	local emotion = OmoriMod.GetEmotion(p)
 	local renderPos = misc.SelfHelpRenderPos
 	local renderScale = misc.SelfHelpRenderScale
 
-	if item == OmoriMod.Enums.CollectibleType.COLLECTIBLE_EMOTION_CHART and p:IsCoopGhost() == false then
-		local SelfHelpAnimFrame = OmoriMod.SwitchCase(OmoriMod.GetEmotion(p), EmotionChartSetFrame) or 0
+	if item == items.COLLECTIBLE_EMOTION_CHART and p:IsCoopGhost() == false then
+		local SelfHelpAnimFrame = EmotionChartSetFrame[emotion] or 0
 		local pkitem = p:GetPocketItem(0)
 		local ispocketactive = (pkitem:GetSlot() == 3 and pkitem:GetType() == 2)
 
@@ -44,10 +45,10 @@ function mod:RenderSelfGuideMode(p, slot, offset, alpha, scale, chrgOffset)
 end
 mod:AddCallback(ModCallbacks.MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM, mod.RenderSelfGuideMode)
 
-function mod:Mierda(collectible, player, var)
+function mod:Mierda(_, player)
 	return OmoriMod:IsOmori(player, false) and (player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) and 2 or 4) or 3
 end
-mod:AddCallback(ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE, mod.Mierda, OmoriMod.Enums.CollectibleType.COLLECTIBLE_EMOTION_CHART)
+mod:AddCallback(ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE, mod.Mierda, items.COLLECTIBLE_EMOTION_CHART)
 
 local conditionMap = {
     [true] = {[true] = tables.EmotionUpgradesOmoriCarBattery, [false] = tables.EmotionUpgradesOmori},
@@ -55,32 +56,30 @@ local conditionMap = {
 }
 
 function mod:SelfelpGuideUseOmori(_, _, player, flags)
-	local playerData = OmoriMod:GetData(player)
-	
 	local CarBatteryUse = (flags == flags | UseFlag.USE_CARBATTERY)	
-	local HasCarBattery = player:HasCollectible(CollectibleType.COLLECTIBLE_CAR_BATTERY)
-
-	if CarBatteryUse then return end
 	
+	if CarBatteryUse then return end
+	local HasCarBattery = player:HasCollectible(CollectibleType.COLLECTIBLE_CAR_BATTERY)
 	local emotion = OmoriMod.GetEmotion(player)
-	local IsMaxEmotionOrNeutral = OmoriMod.SwitchCase(emotion, tables.NoDischargeEmotions) or false
+	local IsMaxEmotionOrNeutral = tables.NoDischargeEmotions[emotion] or false
+	
 	if IsMaxEmotionOrNeutral == true then return {Discharge = false} end
 	
 	local tableRef = conditionMap[OmoriMod:IsOmori(player, false)][HasCarBattery]
 	
-	local EmotionToChange = OmoriMod.SwitchCase(emotion, tableRef)
+	local EmotionToChange = tableRef[emotion]
 	
 	OmoriMod.SetEmotion(player, EmotionToChange)
 	OmoriMod:OmoriChangeEmotionEffect(player)
 	
 	return true
 end
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.SelfelpGuideUseOmori, OmoriMod.Enums.CollectibleType.COLLECTIBLE_EMOTION_CHART)
+mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.SelfelpGuideUseOmori, items.COLLECTIBLE_EMOTION_CHART)
 
-function mod:OnSelfHelpGuideTaking(_, _, _, _, _, player)	
+function mod:OnSelfHelpGuideTaking(_, _, _, _, _, player)
 	if OmoriMod:IsAnyOmori(player) then return end 
 	if OmoriMod.GetEmotion(player) == nil then
 		OmoriMod.SetEmotion(player, "Happy")
 	end
 end
-mod:AddCallback(ModCallbacks.MC_PRE_ADD_COLLECTIBLE, mod.OnSelfHelpGuideTaking, OmoriMod.Enums.CollectibleType.COLLECTIBLE_EMOTION_CHART)
+mod:AddCallback(ModCallbacks.MC_PRE_ADD_COLLECTIBLE, mod.OnSelfHelpGuideTaking, items.COLLECTIBLE_EMOTION_CHART)

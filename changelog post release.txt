@@ -105,3 +105,4 @@ Ver 1.4.0 (06/27/2024)
 	- New visuals for both Omori and Sunny, their emotions are more expressive 
 	- Rewrite of lots of mod mechanics, like some of shiny knife behavior 
 	- A custom shiny knife interaction with Ludovico
+

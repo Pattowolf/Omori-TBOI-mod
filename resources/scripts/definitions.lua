@@ -50,6 +50,7 @@ OmoriMod.Enums = {
 		KNIFE_SWING_TRIGGER = "OmoriModCallbacks_KNIFE_SWING_TRIGGER", -- Fires on Swing's first frame
 		KNIFE_HIT_ENEMY = "OmoriModCallbacks_KNIFE_HIT_ENEMY",-- Fires on knife colliding with enemies
 		KNIFE_ENTITY_COLLISION = "OmoriModCallbacks_KNIFE_ENTITY_COLLISION", -- Fires on knife colliding with non-enemy entities
+		KNIFE_KILL_ENEMY = "OmoriModCallbacks_KNIFE_KILL_ENEMY", -- Fires on knife colliding with non-enemy entities
 	},
 	Tables = {
 		NoDischargeEmotions = {
@@ -184,6 +185,20 @@ OmoriMod.Enums = {
 			["Sad"] = 1.25,
 			["Depressed"] = 1.375,
 			["Miserable"] = 1.5,
+		},
+		SunnyEmotionAlter = {
+			["Afraid"] = {
+				DamageMult = 0.85,
+				FireDelayMult = 0.7,
+				RangeReduction = -1,
+				SpeedMult = 0.8,
+			},
+			["StressedOut"] = {
+				DamageMult = 0.75,
+				FireDelayMult = 0.65,
+				RangeReduction = -2,
+				SpeedMult = 0.7,
+			},
 		},
 	},
 	Misc = {

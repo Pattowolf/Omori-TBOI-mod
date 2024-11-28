@@ -19,14 +19,14 @@ mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, mod.dp_onStart)
 function mod:EmotionDamageManager(player, damage, flags, source, cooldown)
 	local emotion = OmoriMod.GetEmotion(player)
 	
-	local SadIgnore = OmoriMod.SwitchCase(emotion, tables.SadnessIgnoreDamageChance) 
-	local AngerDouble = OmoriMod.SwitchCase(emotion, tables.AngerDoubleDamageChance)
+	local SadIgnore = tables.SadnessIgnoreDamageChance[emotion]
+	local AngerDouble = tables.AngerDoubleDamageChance[emotion]
 	
 	if not SadIgnore and not AngerDouble then return end
 	
 	local CustomDamageTrigger = OmoriMod.randomNumber(1, 100, modrng)
 	local hasBirthright = player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)
-	local hasBlindRage = player:HasTrinket(TrinketType.TRINKET_BLIND_RAGE)		
+	local hasBlindRage = player:HasTrinket(TrinketType.TRINKET_BLIND_RAGE)
 		
 	if SadIgnore then
 		local birthrightSadMult = hasBirthright and 1.25 or 1
@@ -35,7 +35,7 @@ function mod:EmotionDamageManager(player, damage, flags, source, cooldown)
 			local baseiFrames = hasBlindRage and 120 or 60
 			local iFramesMult = 1 + (SadIgnore / 100)
 			local sadIframes = math.ceil(iFramesMult * baseiFrames)
-			player:SetMinDamageCooldown(sadIframes)	
+			player:SetMinDamageCooldown(sadIframes)
 		end
 	end
 	
@@ -50,7 +50,6 @@ function mod:EmotionDamageManager(player, damage, flags, source, cooldown)
 			end
 		end
 	end
-	
 	DBFlag = false
 end
 mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_TAKE_DMG, mod.EmotionDamageManager)
@@ -59,13 +58,15 @@ mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_TAKE_DMG, mod.EmotionDamageManager)
 ---@param tear EntityTear
 function mod:SetSadnessKnockback(tear)	
 	local player = OmoriMod.GetPlayerFromAttack(tear)
-
 	if not player then return end
 
-	local SadMult = OmoriMod.SwitchCase(OmoriMod.GetEmotion(player), tables.SadnessKnockbackMult)
-	local birthrightMult = player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) and 1.25 or 1
+	local emotion = OmoriMod.GetEmotion(player)
+	local SadMult = tables.SadnessKnockbackMult[emotion]
 	
 	if not SadMult then return end
+
+	local birthrightMult = player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) and 1.25 or 1
+
 	if tear.FrameCount == 1 then		
 		tear.Mass = tear.Mass * (1 + SadMult) * birthrightMult
 	end
@@ -73,18 +74,19 @@ end
 mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, mod.SetSadnessKnockback)
 
 function mod:OnShootHappyTear(tear)
-	OmoriMod.DoHappyTear(tear)	
+	OmoriMod.DoHappyTear(tear)
 end
 mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, mod.OnShootHappyTear)
 
 function mod:OmoStats(player, flag)
 	local currentEmotion = OmoriMod.GetEmotion(player)
 	local hasBirthright = player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)
-	
+	local isOmori = OmoriMod:IsOmori(player, false)
+
 	if not OmoriMod:IsOmori(player, true) then
 		if flag == CacheFlag.CACHE_DAMAGE then
-			local DamageEmotion = OmoriMod.SwitchCase(currentEmotion, tables.DamageAlterEmotions)
-			
+			local DamageEmotion = tables.DamageAlterEmotions[currentEmotion]
+
 			if OmoriMod:IsOmori(player, false) then
 				player.Damage = player.Damage * 0.8
 			end
@@ -97,71 +99,60 @@ function mod:OmoStats(player, flag)
 				
 			local baseDamage = player.Damage
 
-			if OmoriMod:IsOmori(player, false) then
+			if isOmori then
 				local birthrightMultiplier = hasBirthright and birthrightMult or 1
 				player.Damage = (baseDamage * damageMult * EmotionDamageMult * birthrightMultiplier)
 			else
 				player.Damage = baseDamage * EmotionDamageMult
 			end
 		elseif flag == CacheFlag.CACHE_FIREDELAY then
-			local TearsEmotion = OmoriMod.SwitchCase(currentEmotion, tables.TearsAlterEmotions)
+			local TearsEmotion = tables.TearsAlterEmotions[currentEmotion]
 			
 			if not TearsEmotion then return end
 			
 			local tearsMult = TearsEmotion.tearsMult
 			local birthrightMult = TearsEmotion.birthrightMult
 		
-			if OmoriMod:IsOmori(player, false) then
+			if isOmori then
 				local birthrightMultiplier = hasBirthright and birthrightMult or 1
 				player.MaxFireDelay = OmoriMod.tearsUp(player.MaxFireDelay, tearsMult * birthrightMultiplier, true)
 			else
 				player.MaxFireDelay = OmoriMod.tearsUp(player.MaxFireDelay, tearsMult, true)
 			end	
 		elseif flag == CacheFlag.CACHE_SPEED then
-			local SpeedEmotion = OmoriMod.SwitchCase(currentEmotion, tables.SpeedAlterEmotions)
+			local SpeedEmotion = tables.SpeedAlterEmotions[currentEmotion] 
 			
 			if not SpeedEmotion then return end
 			
 			local speedMult = SpeedEmotion.speedMult
 			local birthrightMult = SpeedEmotion.birthrightMult
 			
-			if OmoriMod:IsOmori(player, false) then
+			if isOmori then
 				local birthrightMultiplier = hasBirthright and birthrightMult or 1
 				player.MoveSpeed = (player.MoveSpeed * speedMult) * birthrightMultiplier
 			else
 				player.MoveSpeed = (player.MoveSpeed * speedMult)
 			end	
 		elseif flag == CacheFlag.CACHE_LUCK then
-			local LuckAdded = OmoriMod.SwitchCase(currentEmotion, tables.LuckAlterEmotions)
-			local birthrightAdd = (OmoriMod:IsOmori(player, false) and hasBirthright and 1) or 0
+			local LuckAdded = tables.LuckAlterEmotions[currentEmotion] 
+			local birthrightAdd = (isOmori and hasBirthright and 1) or 0
 			
 			if not LuckAdded then return end
 			
-			player.Luck = player.Luck + (LuckAdded + birthrightAdd)
-		elseif flag == CacheFlag.CACHE_TEARFLAG then
-			
+			player.Luck = player.Luck + (LuckAdded + birthrightAdd)			
 		end
 	else
-		if currentEmotion == "Afraid" then
-			if flag == CacheFlag.CACHE_DAMAGE then	
-				player.Damage = player.Damage * 0.85
-			elseif flag == CacheFlag.CACHE_FIREDELAY then	
-				player.MaxFireDelay = OmoriMod.tearsUp(player.MaxFireDelay, 0.70, true)
-			elseif flag == CacheFlag.CACHE_RANGE then
-				player.TearRange = OmoriMod.rangeUp(player.TearRange, -1)
-			elseif flag == CacheFlag.CACHE_SPEED then
-				player.MoveSpeed = player.MoveSpeed * 0.8
-			end
-		elseif currentEmotion == "StressedOut" then
-			if flag == CacheFlag.CACHE_DAMAGE then	
-				player.Damage = player.Damage * 0.75
-			elseif flag == CacheFlag.CACHE_FIREDELAY then	
-				player.MaxFireDelay = OmoriMod.tearsUp(player.MaxFireDelay, 0.65, true)
-			elseif flag == CacheFlag.CACHE_RANGE then
-				player.TearRange = OmoriMod.rangeUp(player.TearRange, -2)
-			elseif flag == CacheFlag.CACHE_SPEED then
-				player.MoveSpeed = player.MoveSpeed * 0.7
-			end
+		if currentEmotion == "Neutral" or currentEmotion == nil then return end
+
+		local emotionAlter = tables.SunnyEmotionAlter[currentEmotion]
+		if flag == CacheFlag.CACHE_DAMAGE then
+			player.Damage = player.Damage * emotionAlter.DamageMult
+		elseif flag == CacheFlag.CACHE_FIREDELAY then
+			player.MaxFireDelay = OmoriMod.tearsUp(player.MaxFireDelay, emotionAlter.FireDelayMult, true)
+		elseif flag == CacheFlag.CACHE_RANGE then
+			player.TearRange = OmoriMod.rangeUp(player.TearRange, emotionAlter.RangeReduction)
+		elseif flag == CacheFlag.CACHE_SPEED then
+			player.MoveSpeed = player.MoveSpeed * emotionAlter.SpeedMult
 		end
 	end
 end

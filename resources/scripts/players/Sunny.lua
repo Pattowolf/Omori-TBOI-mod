@@ -54,9 +54,6 @@ function mod:SunnyStressingOut(player)
         Afraid = "AfraidCounter",
         StressedOut = "StressCounter"
     }
-    
-    print(OmoriMod:GetPtrHashEntity(player))
-
     for emotion, counter in pairs(emotions) do
         local color = OmoriMod.GetEmotion(player) == "Afraid" and StressColor or AfraidColor
 

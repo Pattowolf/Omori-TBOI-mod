@@ -37,10 +37,9 @@ end
 
 ---@param value any
 ---@param tables table
----@return any
 function OmoriMod.SwitchCase(value, tables)
-    local value = tables[value] or tables["_"]
-    return type(value) == "function" and value() or value
+    local val = tables[value] or tables["_"]
+    return type(val) == "function" and val() or val
 end
 
 ---@param x integer
@@ -162,8 +161,8 @@ function OmoriMod.DoHappyTear(tear)
 		["Manic"] = {VelMult = 3, HappyChance = 50},
 	}
 
-	local VelChange = OmoriMod.SwitchCase(emotion, HappyTier).VelMult
-	local HappyCritChance = OmoriMod.SwitchCase(emotion, HappyTier).HappyChance
+	local VelChange = HappyTier[emotion].VelMult
+	local HappyCritChance = HappyTier[emotion].HappyChance
 	
 	if not player:HasCollectible(CollectibleType.COLLECTIBLE_LUDOVICO_TECHNIQUE) then
 		tear.Velocity = tear.Velocity + (RandomVector() * VelChange) * birthrightVelMult
@@ -177,7 +176,6 @@ function OmoriMod.DoHappyTear(tear)
 	end
 end
 
----comment
 ---@param entity Entity
 ---@return boolean
 function OmoriMod:IsShinyKnife(entity)
@@ -234,22 +232,22 @@ function OmoriMod:GetAimingDirection(player)
     then
         return player:GetAimDirection()
     end
-
     return tables.DirectionToVector[player:GetFireDirection()]
 end
 
 ---@param player EntityPlayer
 ---@return boolean
 function OmoriMod:IsPlayerShooting(player)
-	return OmoriMod:GetAimingDirection(player).X ~= 0 or OmoriMod:GetAimingDirection(player).Y ~= 0
+	local aim = OmoriMod:GetAimingDirection(player)
+	return aim.X ~= 0 or aim.Y ~= 0
 end
 
 ---@param player EntityPlayer
 ---@return boolean
 function OmoriMod:IsPlayerMoving(player)
-	return player:GetMovementVector().X ~= 0 or player:GetMovementVector().Y ~= 0
+	local mov = player:GetMovementVector()
+	return mov.X ~= 0 or mov.Y ~= 0
 end
-
 
 local spriteRoot = "gfx/characters/costumes_Omori/"
 local OmoriEmotionChange = {
@@ -270,7 +268,7 @@ function OmoriMod:OmoriChangeEmotionEffect(player)
 	if not OmoriMod:IsOmori(player, false) then return end
 	local emotion = OmoriMod.GetEmotion(player)
 	
-	local emotionTable = OmoriMod.SwitchCase(emotion, OmoriEmotionChange)
+	local emotionTable = OmoriEmotionChange[emotion]
 
 	local EmotionSuffix = emotionTable.suffix
 	local EmotionSound = emotionTable.sound	
@@ -309,7 +307,7 @@ local sunnyHairRoot = "gfx/characters/players/costume_omori_head2"
 function OmoriMod:SunnyChangeEmotionEffect(player)
 	if not OmoriMod:IsOmori(player, true) then return end
 	local emotion = OmoriMod.GetEmotion(player)
-	local emotionTable = OmoriMod.SwitchCase(emotion, SunnyEmotionChange)
+	local emotionTable = SunnyEmotionChange[emotion]
 
 	local playerSprite = player:GetSprite()
 
@@ -394,6 +392,7 @@ function OmoriMod.MakeVector(x)
 	return Vector(math.cos(math.rad(x)),math.sin(math.rad(x)))
 end
 
+local ResetColor = Color(1, 1, 1, 1, 0.6, 0.6, 0.6)
 ---@param player EntityPlayer
 ---@param healAmount integer
 ---@param focus boolean
@@ -410,7 +409,9 @@ function OmoriMod:ResetSunnyEmotion(player, healAmount, focus)
 	playerData.TriggerAfraid = false
 	playerData.TriggerStress = false
 	player:AddHearts(healAmount)
-		
+	
+	player:SetColor(ResetColor, 8, -1, true, true)
+
 	OmoriMod:SunnyChangeEmotionEffect(player)
 
 	playerData.IncreasedBowDamage = focus
@@ -441,27 +442,30 @@ function OmoriMod.GetPlayerFromAttack(entity)
 	return nil
 end
 
+local GlowRoot = "gfx/effects/glow_"
+local emotionGlow = {
+	["Neutral"] = "Neutral",
+	["Happy"] = "Happy",
+	["Ecstatic"] = "Happy",
+	["Manic"] = "Happy",
+	["Sad"] = "Sad",
+	["Depressed"] = "Sad",
+	["Miserable"] = "Sad",
+	["Angry"] = "Angry",
+	["Enraged"] = "Angry",
+	["Furious"] = "Angry",
+	["Afraid"] = "Afraid",
+	["StressedOut"] = "StressedOut",
+}
+
 ---comment
 ---@param player EntityPlayer
 ---@param effect EntityEffect
 function OmoriMod:ReplaceGlowSprite(player, effect)
 	local glowSprite = effect:GetSprite()
-	local GlowRoot = "gfx/effects/glow_"
-	local emotionGlow = {
-		["Neutral"] = "Neutral",
-		["Happy"] = "Happy",
-		["Ecstatic"] = "Happy",
-		["Manic"] = "Happy",
-		["Sad"] = "Sad",
-		["Depressed"] = "Sad",
-		["Miserable"] = "Sad",
-		["Angry"] = "Angry",
-		["Enraged"] = "Angry",
-		["Furious"] = "Angry",
-		["Afraid"] = "Afraid",
-		["StressedOut"] = "StressedOut",
-	}
-	local Glow = OmoriMod.SwitchCase(OmoriMod.GetEmotion(player), emotionGlow) or "Neutral"
+	local emotion = OmoriMod.GetEmotion(player)
+	
+	local Glow = emotionGlow[emotion] 
 	glowSprite:ReplaceSpritesheet(0, GlowRoot .. Glow .. ".png", true)
 end
 
@@ -471,15 +475,14 @@ end
 
 ---comment
 ---@param entity Entity
----@---@return Entity
 function OmoriMod:GetPtrHashEntity(entity)
-	if entity then
+	-- if entity then
 		for _, matchEntity in pairs(Isaac.FindByType(entity.Type, entity.Variant, entity.SubType, false, false)) do
 			if GetPtrHash(entity) == GetPtrHash(matchEntity) then
 				return matchEntity
 			end
 		end
-	end
+	-- end
 end
 
 ---comment
