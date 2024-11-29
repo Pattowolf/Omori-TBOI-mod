@@ -35,13 +35,6 @@ function OmoriMod:GetAceleration(entity)
 	return OmoriMod:Round(acel, 2)
 end
 
----@param value any
----@param tables table
-function OmoriMod.SwitchCase(value, tables)
-    local val = tables[value] or tables["_"]
-    return type(val) == "function" and val() or val
-end
-
 ---@param x integer
 ---@param y integer
 ---@param rng RNG
@@ -151,7 +144,7 @@ function OmoriMod.DoHappyTear(tear)
 	
 	local emotion = OmoriMod.GetEmotion(player)
 	
-	local isHappy = OmoriMod.SwitchCase(emotion, tables.HappinessTiers) or false
+	local isHappy = tables.HappinessTiers[emotion] 
 	
 	if not isHappy then return end
 	
@@ -216,7 +209,7 @@ function OmoriMod:GiveKnife(player)
 				player
 			):ToEffect()
 			OmoriMod:ReplaceKnifeSprite(player, playerData.ShinyKnife)
-			playerData.ShinyKnife.SpriteRotation = OmoriMod.SwitchCase(player:GetHeadDirection(), tables.DirectionToDegrees)
+			playerData.ShinyKnife.SpriteRotation = tables.DirectionToDegrees[player:GetHeadDirection()]
 		end
     end
 end
