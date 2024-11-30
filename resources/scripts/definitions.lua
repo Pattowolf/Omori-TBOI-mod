@@ -2,10 +2,13 @@ OmoriMod.Enums = {
 	PlayerType = {
 		PLAYER_OMORI = Isaac.GetPlayerTypeByName("Omori"),
 		PLAYER_OMORI_B = Isaac.GetPlayerTypeByName("Sunny", true),
+		PLAYER_AUBREY = Isaac.GetPlayerTypeByName("Aubrey"),
+		PLAYER_AUBREY_B = Isaac.GetPlayerTypeByName("Aubrey", true),
 	},
 	NullItemID = {
 		ID_OMORI = Isaac.GetCostumeIdByPath("gfx/characters/costume_omori.anm2"),
 		ID_SUNNY = Isaac.GetCostumeIdByPath("gfx/characters/costume_omori2.anm2"),
+		ID_AUBREY = Isaac.GetCostumeIdByPath("gfx/characters/costume_aubrey.anm2"),
 		ID_OMORI_EMOTION = Isaac.GetCostumeIdByPath("gfx/characters/costume_omori_emotion.anm2"),
 		ID_SUNNY_EMOTION = Isaac.GetCostumeIdByPath("gfx/characters/costume_omori2_emotion.anm2"),
 	},

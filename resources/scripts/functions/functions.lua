@@ -4,6 +4,7 @@ local game = utils.Game
 local sfx = utils.SFX
 local modrng = utils.RNG
 local tables = enums.Tables
+local players = enums.PlayerType
 
 local sounds = enums.SoundEffect
 
@@ -72,7 +73,14 @@ end
 --- @param tainted boolean
 --- @return boolean
 function OmoriMod:IsOmori(player, tainted)
-	return player:GetPlayerType() == (tainted and OmoriMod.Enums.PlayerType.PLAYER_OMORI_B or OmoriMod.Enums.PlayerType.PLAYER_OMORI)
+	return player:GetPlayerType() == (tainted and players.PLAYER_OMORI_B or players.PLAYER_OMORI)
+end
+
+--- @param player EntityPlayer
+--- @param tainted boolean
+--- @return boolean
+function OmoriMod:IsAubrey(player, tainted)
+	return player:GetPlayerType() == (tainted and players.PLAYER_AUBREY or players.PLAYER_AUBREY_B)
 end
 
 --- @param player EntityPlayer

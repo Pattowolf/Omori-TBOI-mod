@@ -10,6 +10,7 @@ local scriptTable = {
 	"items/Overcome",
 	"players/Omori",
 	"players/Sunny",
+	"players/AubreyHeadSpace",
 	"misc/EmotionRender",
 	"misc/EmotionLogic",
 	"translations",

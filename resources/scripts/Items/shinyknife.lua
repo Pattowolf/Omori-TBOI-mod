@@ -247,9 +247,15 @@ function mod:ShinyKnifeUpdate(knife)
 		Isaac.RunCallback(OmoriModCallbacks.KNIFE_SWING, knife)
 	end
 		
+	if playerData.Swings > 1 then
+		knifesprite.PlaybackSpeed = 1.5
+	end
+
 	if knifesprite:IsFinished("Swing") then
 		knifeData.HitBlacklist = {}
 		knifesprite:Play("Idle")
+
+		print(knifesprite.PlaybackSpeed)
 		
 		if playerData.Swings == 0 and knifesprite:IsPlaying("Idle") then
 			playerData.shinyKnifeCharge = 0
@@ -300,11 +306,11 @@ mod:AddCallback(OmoriModCallbacks.KNIFE_SWING_TRIGGER, mod.OnKnifeSwingTrigger)
 
 if debug == true then 
 	function mod:AAAA(knife)	
-		-- for i = 1, 2 do
-			local capsule = knife:GetNullCapsule("KnifeHit2")
+		for i = 1, 2 do
+			local capsule = knife:GetNullCapsule("KnifeHit" .. 2)
 			local debugShape = knife:GetDebugShape()
 			debugShape:Capsule(capsule)
-		-- end
+		end
 	end
 	mod:AddCallback(ModCallbacks.MC_POST_EFFECT_RENDER, mod.AAAA, enums.EffectVariant.EFFECT_SHINY_KNIFE)
 end
@@ -400,7 +406,7 @@ function mod:OnDamagingWithShinyKnife(knife, entity)
 	local sadKnockbackMult = (tables.SadnessKnockbackMult[emotion] or 1) * (birthrightMult or 1)
 		
 	local resizer = (20 * sadKnockbackMult) * (player.ShotSpeed)
-		
+	entity:AddEntityFlags(EntityFlag.FLAG_KNOCKED_BACK | EntityFlag.FLAG_APPLY_IMPACT_DAMAGE)
 	entity.Velocity = (entity.Position - player.Position):Resized(resizer) 
 	
 	return DamageParams

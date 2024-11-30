@@ -29,26 +29,23 @@
 	/> 
 	<player 
 		name="Aubrey" 
-		skin="player_omori.png" 
+		skin="player_aubrey2.png" 
 		hp="6"
 		skinColor="0" 
 		nameimage="playername_omori.png" 
 		portrait="playerportrait_omori.png" 
 		bigportrait="playerportrait_omori.png" 
 		birthright="Feel more" 
-		hidden="true"
 	/> 
 	<player 
 		name="Aubrey" 
 		bSkinParent="Aubrey" 
-		skin="player_omori2.png" 
+		skin="player_aubrey2.png" 
 		hp="6"
 		skinColor="-1" 
 		nameimage="playername_omori2.png" 
 		portrait="playerportrait_omori2.png" 
 		bigportrait="playerportrait_omori2.png" 
 		birthright="Gather all your courage" 
-		pocketActive="105"
-		hidden="true"
-	/> 
+		/> 
 </players>

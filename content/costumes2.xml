@@ -6,4 +6,7 @@
 	<!-- Sunny costumes -->
 	<costume anm2path="costume_omori2.anm2" type="none" />
 	<costume anm2path="costume_omori2_emotion.anm2" type="none" />
+
+	<!-- Aubrey (HeadSpace) Costumes -->
+	<costume anm2path="costume_aubrey.anm2" type="none"/>
 </costumes>    
