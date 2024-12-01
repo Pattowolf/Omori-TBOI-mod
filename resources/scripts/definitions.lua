@@ -31,6 +31,9 @@ OmoriMod.Enums = {
 		SOUND_ANGRY_UPGRADE_2 = Isaac.GetSoundIdByName("Angry Upgrade 2"),
 		SOUND_ANGRY_UPGRADE_3 = Isaac.GetSoundIdByName("Angry Upgrade 3"),
 		SOUND_BACK_NEUTRAL = Isaac.GetSoundIdByName("Back to Neutral"),
+		SOUND_HEADBUTT_START = Isaac.GetSoundIdByName("HeadButt Start"),
+		SOUND_HEADBUTT_HIT = Isaac.GetSoundIdByName("HeadButt Hit"),
+		SOUND_HEADBUTT_KILL = Isaac.GetSoundIdByName("HeadButt Kill"),
 	},
 	EffectVariant = {
 		EFFECT_EMOTION_GLOW = Isaac.GetEntityVariantByName("Emotion Glow"),

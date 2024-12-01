@@ -23,6 +23,15 @@
 	<sound name="Fail Attack">
 		<sample weight="1" path="MissAttack.wav" />
 	</sound>
+	<sound name="HeadButt Start">
+		<sample weight="1" path="BA_headbutt2_Start.wav" />
+	</sound>
+	<sound name="HeadButt Hit">
+		<sample weight="1" path="BA_headbutt2_hit.wav" />
+	</sound>
+	<sound name="HeadButt Kill">
+		<sample weight="1" path="BA_headbutt2_Kill.wav" />
+	</sound>
 	
 	
 	<!-- Emotions -->

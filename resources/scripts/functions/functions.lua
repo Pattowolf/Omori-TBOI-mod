@@ -80,7 +80,7 @@ end
 --- @param tainted boolean
 --- @return boolean
 function OmoriMod:IsAubrey(player, tainted)
-	return player:GetPlayerType() == (tainted and players.PLAYER_AUBREY or players.PLAYER_AUBREY_B)
+	return player:GetPlayerType() == (tainted and players.PLAYER_AUBREY_B or players.PLAYER_AUBREY)
 end
 
 --- @param player EntityPlayer

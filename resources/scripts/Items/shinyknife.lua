@@ -66,6 +66,7 @@ function mod:RenderShinyKnifeCharge()
 			playerData.shinyKnifeChargeBar = Sprite()
 			playerData.shinyKnifeChargeBar:Load("gfx/chargebar.anm2", true)
 		else
+			if not playerData.shinyKnifeCharge then return end
 			chargeBar.PlaybackSpeed = 0.5
 			if not chargeBar:IsPlaying("Disappear") and playerData.shinyKnifeCharge ~= 0 and isShooting then
 				if playerData.shinyKnifeCharge < 100 and (chargeBar:GetAnimation() ~= "Charged") then
