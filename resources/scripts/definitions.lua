@@ -1,3 +1,8 @@
+local function secsToFrames(secs)
+	return math.ceil(secs * 30)
+end
+
+
 OmoriMod.Enums = {
 	PlayerType = {
 		PLAYER_OMORI = Isaac.GetPlayerTypeByName("Omori"),
@@ -205,6 +210,23 @@ OmoriMod.Enums = {
 				RangeReduction = -2,
 				SpeedMult = 0.7,
 			},
+		},
+		AubreyHeadButtParams = {
+			["Neutral"] = {
+				HeadButtCooldown = secsToFrames(1),
+				EmotionCooldown = secsToFrames(5),
+				Emotion = "Angry"
+			},
+			["Angry"] = {
+				HeadButtCooldown = secsToFrames(1.5),
+				EmotionCooldown = secsToFrames(6),
+				Emotion = "Enraged"
+			},
+			["Enraged"] = {
+				HeadButtCooldown = secsToFrames(2),
+				EmotionCooldown = secsToFrames(7),
+				Emotion = "Enraged"
+			}
 		},
 	},
 	Misc = {

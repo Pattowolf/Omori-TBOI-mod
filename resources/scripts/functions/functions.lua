@@ -90,6 +90,13 @@ function OmoriMod:IsAnyOmori(player)
 end
 
 ---comment
+---@param secs number
+---@return integer
+function OmoriMod:SecsToFrames(secs)
+	return math.ceil(secs * 30)
+end
+
+---comment
 ---@param player EntityPlayer
 ---@return boolean
 function OmoriMod:IsEmotionChangeTriggered(player)
