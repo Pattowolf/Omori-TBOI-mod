@@ -32,6 +32,10 @@
 	<sound name="HeadButt Kill">
 		<sample weight="1" path="BA_headbutt2_Kill.wav" />
 	</sound>
+	<sound name="Heart Heal">
+		<sample weight="1" path="BA_Heart_Heal.wav" />
+	</sound>
+
 	
 	
 	<!-- Emotions -->

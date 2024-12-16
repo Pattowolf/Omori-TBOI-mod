@@ -5,6 +5,8 @@ local sfx = utils.SFX
 local modrng = utils.RNG
 local tables = enums.Tables
 local players = enums.PlayerType
+local HBParams = tables.AubreyHeadButtParams
+local misc = enums.Misc
 
 local sounds = enums.SoundEffect
 
@@ -89,6 +91,12 @@ function OmoriMod:IsAnyOmori(player)
 	return OmoriMod:IsOmori(player, true) or OmoriMod:IsOmori(player, false)
 end
 
+--- @param player EntityPlayer
+--- @return boolean
+function OmoriMod:IsAnyAubrey(player)
+	return OmoriMod:IsAubrey(player, true) or OmoriMod:IsAubrey(player, false)
+end
+
 ---comment
 ---@param secs number
 ---@return integer
@@ -108,6 +116,49 @@ function OmoriMod:IsEmotionChangeTriggered(player)
 	Input.IsActionTriggered(ButtonAction.ACTION_DROP, player.ControllerIndex)  
 	
 	return emotionChange
+end
+
+
+---@param player EntityPlayer
+---@param changeEmotion boolean?
+---@param SetEmotionCounter boolean?
+function OmoriMod:TriggerHBParams(player, changeEmotion, SetEmotionCounter)
+    changeEmotion = changeEmotion or false
+    SetEmotionCounter = SetEmotionCounter or false
+    local emotion = OmoriMod.GetEmotion(player)
+    local playerData = OmoriMod:GetData(player) 
+
+
+    playerData.HeadButtCounter = HBParams[emotion].HeadButtCooldown
+    -- playerData.HeadButt = false
+    playerData.FixedDir = nil
+
+    if SetEmotionCounter == true then
+        playerData.EmotionCounter = HBParams[emotion].EmotionCooldown
+    end
+
+    if changeEmotion == true then
+        OmoriMod.SetEmotion(player, HBParams[emotion].Emotion)
+        player:SetColor(misc.AngryColor, 8, -1, true, true)
+    end
+
+	game:ShakeScreen(10)
+
+	playerData.HeadButt = false
+
+end
+
+---@param player EntityPlayer
+function OmoriMod:InitHeadbutt(player)
+    local playerData = OmoriMod:GetData(player)
+
+	if playerData.HeadButt == true then return end
+
+    sfx:Play(sounds.SOUND_HEADBUTT_START)
+
+    playerData.HeadButt = true
+    playerData.FixedDir = player:GetMovementInput():Normalized()
+    playerData.HeadButtDir = (playerData.FixedDir):Resized(12)
 end
 
 ---comment
@@ -190,29 +241,47 @@ function OmoriMod:IsShinyKnife(entity)
 	return entity.Type == EntityType.ENTITY_EFFECT and entity.Variant == OmoriMod.Enums.EffectVariant.EFFECT_SHINY_KNIFE
 end
 
+
+local KnifeSprites = {
+	[players.PLAYER_OMORI_B] = "ViolinBow",
+	[players.PLAYER_AUBREY] = "MrEggplant",
+	[players.PLAYER_AUBREY_B] = "Nailbat",
+}
+
 ---@param player EntityPlayer
 ---@param knife EntityEffect
 function OmoriMod:ReplaceKnifeSprite(player, knife)
 	local knifesprite = knife:GetSprite()
-	local knifeReplaceSprite = "ShinyKnife"
+	-- local knifeReplaceSprite = "ShinyKnife"
 	
-	if not OmoriMod:IsOmori(player, true) then
+	local knifeReplaceSprite = KnifeSprites[player:GetPlayerType()] or "ShinyKnife"
+
+	if OmoriMod:IsOmori(player, false) then
 		if player:HasCollectible(CollectibleType.COLLECTIBLE_MOMS_KNIFE) then
 			knifeReplaceSprite = "RedKnife"
 		end
-	else
-		knifeReplaceSprite = "ViolinBow"
 	end
 
 	for i = 0, 1 do
-		knifesprite:ReplaceSpritesheet(i, "gfx/effects/" .. knifeReplaceSprite.. ".png", true)
+		knifesprite:ReplaceSpritesheet(i, "gfx/effects/" .. knifeReplaceSprite .. ".png", true)
 	end
 end
 
+---@generic In, Out, Default
+---@param value?    In
+---@param cases     { [In]: Out }
+---@param default?  Default
+---@return Out|Default
+function OmoriMod.When(value, cases, default)
+    if value == nil then return default end
+    return cases[value]
+end
+
 ---@param player EntityPlayer
+---@return EntityEffect
 function OmoriMod:GiveKnife(player)
 	local playerData = OmoriMod:GetData(player)
-	if OmoriMod:IsKnifeUser(player) then
+	-- if OmoriMod:IsKnifeUser(player) then
 		local knife = playerData.ShinyKnife
 		if not knife then
 			playerData.ShinyKnife = Isaac.Spawn(
@@ -226,7 +295,9 @@ function OmoriMod:GiveKnife(player)
 			OmoriMod:ReplaceKnifeSprite(player, playerData.ShinyKnife)
 			playerData.ShinyKnife.SpriteRotation = tables.DirectionToDegrees[player:GetHeadDirection()]
 		end
-    end
+    -- end
+
+	return playerData.ShinyKnife
 end
 
 ---@param player EntityPlayer
@@ -257,7 +328,7 @@ function OmoriMod:IsPlayerMoving(player)
 	return mov.X ~= 0 or mov.Y ~= 0
 end
 
-local spriteRoot = "gfx/characters/costumes_Omori/"
+local spriteRoot = "gfx/characters/costumes_"
 local OmoriEmotionChange = {
 	["Neutral"] = {suffix = "neutral", sound = sounds.SOUND_BACK_NEUTRAL},
 	["Happy"] = {suffix = "happy", sound = sounds.SOUND_HAPPY_UPGRADE},
@@ -271,22 +342,33 @@ local OmoriEmotionChange = {
 	["Furious"] = {suffix = "furious", sound = sounds.SOUND_ANGRY_UPGRADE_3},
 }
 
+local characterFolder = {
+	[players.PLAYER_OMORI] = "Omori/",
+	[players.PLAYER_AUBREY] = "DW_Aubrey/",
+	[players.PLAYER_AUBREY_B] = "RW_Aubrey/",
+}
+
 ---@param player EntityPlayer
-function OmoriMod:OmoriChangeEmotionEffect(player)
-	if not OmoriMod:IsOmori(player, false) then return end
+function OmoriMod:ChangeEmotionEffect(player)
+	if OmoriMod:IsOmori(player, true) then return end
+
 	local emotion = OmoriMod.GetEmotion(player)
-	
+
+	local charFolderTarget = characterFolder[player:GetPlayerType()]
+
 	local emotionTable = OmoriEmotionChange[emotion]
 
 	local EmotionSuffix = emotionTable.suffix
 	local EmotionSound = emotionTable.sound	
 			
 	local EmotionCostume = player:GetCostumeSpriteDescs()[3]
-	
-	local EmotionCostumeSprite = EmotionCostume:GetSprite()
 
-	EmotionCostumeSprite:ReplaceSpritesheet(0, spriteRoot .. EmotionSuffix .. ".png", true)
 	sfx:Play(EmotionSound, 2, 0, false, 1, 0)
+	if not EmotionCostume then return end
+
+	local EmotionCostumeSprite = EmotionCostume:GetSprite()
+		
+	EmotionCostumeSprite:ReplaceSpritesheet(0, spriteRoot .. charFolderTarget .. EmotionSuffix .. ".png", true)
 end
 
 ---@param player EntityPlayer
@@ -346,6 +428,21 @@ function OmoriMod:SunnyChangeEmotionEffect(player)
 	sfx:Play(Sound, 1, 0, false, Pitch, 0)
 end
 
+
+local EmotionColor = {
+	["Neutral"] = misc.NeutralColor,
+	["Happy"] = misc.HappyColor,
+	["Ecstatic"] = misc.HappyColor,
+	["Manic"] = misc.HappyColor,
+	["Sad"] = misc.SadColor,
+	["Depressed"] = misc.SadColor,
+	["Miserable"] = misc.SadColor,
+	["Angry"] = misc.AngryColor,
+	["Enraged"] = misc.AngryColor,
+	["Furious"] = misc.AngryColor,
+	["Afraid"] = misc.NeutralColorColor,
+	["StressedOut"] = misc.NeutralColorColor,
+}
 --- comment
 --- @param player EntityPlayer
 --- @param emotion string
@@ -354,9 +451,14 @@ function OmoriMod.SetEmotion(player, emotion)
 	if type(emotion) ~= "string" then return end
 	
 	playerData.PlayerEmotion = emotion
-		
+	OmoriMod:ChangeEmotionEffect(player)
+	OmoriMod:SunnyChangeEmotionEffect(player)
+
 ---@diagnostic disable-next-line: param-type-mismatch
 	player:AddCacheFlags(CacheFlag.CACHE_DAMAGE | CacheFlag.CACHE_SPEED | CacheFlag.CACHE_FIREDELAY | CacheFlag.CACHE_LUCK, true)
+
+	if player.FrameCount == 0 then return end
+	player:SetColor(EmotionColor[emotion], 8, -1, true, true)
 end
 
 ---comment

@@ -66,7 +66,7 @@ function mod:RenderShinyKnifeCharge()
 			playerData.shinyKnifeChargeBar = Sprite()
 			playerData.shinyKnifeChargeBar:Load("gfx/chargebar.anm2", true)
 		else
-			if not playerData.shinyKnifeCharge then return end
+			if not playerData.shinyKnifeCharge or playerData.shinyKnifeCharge == 0 then return end
 			chargeBar.PlaybackSpeed = 0.5
 			if not chargeBar:IsPlaying("Disappear") and playerData.shinyKnifeCharge ~= 0 and isShooting then
 				if playerData.shinyKnifeCharge < 100 and (chargeBar:GetAnimation() ~= "Charged") then
@@ -102,37 +102,14 @@ function mod:OnKnifeRemoving()
 end
 mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.OnKnifeRemoving)
 
-function mod:GivingKnife(player)
-    local playerData = OmoriMod:GetData(player)
+-- function mod:GivingKnife(player)
+--     local playerData = OmoriMod:GetData(player)
 
-    OmoriMod:GiveKnife(player)
+    -- OmoriMod:GiveKnife(player)
 	
-	if player:HasCollectible(CollectibleType.COLLECTIBLE_LUDOVICO_TECHNIQUE) then
-		if not playerData.FakeLudoTearSpawned or (playerData.FakeLudoTearSpawned == false) then
-			local fakeLudoTear = Isaac.Spawn(
-				2, 
-				0,
-				0,
-				player.Position,
-				Vector.Zero,
-				player
-			)
-			
-			if not fakeLudoTear and not fakeLudoTear:ToTear() then return end
-
-			fakeLudoTear.CollisionDamage = player.Damage
-			
-			local tearData = OmoriMod:GetData(fakeLudoTear)
-			
-			if not tearData.IsFakeLudoTear then
-				tearData.IsFakeLudoTear = true
-			end
-			
-			playerData.FakeLudoTearSpawned = true
-		end
-	end
-end
-OmoriMod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.GivingKnife)
+	
+-- end
+-- OmoriMod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.GivingKnife)
 
 function mod:KnifeSmoothRotation(player)
 	local playerData = OmoriMod:GetData(player)
@@ -189,6 +166,10 @@ mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.KnifeSmoothRotation)
 function mod:ShinyKnifeUpdate(knife)
 	local knifesprite = knife:GetSprite()
     local player = knife.SpawnerEntity:ToPlayer()
+
+	local Ret = Isaac.RunCallback(OmoriModCallbacks.PRE_KNIFE_UPDATE, knife)
+
+	if Ret == false then return end
 
     local knifeData = OmoriMod:GetData(knife)
 
@@ -255,8 +236,6 @@ function mod:ShinyKnifeUpdate(knife)
 	if knifesprite:IsFinished("Swing") then
 		knifeData.HitBlacklist = {}
 		knifesprite:Play("Idle")
-
-		print(knifesprite.PlaybackSpeed)
 		
 		if playerData.Swings == 0 and knifesprite:IsPlaying("Idle") then
 			playerData.shinyKnifeCharge = 0

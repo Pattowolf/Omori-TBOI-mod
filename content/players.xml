@@ -29,8 +29,8 @@
 	/> 
 	<player 
 		name="Aubrey" 
-		skin="player_aubrey2.png" 
-		hp="6"
+		skin="player_aubrey.png" 
+		hp="8"
 		skinColor="0" 
 		nameimage="playername_omori.png" 
 		portrait="playerportrait_omori.png" 

@@ -1,9 +1,9 @@
 <AnimatedActor>
-	<Info CreatedBy="robot" CreatedOn="12/12/2024 06:56:28 p. m." Version="121" Fps="30"/>
+	<Info CreatedBy="robot" CreatedOn="29/11/2024 10:36:03 p. m." Version="119" Fps="30"/>
 	<Content>
 		<Spritesheets>
-			<Spritesheet Path="players\costume_aubrey_head.png" Id="0"/>
-			<Spritesheet Path="players\costume_aubrey_body.png" Id="1"/>
+			<Spritesheet Path="players\costume_aubrey_head2.png" Id="0"/>
+			<Spritesheet Path="players\costume_aubrey_body2.png" Id="1"/>
 		</Spritesheets>
 		<Layers>
 			<Layer Name="body0" Id="0" SpritesheetId="1"/>

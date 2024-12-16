@@ -106,19 +106,22 @@ function mod:OmoStats(player, flag)
 				player.Damage = baseDamage * EmotionDamageMult
 			end
 		elseif flag == CacheFlag.CACHE_FIREDELAY then
-			local TearsEmotion = tables.TearsAlterEmotions[currentEmotion]
+			if not OmoriMod:IsAnyAubrey(player) then
+				local TearsEmotion = tables.TearsAlterEmotions[currentEmotion]
+				
+				if not TearsEmotion then return end
+				
+				local tearsMult = TearsEmotion.tearsMult
+				local birthrightMult = TearsEmotion.birthrightMult
 			
-			if not TearsEmotion then return end
-			
-			local tearsMult = TearsEmotion.tearsMult
-			local birthrightMult = TearsEmotion.birthrightMult
-		
-			if isOmori then
-				local birthrightMultiplier = hasBirthright and birthrightMult or 1
-				player.MaxFireDelay = OmoriMod.tearsUp(player.MaxFireDelay, tearsMult * birthrightMultiplier, true)
-			else
-				player.MaxFireDelay = OmoriMod.tearsUp(player.MaxFireDelay, tearsMult, true)
-			end	
+				if isOmori then
+					local birthrightMultiplier = hasBirthright and birthrightMult or 1
+					player.MaxFireDelay = OmoriMod.tearsUp(player.MaxFireDelay, tearsMult * birthrightMultiplier, true)
+				else
+					player.MaxFireDelay = OmoriMod.tearsUp(player.MaxFireDelay, tearsMult, true)
+				end	
+			end
+
 		elseif flag == CacheFlag.CACHE_SPEED then
 			local SpeedEmotion = tables.SpeedAlterEmotions[currentEmotion] 
 			

@@ -64,16 +64,13 @@ mod:AddCallback(ModCallbacks.MC_POST_RENDER, mod.RenderEmotionTitle)
 function mod:ChangeEmotionLogic(player)
 	if not OmoriMod:IsOmori(player, false) then return end
 	local emotion = OmoriMod.GetEmotion(player)
-
-	if emotion == nil then
-		OmoriMod.SetEmotion(player, "Neutral")
-	end
 	
 	if not OmoriMod:IsEmotionChangeTriggered(player) then return end
+	
 	local newEmotion = tables.EmotionToChange[emotion] or "Neutral"
 		
 	OmoriMod.SetEmotion(player, newEmotion)
-	OmoriMod:OmoriChangeEmotionEffect(player)
+	OmoriMod:ChangeEmotionEffect(player)
 end
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.ChangeEmotionLogic)
 

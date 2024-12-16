@@ -18,12 +18,13 @@ if not REPENTOGON then
     return
 end
 
-local myFolder = "resources.scripts.omori_library_of_isaac"
-local LOCAL_TSIL = require(myFolder .. ".TSIL")
-LOCAL_TSIL.Init(myFolder)
+-- local myFolder = "resources.scripts.omori_library_of_isaac"
+-- local LOCAL_TSIL = require(myFolder .. ".TSIL")
+-- LOCAL_TSIL.Init(myFolder)
 
 OmoriMod.saveManager = include("resources.scripts.misc.save_manager")
 OmoriMod.saveManager.Init(OmoriMod)
+
 
 include("include")
 

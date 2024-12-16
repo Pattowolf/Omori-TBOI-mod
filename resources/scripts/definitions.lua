@@ -13,9 +13,9 @@ OmoriMod.Enums = {
 	NullItemID = {
 		ID_OMORI = Isaac.GetCostumeIdByPath("gfx/characters/costume_omori.anm2"),
 		ID_SUNNY = Isaac.GetCostumeIdByPath("gfx/characters/costume_omori2.anm2"),
-		ID_AUBREY = Isaac.GetCostumeIdByPath("gfx/characters/costume_aubrey.anm2"),
-		ID_OMORI_EMOTION = Isaac.GetCostumeIdByPath("gfx/characters/costume_omori_emotion.anm2"),
-		ID_SUNNY_EMOTION = Isaac.GetCostumeIdByPath("gfx/characters/costume_omori2_emotion.anm2"),
+		ID_DW_AUBREY = Isaac.GetCostumeIdByPath("gfx/characters/costume_aubrey.anm2"),
+		ID_RW_AUBREY = Isaac.GetCostumeIdByPath("gfx/characters/costume_aubrey_2.anm2"),
+		ID_EMOTION = Isaac.GetCostumeIdByPath("gfx/characters/costume_emotion.anm2"),
 	},
 	SoundEffect = {
 		SOUND_BLADE_SLASH = Isaac.GetSoundIdByName("Blade Slash"),
@@ -39,6 +39,8 @@ OmoriMod.Enums = {
 		SOUND_HEADBUTT_START = Isaac.GetSoundIdByName("HeadButt Start"),
 		SOUND_HEADBUTT_HIT = Isaac.GetSoundIdByName("HeadButt Hit"),
 		SOUND_HEADBUTT_KILL = Isaac.GetSoundIdByName("HeadButt Kill"),
+		SOUND_HEART_HEAL = Isaac.GetSoundIdByName("Heart Heal"),
+		SOUND_MR_EGGPLANT_HIT = Isaac.GetSoundIdByName("MrEggplant Attack"),
 	},
 	EffectVariant = {
 		EFFECT_EMOTION_GLOW = Isaac.GetEntityVariantByName("Emotion Glow"),
@@ -62,6 +64,7 @@ OmoriMod.Enums = {
 		KNIFE_HIT_ENEMY = "OmoriModCallbacks_KNIFE_HIT_ENEMY",-- Fires on knife colliding with enemies
 		KNIFE_ENTITY_COLLISION = "OmoriModCallbacks_KNIFE_ENTITY_COLLISION", -- Fires on knife colliding with non-enemy entities
 		KNIFE_KILL_ENEMY = "OmoriModCallbacks_KNIFE_KILL_ENEMY", -- Fires on knife colliding with non-enemy entities
+		PRE_KNIFE_UPDATE = "OmoriModCallbacks_PRE_KNIFE_UPDATE", -- Fires every knife update, return false to cancel knife logic
 	},
 	Tables = {
 		NoDischargeEmotions = {
@@ -215,17 +218,20 @@ OmoriMod.Enums = {
 			["Neutral"] = {
 				HeadButtCooldown = secsToFrames(1),
 				EmotionCooldown = secsToFrames(5),
-				Emotion = "Angry"
+				Emotion = "Angry",
+				DamageMult = 1,
 			},
 			["Angry"] = {
 				HeadButtCooldown = secsToFrames(1.5),
 				EmotionCooldown = secsToFrames(6),
-				Emotion = "Enraged"
+				Emotion = "Enraged",
+				DamageMult = 1.15
 			},
 			["Enraged"] = {
 				HeadButtCooldown = secsToFrames(2),
 				EmotionCooldown = secsToFrames(7),
-				Emotion = "Enraged"
+				Emotion = "Enraged",
+				DamageMult = 1.3
 			}
 		},
 	},
@@ -233,6 +239,12 @@ OmoriMod.Enums = {
 		SelfHelpRenderPos = Vector(16, 16),
 		SelfHelpRenderScale = Vector.One,
 		CriticColor = Color(0.8, 0.8, 0.8, 1, 255/255, 200/255, 100/255),
+		NeutralColor = Color(1, 1, 1, 1, 0.2, 0.2, 0.2),
+		AngryColor = Color(1, 1, 1, 1, 0.6),
+		HappyColor = Color(1, 1, 1, 1, 0.6, 0.6),
+		SadColor = Color(1, 1, 1, 1, 0.0, 0.1, 0.8),
+		AfraidColor = Color(1, 1, 1, 1, 0.2, 0.2, 0.2),
+		StressColor = Color(1, 1, 1, 1, 0.2),
 	},
 }
 -- Globals end

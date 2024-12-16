@@ -1,21 +1,25 @@
 local path = "resources/scripts/"
+local players = "players/"
+local far = players .. "Faraway/"
+local dw = players .. "Dreamworld/"
 
 local scriptTable = {
 	"definitions",
 	"functions/piberFuncs",
 	"functions/functions",
 	"items/shinyknife",
-	"items/SelfHelpGuide",
+	"items/EmotionChart",
 	"items/CalmDown",
 	"items/Overcome",
-	"players/Omori",
-	"players/Sunny",
-	"players/AubreyHeadSpace",
+	dw .. "Omori",
+	dw .. "Aubrey",
+	far .. "Sunny",
+	far .. "Aubrey",
 	"misc/EmotionRender",
 	"misc/EmotionLogic",
 	"translations",
 }
 
-for k, v in pairs(scriptTable) do
+for _, v in ipairs(scriptTable) do
 	include(path .. v)
 end
