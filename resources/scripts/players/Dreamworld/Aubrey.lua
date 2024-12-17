@@ -246,5 +246,5 @@ function mod:OnMrEggplantKill(Eggplant)
         player:AddHearts(healChance[emotion].hearts)
     end
 end
-mod:AddCallback(Callbacks.KNIFE_KILL_ENEMY, mod.OnMrEggplantKill)`
+mod:AddCallback(Callbacks.KNIFE_KILL_ENEMY, mod.OnMrEggplantKill)
 
