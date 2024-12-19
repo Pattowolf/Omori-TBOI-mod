@@ -30,12 +30,7 @@ end
 --- @param entity Entity
 --- @return number
 function OmoriMod:GetAceleration(entity)
-	local normalizedVelocity = entity.Velocity:Normalized()
-	local NewVelValue = entity.Velocity * normalizedVelocity
-	
-	local acel = NewVelValue.X + NewVelValue.Y
-	
-	return OmoriMod:Round(acel, 2)
+	return OmoriMod:Round(entity.Velocity:Length(), 2)
 end
 
 ---@param x integer
@@ -371,6 +366,15 @@ function OmoriMod:ChangeEmotionEffect(player)
 	EmotionCostumeSprite:ReplaceSpritesheet(0, spriteRoot .. charFolderTarget .. EmotionSuffix .. ".png", true)
 end
 
+function OmoriMod:AAAAA()
+	local players = PlayerManager.GetPlayers()
+
+	for _, player in pairs(players) do
+		OmoriMod:ChangeEmotionEffect(player)
+	end	
+end
+OmoriMod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, OmoriMod.AAAAA)
+
 ---@param player EntityPlayer
 ---@param TearFlag TearFlags
 function OmoriMod:playerHasTearFlag(player, TearFlag)
@@ -428,7 +432,6 @@ function OmoriMod:SunnyChangeEmotionEffect(player)
 	sfx:Play(Sound, 1, 0, false, Pitch, 0)
 end
 
-
 local EmotionColor = {
 	["Neutral"] = misc.NeutralColor,
 	["Happy"] = misc.HappyColor,
@@ -451,6 +454,7 @@ function OmoriMod.SetEmotion(player, emotion)
 	if type(emotion) ~= "string" then return end
 	
 	playerData.PlayerEmotion = emotion
+
 	OmoriMod:ChangeEmotionEffect(player)
 	OmoriMod:SunnyChangeEmotionEffect(player)
 
@@ -461,7 +465,6 @@ function OmoriMod.SetEmotion(player, emotion)
 	player:SetColor(EmotionColor[emotion], 8, -1, true, true)
 end
 
----comment
 ---@param player EntityPlayer
 ---@return string
 function OmoriMod.GetEmotion(player)
@@ -476,7 +479,6 @@ LINE_SPRITE:SetFrame("Dead", 0)
 local MAX_POINTS = 32
 local ANGLE_SEPARATION = 360 / MAX_POINTS
 
----comment
 ---@param entity Entity
 ---@param AreaSize number
 function RenderAreaOfEffect(entity, AreaSize) -- Took from Melee lib and tweaked a little bit
@@ -495,7 +497,6 @@ function RenderAreaOfEffect(entity, AreaSize) -- Took from Melee lib and tweaked
     end
 end
 
----comment
 ---@param x number
 ---@return Vector
 function OmoriMod.MakeVector(x)
@@ -568,7 +569,6 @@ local emotionGlow = {
 	["StressedOut"] = "StressedOut",
 }
 
----comment
 ---@param player EntityPlayer
 ---@param effect EntityEffect
 function OmoriMod:ReplaceGlowSprite(player, effect)
@@ -586,13 +586,11 @@ end
 ---comment
 ---@param entity Entity
 function OmoriMod:GetPtrHashEntity(entity)
-	-- if entity then
-		for _, matchEntity in pairs(Isaac.FindByType(entity.Type, entity.Variant, entity.SubType, false, false)) do
-			if GetPtrHash(entity) == GetPtrHash(matchEntity) then
-				return matchEntity
-			end
+	for _, matchEntity in pairs(Isaac.FindByType(entity.Type, entity.Variant, entity.SubType, false, false)) do
+		if GetPtrHash(entity) == GetPtrHash(matchEntity) then
+			return matchEntity
 		end
-	-- end
+	end
 end
 
 ---comment

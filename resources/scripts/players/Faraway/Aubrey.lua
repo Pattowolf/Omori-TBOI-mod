@@ -50,8 +50,6 @@ function mod:AubreyHeadbuttTimer(player)
     if not OmoriMod:IsAubrey(player, true) then return end
     local playerData = OmoriMod:GetData(player)
 
-    
-
     if playerData.HeadButtTimer > 0 then
         playerData.HeadButtTimer = playerData.HeadButtTimer - 1 
     else

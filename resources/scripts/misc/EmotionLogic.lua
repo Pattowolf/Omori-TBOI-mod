@@ -25,11 +25,14 @@ function mod:EmotionDamageManager(player, damage, flags, source, cooldown)
 	if not SadIgnore and not AngerDouble then return end
 	
 	local CustomDamageTrigger = OmoriMod.randomNumber(1, 100, modrng)
-	local hasBirthright = player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)
+	local hasBirthright = OmoriMod:IsOmori(player, false) and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)
 	local hasBlindRage = player:HasTrinket(TrinketType.TRINKET_BLIND_RAGE)
 		
 	if SadIgnore then
 		local birthrightSadMult = hasBirthright and 1.25 or 1
+
+		print(birthrightSadMult)
+
 		SadIgnore = math.ceil(SadIgnore * birthrightSadMult)	
 		if CustomDamageTrigger <= SadIgnore then
 			local baseiFrames = hasBlindRage and 120 or 60
@@ -73,11 +76,16 @@ function mod:SetSadnessKnockback(tear)
 end
 mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, mod.SetSadnessKnockback)
 
+---comment
+---@param tear EntityTear
 function mod:OnShootHappyTear(tear)
 	OmoriMod.DoHappyTear(tear)
 end
 mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, mod.OnShootHappyTear)
 
+---comment
+---@param player EntityPlayer
+---@param flag CacheFlag
 function mod:OmoStats(player, flag)
 	local currentEmotion = OmoriMod.GetEmotion(player)
 	local hasBirthright = player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)
@@ -121,7 +129,6 @@ function mod:OmoStats(player, flag)
 					player.MaxFireDelay = OmoriMod.tearsUp(player.MaxFireDelay, tearsMult, true)
 				end	
 			end
-
 		elseif flag == CacheFlag.CACHE_SPEED then
 			local SpeedEmotion = tables.SpeedAlterEmotions[currentEmotion] 
 			

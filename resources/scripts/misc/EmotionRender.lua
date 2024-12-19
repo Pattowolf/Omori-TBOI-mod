@@ -74,6 +74,7 @@ function mod:ChangeEmotionLogic(player)
 end
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.ChangeEmotionLogic)
 
+---@param player EntityPlayer
 function mod:EmotionGlow(player)
 	local playerData = OmoriMod:GetData(player)
 	local emotionGlow = playerData.EmotionGlow

@@ -4,7 +4,7 @@ local enums = OmoriMod.Enums
 local enemyRadius = 80
 local costumes = enums.NullItemID
 local utils = enums.Utils
-
+local misc = enums.Misc
 local sfx = utils.SFX
 
 ---comment
@@ -26,28 +26,20 @@ function mod:SunnyInit(player)
 end
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, mod.SunnyInit)
 
-local AfraidColor = Color(1, 1, 1, 1, 0.2, 0.2, 0.2)
-local StressColor = Color(1, 1, 1, 1, 0.2)
-
-
 ---comment
 ---@param player EntityPlayer
 ---@return boolean
 function mod:AreEnemiesNearby(player)
     local nearEnemies = Isaac.FindInRadius(player.Position, enemyRadius, EntityPartition.ENEMY)
-
     local Bool = false
-
     for _, enemy in ipairs(nearEnemies) do
         if enemy:IsActiveEnemy() and enemy:IsVulnerableEnemy() then
             Bool = true
         end
     end
-
     return Bool
 end
 
----comment
 ---@param player EntityPlayer
 function mod:SunnyStressingOut(player)
     if not OmoriMod:IsOmori(player, true) then return end
@@ -68,14 +60,13 @@ function mod:SunnyStressingOut(player)
         playerData.StressCounter = 150
     end
     
-
     local emotions = {
         Afraid = "AfraidCounter",
         StressedOut = "StressCounter"
     }
 
     for emotion, counter in pairs(emotions) do
-        local color = (emotion == "Afraid" and AfraidColor) or StressColor
+        local color = (emotion == "Afraid" and misc.AfraidColor) or misc.StressColor
 
         if playerData[counter] == 1 then
             OmoriMod.SetEmotion(player, emotion)

@@ -19,14 +19,13 @@
 				- Happy: Increased Speed and luck, fired tears fill have a little deviation, tears will have a chance of being critical damage tears (x2 Omori's damage stat)
 				- Sad: Increased tears, reduced damage and speed, Omori will have a chance to ignore receiving damage
 				- Angry: Increased damage, reduced tears, Omori will have a chance to double receiving damage
+		Emotion chart: 
+			- A 4 charges active that upgrades current Omori's Emotion, changing emotion with emotion change key will reset emotion upgrade
 		Birthright (feel more):
 			- Emotions can be upgraded, each emotion stage has the same effect over Omori, but powered
 				- Happy > Ecstatic > Manic
 				- Sad > Depressed > Miserable
 				- Angry > Enraged > Furious
-		Self-Help Guide: 
-			- A 6 charges active that upgrades current Omori's Emotion, changing emotion with emotion change key will reset emotion upgrade
-
 --- SUNNY ---
 	Stats: 
 		Speed: 1.00
@@ -53,16 +52,33 @@
 			- Replace Calm Down with Overcome
 				- Restores Sunny's Emotion to Neutral
 				- Heals a full red heart
-				- Raises bow's damage multiplier to x5 (only works once after Overcome use)
-				
---- AUBREY (DW) --- (WORK IN PROGRESS, EXPECT HER IN v2.0.0)		
-		
-		- Aubrey will start with Pep Talk (3 charges active, it inflicts Happy and its stages)
-		- Aubrey won't receive any penalty from Happiness
-		- On receiving damage, Aubrey will have a change to counter with Mr. Plantegg
-		- Pressing any emotion change for Omori will activate her Headbutt
-			- Aubrey will receive a temporal speed upgrade
-			- Aubrey won't be able to shoot tears
-			- Colliding with an enemy will damage it (just need to think on a good formula)
-			- If enemy doesn't die, Aubrey will take damage
-			- If enemy dies, Aubrey won't receive damage (maybe she would also heal herself, idk)
+				- Raises bow's damage multiplier to x5 (only works once after Overcome use)		
+--- AUBREY (DW) --- (WORK IN PROGRESS, EXPECT HER IN v2.0.0)	
+	Stats: 	
+		Speed: 0.80
+		Tears: 2.05 (x0.8)
+		Damage: 4.55 (x1.3)
+		Range: 6.50
+		ShotSpeed: 1.00
+		Luck: 1.00
+
+	Description: Aubrey is meant to be a Tank, so she has high damage, low tears and speed, and 4 hearts, like Omori, she can inherit different emotions, but her mechanics will go arround Anger and some of her signature skills in OMORI:
+		- Headbutt: if Aubrey is moving, pressing one of the buttons that cycles Omori's emotion, will trigger her Headbutt	
+			- Aubrey will charge in the direction she was walkin
+			- Hitting an enemy will damage it
+			- Damage formula is (Aubrey's Damage * 2) * Aubrey's Speed stat (Min 1, )
+			- If enemy survives, Aubrey will receive damage
+			- If Aubrey Fails the Headbutt and collides with a wall or grid entity, she'll get Angry but won't receive any damage (Enraged if she was already Angry)
+		- Counter:
+			- If Aubrey receives contact damage from an enemy, she'll counter with Mr Eggplant:
+				- Mr Eggplant damage formula is Aubrey's Damage * 3
+				- Mr Eggplant will push enemies if they survive
+				- Receiving Damage has a chance to enrage Aubrey
+				- When killing an enemy with Mr Eggplant, Aubrey Has a chance to heal herself (1/2 heart), the angrier, the more chance of healing
+		- Emotions: Just like Omori, Aubrey can inherit Emotions, but they'll work different with her:
+			- Aubrey can only reach 2nd stage Emotions (Ecstatic, Enraged, Depressed)
+			- Aubrey won't receive tears down from Anger (she'll got Damage upgrade and double taken damage chance)
+			- Anger will increase damage of her Headbutt (Angry: x1.25, Enraged: x1.5)
+		- Birthright (Mash)
+			- Killing an enemy with Headbutt will always heal 1/2 heart
+			- Increased heal chance from killing with MrEggplant (chance x1.5)

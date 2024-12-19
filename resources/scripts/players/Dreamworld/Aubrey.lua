@@ -109,6 +109,10 @@ function mod:AubreyButthead(player)
     else
         player.Velocity = playerData.HeadButtDir
     end     
+
+    if player:GetDamageCooldown() == 0 then
+        playerData.TriggerMrEggplant = true
+    end
 end
 mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.AubreyButthead)
 
@@ -128,19 +132,21 @@ function mod:AubreyHittingButthead(player, collider)
     sfx:Play(sounds.SOUND_HEADBUTT_HIT)
     local DamageFormula = (player.Damage * 2) * math.max(player.MoveSpeed, 1) * HBParams[emotion].DamageMult
 
-    playerData.EmotionCounter = math.max(playerData.EmotionCounter - 5, 0)
-
-    collider:TakeDamage(DamageFormula, 0, EntityRef(player), 0)
-
     for _, entity in ipairs(Isaac.FindInRadius(player.Position, HeadButtAOE, EntityPartition.ENEMY)) do
-        entity:TakeDamage(DamageFormula * 0.8, 0, EntityRef(player), 0)
+        entity:TakeDamage(DamageFormula, 0, EntityRef(player), 0)
         collider.Velocity = (collider.Position - player.Position) * 1.5
+ 
+        if entity.HitPoints <= DamageFormula then
+            if player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
+                player:AddHearts(1)
+            end
+            player:SetMinDamageCooldown(20)
+        else
+            playerData.TriggerMrEggplant = false
+        end
     end
 
     mod:TriggerHBParams(player, false, false)
-
-    player:SetMinDamageCooldown(20)
-
     collider.Velocity = (collider.Position - player.Position)
 end
 mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, mod.AubreyHittingButthead)
@@ -157,38 +163,36 @@ function mod:NullHeadbuttDamage(entity, _, _, source)
     if not OmoriMod:IsAubrey(player, false) then return end
 
     local playerData = OmoriMod:GetData(player)
+    local emotion = OmoriMod.GetEmotion(player)
 
-    if playerData.HeadButt == true then
-        return false
-    else
-        local emotionChangeTrigger = OmoriMod.randomNumber(1, 100, rng)
-        local emotion = OmoriMod.GetEmotion(player)
-
-        if emotionChangeTrigger <= 20 then
-            OmoriMod.SetEmotion(player, HBParams[emotion].Emotion)
-            playerData.EmotionCounter = HBParams[emotion].EmotionCooldown
-        end
+    local emotionChangeTrigger = OmoriMod.randomNumber(1, 100, rng)
+        
+    if emotionChangeTrigger <= 20 then
+        OmoriMod.SetEmotion(player, HBParams[emotion].Emotion)
+        playerData.EmotionCounter = HBParams[emotion].EmotionCooldown
     end
 
     local ent = source.Entity
     local enemy = ent:IsActiveEnemy() and ent:IsVulnerableEnemy()
 
-    if ent and enemy then
-        if ent.Type == 0 then return end
+    if playerData.TriggerMrEggplant == true then
+        if ent and enemy then
+            if ent.Type == 0 then return end
 
-        local MrEggplant = OmoriMod:GiveKnife(player)
+            local MrEggplant = OmoriMod:GiveKnife(player)
 
-        if not MrEggplant then return end
+            if not MrEggplant then return end
 
-        local MrESprite = MrEggplant:GetSprite()
-        local MrEData = OmoriMod:GetData(MrEggplant)
+            local MrESprite = MrEggplant:GetSprite()
+            local MrEData = OmoriMod:GetData(MrEggplant)
 
-        local playerPos = player.Position
-        local entPos = ent.Position
+            local playerPos = player.Position
+            local entPos = ent.Position
 
-        MrEData.Aiming = (entPos - playerPos):GetAngleDegrees()
+            MrEData.Aiming = (entPos - playerPos):GetAngleDegrees()
 
-        MrESprite:Play("Swing")
+            MrESprite:Play("Swing")
+        end
     end
 end
 mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, mod.NullHeadbuttDamage)
@@ -223,15 +227,15 @@ end
 mod:AddCallback(Callbacks.PRE_KNIFE_UPDATE, mod.MrEggplantBehavior)
 
 local healChance = {
-    ["Neutral"] = {HealMaxRoll = 20, hearts = 2},
-    ["Angry"] = {HealMaxRoll = 15, hearts = 3},
-    ["Enraged"] = {HealMaxRoll = 15, hearts = 3},
+    ["Neutral"] = 20,
+    ["Angry"] = 25,
+    ["Enraged"] = 35,
 }
 
 ---comment
 ---@param Eggplant EntityEffect
 function mod:OnMrEggplantKill(Eggplant)
-    local player = Eggplant.SpawnerEntity:ToPlayer()
+    local player = Eggplant.SpawnerEntity:ToPlayer() ---@type EntityPlayer?
     
     if not player then return end 
 
@@ -239,11 +243,13 @@ function mod:OnMrEggplantKill(Eggplant)
 
     local emotion = OmoriMod.GetEmotion(player)
 
-    local healMaxChance = healChance[emotion].HealMaxRoll
+    local birthrightMult = player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) and 1.5 or 1
+
+    local healMaxChance = math.ceil(healChance[emotion] * birthrightMult)
     local healRoll = OmoriMod.randomNumber(1, 100, rng)
 
     if healRoll <= healMaxChance then
-        player:AddHearts(healChance[emotion].hearts)
+        player:AddHearts(2)
     end
 end
 mod:AddCallback(Callbacks.KNIFE_KILL_ENEMY, mod.OnMrEggplantKill)

@@ -106,3 +106,7 @@ Ver 1.4.0 (06/27/2024)
 	- Rewrite of lots of mod mechanics, like some of shiny knife behavior 
 	- A custom shiny knife interaction with Ludovico
 
+
+Ver 2.0 (12/25/2024)
+- Additions:
+	- Added Aubrey!
