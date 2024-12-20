@@ -60,3 +60,16 @@ function mod:OmoUpdate(player)
 	end
 end
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.OmoUpdate)
+
+---comment
+---@param player EntityPlayer
+---@param flags CacheFlag
+function mod:OmoriStats(player, flags)
+	if not OmoriMod:IsOmori(player, false) then return end
+	if flags == CacheFlag.CACHE_DAMAGE then
+		player.Damage = player.Damage * 1.1
+	elseif flags == CacheFlag.CACHE_SPEED then
+		player.MoveSpeed = player.MoveSpeed + 0.1
+	end
+end
+mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.OmoriStats)

@@ -154,8 +154,9 @@ mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, mod.AubreyHittingButthead)
 ---comment
 ---@param entity Entity
 ---@param source EntityRef
+---@param flags DamageFlag
 ---@return boolean?
-function mod:NullHeadbuttDamage(entity, _, _, source)
+function mod:NullHeadbuttDamage(entity, _, flags, source)
     local player = entity:ToPlayer()    
 
     if not player then return end
@@ -164,21 +165,29 @@ function mod:NullHeadbuttDamage(entity, _, _, source)
 
     local playerData = OmoriMod:GetData(player)
     local emotion = OmoriMod.GetEmotion(player)
-
     local emotionChangeTrigger = OmoriMod.randomNumber(1, 100, rng)
-        
-    if emotionChangeTrigger <= 20 then
-        OmoriMod.SetEmotion(player, HBParams[emotion].Emotion)
-        playerData.EmotionCounter = HBParams[emotion].EmotionCooldown
+
+    local SpikeAcidFlags = DamageFlag.DAMAGE_ACID | DamageFlag.DAMAGE_SPIKES
+
+    if playerData.HeadButt then
+        print(flags | SpikeAcidFlags == SpikeAcidFlags)
     end
+
+    if source.Type == 0 then return end
 
     local ent = source.Entity
     local enemy = ent:IsActiveEnemy() and ent:IsVulnerableEnemy()
 
-    if playerData.TriggerMrEggplant == true then
-        if ent and enemy then
-            if ent.Type == 0 then return end
+    if not ent then return end
+    if ent.Type == 0 then return end
 
+    if enemy then
+        if emotionChangeTrigger <= 20 then
+            OmoriMod.SetEmotion(player, HBParams[emotion].Emotion)
+            playerData.EmotionCounter = HBParams[emotion].EmotionCooldown
+        end
+
+        if playerData.TriggerMrEggplant == true then
             local MrEggplant = OmoriMod:GiveKnife(player)
 
             if not MrEggplant then return end
@@ -192,6 +201,10 @@ function mod:NullHeadbuttDamage(entity, _, _, source)
             MrEData.Aiming = (entPos - playerPos):GetAngleDegrees()
 
             MrESprite:Play("Swing")
+        end
+    else
+        if playerData.HeadButt == true then
+            return false
         end
     end
 end
@@ -242,10 +255,15 @@ function mod:OnMrEggplantKill(Eggplant)
     if not OmoriMod:IsAubrey(player, false) then return end
 
     local emotion = OmoriMod.GetEmotion(player)
+    local maxChance = healChance[emotion]
+
+    if healChance[emotion] == nil then
+        maxChance = 20
+    end
 
     local birthrightMult = player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) and 1.5 or 1
 
-    local healMaxChance = math.ceil(healChance[emotion] * birthrightMult)
+    local healMaxChance = math.ceil(maxChance * birthrightMult)
     local healRoll = OmoriMod.randomNumber(1, 100, rng)
 
     if healRoll <= healMaxChance then

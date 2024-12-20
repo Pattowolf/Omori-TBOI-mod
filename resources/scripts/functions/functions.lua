@@ -123,13 +123,12 @@ function OmoriMod:TriggerHBParams(player, changeEmotion, SetEmotionCounter)
     local emotion = OmoriMod.GetEmotion(player)
     local playerData = OmoriMod:GetData(player) 
 
-
-    playerData.HeadButtCounter = HBParams[emotion].HeadButtCooldown
-    -- playerData.HeadButt = false
+    playerData.HeadButtCounter = HBParams[emotion].HeadButtCooldown or HBParams["Neutral"].HeadButtCooldown
+	
     playerData.FixedDir = nil
 
     if SetEmotionCounter == true then
-        playerData.EmotionCounter = HBParams[emotion].EmotionCooldown
+        playerData.EmotionCounter = HBParams[emotion].EmotionCooldown or HBParams["Neutral"].EmotionCooldown
     end
 
     if changeEmotion == true then
@@ -311,16 +310,39 @@ end
 
 ---@param player EntityPlayer
 ---@return boolean
-function OmoriMod:IsPlayerShooting(player)
-	local aim = OmoriMod:GetAimingDirection(player)
-	return aim.X ~= 0 or aim.Y ~= 0
+function OmoriMod:IsPlayerShooting(player, CheckInput)
+	CheckInput = CheckInput or false
+
+	if CheckInput then
+		return (
+			Input.IsActionPressed(ButtonAction.ACTION_SHOOTDOWN, player.ControllerIndex) or
+			Input.IsActionPressed(ButtonAction.ACTION_SHOOTLEFT, player.ControllerIndex) or
+			Input.IsActionPressed(ButtonAction.ACTION_SHOOTRIGHT, player.ControllerIndex) or
+			Input.IsActionPressed(ButtonAction.ACTION_SHOOTUP, player.ControllerIndex) 
+		)
+	else
+		local aim = OmoriMod:GetAimingDirection(player)
+		return aim.X ~= 0 or aim.Y ~= 0
+	end
 end
 
 ---@param player EntityPlayer
+---@param CheckInput boolean?
 ---@return boolean
-function OmoriMod:IsPlayerMoving(player)
-	local mov = player:GetMovementVector()
-	return mov.X ~= 0 or mov.Y ~= 0
+function OmoriMod:IsPlayerMoving(player, CheckInput)
+	CheckInput = CheckInput or false
+
+	if CheckInput then
+		return (
+			Input.IsActionPressed(ButtonAction.ACTION_DOWN, player.ControllerIndex) or
+			Input.IsActionPressed(ButtonAction.ACTION_UP, player.ControllerIndex) or
+			Input.IsActionPressed(ButtonAction.ACTION_LEFT, player.ControllerIndex) or
+			Input.IsActionPressed(ButtonAction.ACTION_RIGHT, player.ControllerIndex) 
+		)
+	else
+		local mov = player:GetMovementVector()
+		return mov.X ~= 0 or mov.Y ~= 0
+	end
 end
 
 local spriteRoot = "gfx/characters/costumes_"

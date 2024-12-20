@@ -35,7 +35,7 @@
 		nameimage="playername_omori.png" 
 		portrait="playerportrait_omori.png" 
 		bigportrait="playerportrait_omori.png" 
-		birthright="Feel more" 
+		birthright="Mash" 
 	/> 
 	<player 
 		name="Aubrey" 

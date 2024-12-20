@@ -220,6 +220,30 @@ OmoriMod.Enums = {
 				Emotion = "Angry",
 				DamageMult = 1,
 			},
+			["Happy"] = {
+				HeadButtCooldown = secsToFrames(1),
+				EmotionCooldown = secsToFrames(5),
+				Emotion = "Angry",
+				DamageMult = 1,
+			},
+			["Ecstatic"] = {
+				HeadButtCooldown = secsToFrames(1),
+				EmotionCooldown = secsToFrames(5),
+				Emotion = "Angry",
+				DamageMult = 1,
+			},
+			["Sad"] = {
+				HeadButtCooldown = secsToFrames(1),
+				EmotionCooldown = secsToFrames(5),
+				Emotion = "Angry",
+				DamageMult = 1,
+			},
+			["Depressed"] = {
+				HeadButtCooldown = secsToFrames(1),
+				EmotionCooldown = secsToFrames(5),
+				Emotion = "Angry",
+				DamageMult = 1,
+			},
 			["Angry"] = {
 				HeadButtCooldown = secsToFrames(1.5),
 				EmotionCooldown = secsToFrames(6),

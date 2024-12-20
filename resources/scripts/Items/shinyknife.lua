@@ -17,7 +17,7 @@ local debug = false
 local function getWeaponDMG(player)
     local playerData = OmoriMod:GetData(player)
 	local emotion = OmoriMod.GetEmotion(player)
-    local DamageMult = OmoriMod:IsOmori(player, true) and 2 or 3
+    local DamageMult = (OmoriMod:IsOmori(player, true) and 2) or (OmoriMod:IsOmori(player, false) and 2.5) or 3
 	
 	local angerValues = {
 		["Angry"] = 1.1,
@@ -102,15 +102,6 @@ function mod:OnKnifeRemoving()
 end
 mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.OnKnifeRemoving)
 
--- function mod:GivingKnife(player)
---     local playerData = OmoriMod:GetData(player)
-
-    -- OmoriMod:GiveKnife(player)
-	
-	
--- end
--- OmoriMod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.GivingKnife)
-
 function mod:KnifeSmoothRotation(player)
 	local playerData = OmoriMod:GetData(player)
 
@@ -120,10 +111,10 @@ function mod:KnifeSmoothRotation(player)
 	local knifesprite = knife:GetSprite()
 	local knifeData = OmoriMod:GetData(knife)
 		
-	local isShooting = OmoriMod:IsPlayerShooting(player)
+	local isShooting = OmoriMod:IsPlayerShooting(player, true)
 	local aimDegrees = player:GetAimDirection():GetAngleDegrees() 
 		
-	local isIdle = knifesprite:IsPlaying("Idle")	
+	local isIdle = knifesprite:IsPlaying("Idle")
 	local isMoving = OmoriMod:IsPlayerMoving(player)
 
 	local finishedSwing = knifesprite:IsFinished("Swing")
@@ -157,7 +148,6 @@ function mod:KnifeSmoothRotation(player)
 			knife.SpriteRotation = knifeData.Aiming
 		end
 	end
-	-- knife:FollowParent(player)
 end
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.KnifeSmoothRotation)
 
@@ -184,8 +174,6 @@ function mod:ShinyKnifeUpdate(knife)
 	local isIdle = knifesprite:IsPlaying("Idle")
 
 	local baseSwings = OmoriMod:IsOmori(player, true) and 2 or 0
-
-	-- knife:FollowParent(player)
 	
 	playerData.shinyKnifeCharge = playerData.shinyKnifeCharge or 0
 	playerData.Swings = playerData.Swings or 0
@@ -302,7 +290,6 @@ function mod:OnKnifeSwing(knife)
 		
 	for i = 1, 2 do
 		local capsule = knife:GetNullCapsule("KnifeHit" .. i)
-		local capsulePosition = capsule:GetPosition() 
 		
 		for _, entity in ipairs(Isaac.FindInCapsule(capsule)) do
 			if entity:ToPlayer() or entity:ToTear() then return end
