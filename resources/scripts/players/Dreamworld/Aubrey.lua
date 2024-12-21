@@ -9,6 +9,7 @@ local rng = utils.RNG
 local tables = enums.Tables
 local HBParams = tables.AubreyHeadButtParams
 local Callbacks = enums.Callbacks
+local misc = enums.Misc
 
 local HeadButtAOE = 60
 local NeutralColor = Color(1, 1, 1, 1, 0.2, 0.2, 0.2)
@@ -53,7 +54,6 @@ function mod:AubreyInputs(player)
 
     if OmoriMod:IsEmotionChangeTriggered(player) then 
         if not OmoriMod:IsPlayerMoving(player) then return end
-        
         mod:InitHeadbutt(player)
     end
 
@@ -89,7 +89,7 @@ function mod:AubreyButthead(player)
             
                 if counterName == "HeadButtCounter" and playerData[counterName] == 1 then
                     sfx:Play(sounds.SOUND_HEART_HEAL)
-                    player:SetColor(Color(0.7, 1, 0.2, 1), 5, -1, true, true)
+                    player:SetColor(misc.ReadyColor, 5, -1, true, true)
                 end
             
                 if counterName == "EmotionCounter" then
@@ -132,6 +132,10 @@ function mod:AubreyHittingButthead(player, collider)
     sfx:Play(sounds.SOUND_HEADBUTT_HIT)
     local DamageFormula = (player.Damage * 2) * math.max(player.MoveSpeed, 1) * HBParams[emotion].DamageMult
 
+    if collider:IsBoss() then
+        player:SetMinDamageCooldown(30)
+    end
+
     for _, entity in ipairs(Isaac.FindInRadius(player.Position, HeadButtAOE, EntityPartition.ENEMY)) do
         entity:TakeDamage(DamageFormula, 0, EntityRef(player), 0)
         collider.Velocity = (collider.Position - player.Position) * 1.5
@@ -151,6 +155,9 @@ function mod:AubreyHittingButthead(player, collider)
 end
 mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, mod.AubreyHittingButthead)
 
+local function isFlagInBitmask(flag1, flag2)
+    return flag1 & flag2 > 0
+end
 ---comment
 ---@param entity Entity
 ---@param source EntityRef
@@ -167,19 +174,22 @@ function mod:NullHeadbuttDamage(entity, _, flags, source)
     local emotion = OmoriMod.GetEmotion(player)
     local emotionChangeTrigger = OmoriMod.randomNumber(1, 100, rng)
 
-    local SpikeAcidFlags = DamageFlag.DAMAGE_ACID | DamageFlag.DAMAGE_SPIKES
+    local SpikeAcidFlags = DamageFlag.DAMAGE_ACID | DamageFlag.DAMAGE_SPIKES | DamageFlag.DAMAGE_CURSED_DOOR
 
     if playerData.HeadButt then
-        print(flags | SpikeAcidFlags == SpikeAcidFlags)
+        if isFlagInBitmask(flags, SpikeAcidFlags) then
+            return false
+        end 
     end
 
     if source.Type == 0 then return end
 
     local ent = source.Entity
-    local enemy = ent:IsActiveEnemy() and ent:IsVulnerableEnemy()
 
     if not ent then return end
     if ent.Type == 0 then return end
+
+    local enemy = ent:IsActiveEnemy() and ent:IsVulnerableEnemy()
 
     if enemy then
         if emotionChangeTrigger <= 20 then
@@ -189,9 +199,6 @@ function mod:NullHeadbuttDamage(entity, _, flags, source)
 
         if playerData.TriggerMrEggplant == true then
             local MrEggplant = OmoriMod:GiveKnife(player)
-
-            if not MrEggplant then return end
-
             local MrESprite = MrEggplant:GetSprite()
             local MrEData = OmoriMod:GetData(MrEggplant)
 
@@ -245,7 +252,6 @@ local healChance = {
     ["Enraged"] = 35,
 }
 
----comment
 ---@param Eggplant EntityEffect
 function mod:OnMrEggplantKill(Eggplant)
     local player = Eggplant.SpawnerEntity:ToPlayer() ---@type EntityPlayer?
@@ -271,4 +277,3 @@ function mod:OnMrEggplantKill(Eggplant)
     end
 end
 mod:AddCallback(Callbacks.KNIFE_KILL_ENEMY, mod.OnMrEggplantKill)
-

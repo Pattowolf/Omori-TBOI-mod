@@ -189,8 +189,16 @@ function mod:ShinyKnifeUpdate(knife)
 		if isIdle then
 			local knifeChargeFormula = (OmoriMod:IsOmori(player, true) and (((0.05 + (OmoriMod.TearsPerSecond(player) / 50)) / 2.5)) * 100) or (((0.025 + (OmoriMod.TearsPerSecond(player) / 100)) / 2.5)) * 100
 			
+			local newCharge = Isaac.RunCallback(OmoriModCallbacks.PRE_KNIFE_CHARGE, knife)
+
+			if newCharge then
+				knifeChargeFormula = newCharge
+			end
+
 			playerData.shinyKnifeCharge = math.min(playerData.shinyKnifeCharge + knifeChargeFormula, 100)
 			
+			if playerData.shinyKnifeCharge >= 99 then playerData.shinyKnifeCharge = 100 end
+
 			if playerData.Swings < 1 then
 				playerData.Swings = numTears + baseSwings
 			end
@@ -288,18 +296,28 @@ function mod:OnKnifeSwing(knife)
 	knifeData.HitBlacklist = knifeData.HitBlacklist or {}		
 	knife.SpriteRotation = knifeData.Aiming
 		
+	local player = knife.SpawnerEntity:ToPlayer()
+
 	for i = 1, 2 do
 		local capsule = knife:GetNullCapsule("KnifeHit" .. i)
-		
 		for _, entity in ipairs(Isaac.FindInCapsule(capsule)) do
 			if entity:ToPlayer() or entity:ToTear() then return end
 
 			if not knifeData.HitBlacklist[GetPtrHash(entity)] then
-				if entity:ToNPC() then
-					local ret = Isaac.RunCallback(OmoriModCallbacks.KNIFE_HIT_ENEMY, knife, entity)
-					entity:TakeDamage(ret.Damage, ret.Flags, EntityRef(knife), ret.CountDown)
+				knifeData.Damage = getWeaponDMG(player)
 
-					if entity.HitPoints <= ret.Damage then
+				if entity:ToNPC() then
+					local ret = Isaac.RunCallback(OmoriModCallbacks.KNIFE_HIT_ENEMY, knife, entity, knifeData.Damage)
+
+					local Damage = knifeData.Damage
+
+					if ret then
+						Damage = ret
+					end
+
+					entity:TakeDamage(Damage, 0, EntityRef(knife), 0)
+
+					if entity.HitPoints <= Damage then
 						Isaac.RunCallback(OmoriModCallbacks.KNIFE_KILL_ENEMY, knife, entity)
 					end
 				else
@@ -330,27 +348,25 @@ mod:AddCallback(OmoriModCallbacks.KNIFE_ENTITY_COLLISION, mod.KnifeColliding)
 ---comment
 ---@param knife EntityEffect
 ---@param entity Entity
----@return table 
-function mod:OnDamagingWithShinyKnife(knife, entity)
+---@param damage number
+---@return number
+function mod:OnDamagingWithShinyKnife(knife, entity, damage)
 	local player = knife.SpawnerEntity:ToPlayer()
 	local knifeData = OmoriMod:GetData(knife)
-	
----@diagnostic disable-next-line: missing-return-value
+
 	if not player then return end
+
+	if not (OmoriMod:IsAnyOmori(player) or player:HasCollectible(enums.CollectibleType.COLLECTIBLE_SHINY_KNIFE)) then return end
 
 	local emotion = OmoriMod.GetEmotion(player)
 	
-	local DamageParams = {
-		Damage = getWeaponDMG(player),
-		Flags = 0,
-		CountDown = 0,
-	}
-
 	local IsHappy = tables.HappinessTiers[emotion]
 	
+	local Damage = damage
+
 	if IsHappy then
 		if knifeData.IsCriticAtack then
-			DamageParams.Damage = DamageParams.Damage * 2
+			Damage = Damage * 2
 			sfx:Play(OmoriMod.Enums.SoundEffect.SOUND_RIGHT_IN_THE_HEART, 1, 0, false, 1, 0)
 		else
 			local failChance = tables.HappinessFailChance[emotion] 
@@ -358,13 +374,13 @@ function mod:OnDamagingWithShinyKnife(knife, entity)
 				local failTriggerChance = OmoriMod.randomNumber(1, 100, rng)
 				if failTriggerChance <= failChance then	
 					sfx:Play(OmoriMod.Enums.SoundEffect.SOUND_MISS_ATTACK, 1, 0, false, 1, 0)
-					DamageParams.Damage = 0
+					Damage = 0
 				end
 			end
 		end
 	end
 	
-	if DamageParams.Damage > 0 then 
+	if Damage > 0 then 
 		sfx:Play(SoundEffect.SOUND_MEATY_DEATHS, 1, 0, false, 1, 0)
 	end
 	
@@ -375,8 +391,8 @@ function mod:OnDamagingWithShinyKnife(knife, entity)
 	local resizer = (20 * sadKnockbackMult) * (player.ShotSpeed)
 	entity:AddEntityFlags(EntityFlag.FLAG_KNOCKED_BACK | EntityFlag.FLAG_APPLY_IMPACT_DAMAGE)
 	entity.Velocity = (entity.Position - player.Position):Resized(resizer) 
-	
-	return DamageParams
+
+	return Damage
 end
 mod:AddCallback(OmoriModCallbacks.KNIFE_HIT_ENEMY, mod.OnDamagingWithShinyKnife)
 

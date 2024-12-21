@@ -1,14 +1,15 @@
 <costumes anm2root="gfx/characters/">
 	<!-- Omori costumes -->
 	<costume anm2path="costume_omori.anm2" type="none" />
-	<!-- <costume anm2path="costume_omori_emotion.anm2" type="none" /> -->
 	
 	<!-- Sunny costumes -->
 	<costume anm2path="costume_omori2.anm2" type="none" />
-	<!-- <costume anm2path="costume_omori2_emotion.anm2" type="none" /> -->
 
 	<!-- Aubrey (HeadSpace) Costumes -->
 	<costume anm2path="costume_aubrey.anm2" type="none"/>
+
+	<!-- Aubrey (Real world) Costumes -->
+	<costume anm2path="costume_aubrey_2.anm2" type="none"/>
 
 	<!-- General emotion costume  -->
 	<costume anm2path="costume_emotion.anm2" type="none"/>

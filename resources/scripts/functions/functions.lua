@@ -99,6 +99,12 @@ function OmoriMod:SecsToFrames(secs)
 	return math.ceil(secs * 30)
 end
 
+---@param secs number
+---@return number
+function OmoriMod:SecsToKnifeCharge(secs)
+	return 3 / secs
+end
+
 ---comment
 ---@param player EntityPlayer
 ---@return boolean
@@ -123,6 +129,8 @@ function OmoriMod:TriggerHBParams(player, changeEmotion, SetEmotionCounter)
     local emotion = OmoriMod.GetEmotion(player)
     local playerData = OmoriMod:GetData(player) 
 
+	if playerData.HeadButt == false then return end
+
     playerData.HeadButtCounter = HBParams[emotion].HeadButtCooldown or HBParams["Neutral"].HeadButtCooldown
 	
     playerData.FixedDir = nil
@@ -139,7 +147,6 @@ function OmoriMod:TriggerHBParams(player, changeEmotion, SetEmotionCounter)
 	game:ShakeScreen(10)
 
 	playerData.HeadButt = false
-
 end
 
 ---@param player EntityPlayer
@@ -151,7 +158,7 @@ function OmoriMod:InitHeadbutt(player)
     sfx:Play(sounds.SOUND_HEADBUTT_START)
 
     playerData.HeadButt = true
-    playerData.FixedDir = player:GetMovementInput():Normalized()
+    playerData.FixedDir = OmoriMod:IsPlayerMoving(player, true) and player:GetMovementInput():Normalized() or Vector(0, 1)
     playerData.HeadButtDir = (playerData.FixedDir):Resized(12)
 end
 
@@ -392,6 +399,10 @@ function OmoriMod:AAAAA()
 	local players = PlayerManager.GetPlayers()
 
 	for _, player in pairs(players) do
+		local emotion = OmoriMod.GetEmotion(player)
+
+		if not emotion then return end
+
 		OmoriMod:ChangeEmotionEffect(player)
 	end	
 end

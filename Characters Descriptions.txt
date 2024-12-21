@@ -82,3 +82,33 @@
 		- Birthright (Mash)
 			- Killing an enemy with Headbutt will always heal 1/2 heart
 			- Increased heal chance from killing with MrEggplant (chance x1.5)
+--- AUBREY (Faraway) ---
+	Stats: 	
+		Speed: 1
+		Tears: 2.73 
+		Damage: 3.50 
+		Range: 6.50
+		ShotSpeed: 1.00
+		Luck: 1.00
+
+	Description: Just like Sunny, Aubrey has some problems to control her emotions, due the way how her friends left her behind after Mari's death, she got anger problems she still can't control, trying to land headbutts to relax her growing rage, also, she has her nailbat to smash some enemies with it:
+		- Headbutt: Like her Dreamworld counterpart, Faraway Aubrey has a Headbutt to attack, but instead of having control of it, she can't control it when she gets Angry
+			- Aubrey will charge in the direction she was walkin
+			- Hitting an enemy will damage it
+			- Damage formula is (Aubrey's Damage * 2) * Aubrey's Speed stat
+			- Landing succesfully a headbutt will relax Aubrey, returning her to Neutral emotion
+			- Headbutt will only trigger in an uncleared room
+		- Homerun: A chargeable attack of fixed 4 seconds, hits with her nailed bat
+			- Charges when firing
+			- Damage formula is: Aubrey's Damage * 2.5
+			- When hitting an enemy, it will be pushed very hard
+			- Small chance to instantly kill on hit (10%)
+		- Emotions: Faraway Aubrey can also inherit Emotions, but, again, they'll work different
+			- Aubrey can only reach 2nd stage Emotions (Ecstatic, Enraged, Depressed)
+			- Aubrey will start Neutral, but if enough time passes, she'll got Angry, then Enraged 
+			- When being in anger, she'll automatically charge to the direction she's walking (warning flashes will trigger before)
+			- Enragement will only happen in an uncleared room
+		- Birthright (It means everything)
+			- Aubrey will get Angry much faster
+			- Reduced Homerun charge time (4 > 2)
+			- Increased Headbutt damage mult: (2 > 3)

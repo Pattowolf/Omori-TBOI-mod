@@ -6,12 +6,10 @@ local game = utils.Game
 
 function mod:RenderEmotionTitle()
 	local p = Isaac.GetPlayer(0)
-	local emotionDisplayMenu = 1
 	local emotionLanguage = 1
 	local emotionLangSuffix = ""
 	
 	if OmoriMod.saveManager.GetDeadSeaScrollsSave() then
-		emotionDisplayMenu = OmoriMod.saveManager.GetDeadSeaScrollsSave().emotiondisplay
 		emotionLanguage = OmoriMod.saveManager.GetDeadSeaScrollsSave().emotionlanguage
 	end
 

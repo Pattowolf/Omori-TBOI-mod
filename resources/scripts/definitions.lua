@@ -64,6 +64,7 @@ OmoriMod.Enums = {
 		KNIFE_ENTITY_COLLISION = "OmoriModCallbacks_KNIFE_ENTITY_COLLISION", -- Fires on knife colliding with non-enemy entities
 		KNIFE_KILL_ENEMY = "OmoriModCallbacks_KNIFE_KILL_ENEMY", -- Fires on knife colliding with non-enemy entities
 		PRE_KNIFE_UPDATE = "OmoriModCallbacks_PRE_KNIFE_UPDATE", -- Fires every knife update, return false to cancel knife logic
+		PRE_KNIFE_CHARGE = "OmoriModCallbacks_PRE_KNIFE_CHARGE", -- Fires when knife is charging, return a number to change knife charge rythm 
 	},
 	Tables = {
 		NoDischargeEmotions = {
@@ -268,6 +269,7 @@ OmoriMod.Enums = {
 		SadColor = Color(1, 1, 1, 1, 0.0, 0.1, 0.8),
 		AfraidColor = Color(1, 1, 1, 1, 0.2, 0.2, 0.2),
 		StressColor = Color(1, 1, 1, 1, 0.2),
+		ReadyColor = Color(1, 1, 1, 1, 0.2, 0.6)
 	},
 }
 -- Globals end
