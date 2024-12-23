@@ -17,7 +17,7 @@ if Options.Language == "es" then
 		[OmoriMod.Enums.CollectibleType.COLLECTIBLE_CALM_DOWN] = {Name = "Calmarse", Description = "Respira profundo"},
 	}
 	
-	for key, value in pairs(items) do
+	for key, _ in pairs(items) do
 		itemConfig:GetCollectible(key).Name = items[key].Name
 		itemConfig:GetCollectible(key).Description = items[key].Description
 	end

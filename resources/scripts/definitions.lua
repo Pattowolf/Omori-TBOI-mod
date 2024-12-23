@@ -39,7 +39,8 @@ OmoriMod.Enums = {
 		SOUND_HEADBUTT_HIT = Isaac.GetSoundIdByName("HeadButt Hit"),
 		SOUND_HEADBUTT_KILL = Isaac.GetSoundIdByName("HeadButt Kill"),
 		SOUND_HEART_HEAL = Isaac.GetSoundIdByName("Heart Heal"),
-		SOUND_MR_EGGPLANT_HIT = Isaac.GetSoundIdByName("MrEggplant Attack"),
+		SOUND_AUBREY_SWING = Isaac.GetSoundIdByName("AubreySwing"),
+		SOUND_AUBREY_HIT = Isaac.GetSoundIdByName("AubreyHit"),
 	},
 	EffectVariant = {
 		EFFECT_EMOTION_GLOW = Isaac.GetEntityVariantByName("Emotion Glow"),
@@ -60,11 +61,13 @@ OmoriMod.Enums = {
 	Callbacks = {
 		KNIFE_SWING = "OmoriModCallbacks_KNIFE_SWING", -- Fires everytime Knife is swinging 
 		KNIFE_SWING_TRIGGER = "OmoriModCallbacks_KNIFE_SWING_TRIGGER", -- Fires on Swing's first frame
+		KNIFE_SWING_FINISH = "OmoriModCallbacks_KNIFE_SWING_FINISH", -- Fires on Swing's finishing
 		KNIFE_HIT_ENEMY = "OmoriModCallbacks_KNIFE_HIT_ENEMY",-- Fires on knife colliding with enemies
 		KNIFE_ENTITY_COLLISION = "OmoriModCallbacks_KNIFE_ENTITY_COLLISION", -- Fires on knife colliding with non-enemy entities
 		KNIFE_KILL_ENEMY = "OmoriModCallbacks_KNIFE_KILL_ENEMY", -- Fires on knife colliding with non-enemy entities
 		PRE_KNIFE_UPDATE = "OmoriModCallbacks_PRE_KNIFE_UPDATE", -- Fires every knife update, return false to cancel knife logic
 		PRE_KNIFE_CHARGE = "OmoriModCallbacks_PRE_KNIFE_CHARGE", -- Fires when knife is charging, return a number to change knife charge rythm 
+		POST_KNIFE_RENDER = "OmoriModCallbacks_POST_KNIFE_RENDER", -- Fires when knife is charging, return a number to change knife charge rythm 
 	},
 	Tables = {
 		NoDischargeEmotions = {

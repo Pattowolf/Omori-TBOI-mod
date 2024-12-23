@@ -67,6 +67,8 @@ function mod:AubreyInputs(player)
             player:SetMinDamageCooldown(40)
         end       
     end
+
+    player.Size = playerData.HeadButt == true and 20 or 10
 end
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.AubreyInputs)
 

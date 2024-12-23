@@ -32,20 +32,20 @@
 		skin="player_aubrey.png" 
 		hp="8"
 		skinColor="0" 
-		nameimage="playername_omori.png" 
-		portrait="playerportrait_omori.png" 
-		bigportrait="playerportrait_omori.png" 
+		nameimage="playername_aubrey.png" 
+		portrait="playerportrait_aubrey.png" 
+		bigportrait="playerportrait_aubrey.png" 
 		birthright="Mash" 
 	/> 
 	<player 
 		name="Aubrey" 
 		bSkinParent="Aubrey" 
 		skin="player_aubrey2.png" 
-		hp="6"
+		hp="8"
 		skinColor="-1" 
-		nameimage="playername_omori2.png" 
-		portrait="playerportrait_omori2.png" 
-		bigportrait="playerportrait_omori2.png" 
+		nameimage="playername_aubrey.png" 
+		portrait="playerportrait_aubrey2.png" 
+		bigportrait="playerportrait_aubrey2.png" 
 		birthright="It means everything" 
 		/> 
 </players>

@@ -111,7 +111,7 @@ function mod:KnifeSmoothRotation(player)
 	local knifesprite = knife:GetSprite()
 	local knifeData = OmoriMod:GetData(knife)
 		
-	local isShooting = OmoriMod:IsPlayerShooting(player, true)
+	local isShooting = OmoriMod:IsPlayerShooting(player)
 	local aimDegrees = player:GetAimDirection():GetAngleDegrees() 
 		
 	local isIdle = knifesprite:IsPlaying("Idle")
@@ -175,6 +175,8 @@ function mod:ShinyKnifeUpdate(knife)
 
 	local baseSwings = OmoriMod:IsOmori(player, true) and 2 or 0
 	
+	local frame = knifesprite:GetFrame()
+
 	playerData.shinyKnifeCharge = playerData.shinyKnifeCharge or 0
 	playerData.Swings = playerData.Swings or 0
 	
@@ -183,9 +185,9 @@ function mod:ShinyKnifeUpdate(knife)
 	if isShooting then
 		if player:HasCollectible(CollectibleType.COLLECTIBLE_SOY_MILK) and isIdle then
 			knifeData.HitBlacklist = {}
-			knifesprite:Play("Swing")
-			Isaac.RunCallback(OmoriModCallbacks.KNIFE_SWING_TRIGGER, knife)
+			OmoriMod:InitKnifeSwing(knife)	
 		end
+
 		if isIdle then
 			local knifeChargeFormula = (OmoriMod:IsOmori(player, true) and (((0.05 + (OmoriMod.TearsPerSecond(player) / 50)) / 2.5)) * 100) or (((0.025 + (OmoriMod.TearsPerSecond(player) / 100)) / 2.5)) * 100
 			
@@ -199,50 +201,72 @@ function mod:ShinyKnifeUpdate(knife)
 			
 			if playerData.shinyKnifeCharge >= 99 then playerData.shinyKnifeCharge = 100 end
 
-			if playerData.Swings < 1 then
+			-- if playerData.Swings < 1 then
 				playerData.Swings = numTears + baseSwings
-			end
+			-- end
 		
 			if HasMarked and playerData.shinyKnifeCharge == 100 and playerData.Swings > 0 and isIdle then
-				knifesprite:Play("Swing")
+				-- print("sdsdji\sd")
+				OmoriMod:InitKnifeSwing(knife)
 				playerData.Swings = playerData.Swings - 1
-				Isaac.RunCallback(OmoriModCallbacks.KNIFE_SWING_TRIGGER, knife)
 			end
 		end
 	else
 		if playerData.shinyKnifeCharge == 100 and playerData.Swings > 0 and isIdle then
-			knifesprite:Play("Swing")
+			OmoriMod:InitKnifeSwing(knife)
 			playerData.Swings = playerData.Swings - 1
-			Isaac.RunCallback(OmoriModCallbacks.KNIFE_SWING_TRIGGER, knife)
 		end 
 		
 		if playerData.shinyKnifeCharge ~= 100 then
 			playerData.shinyKnifeCharge = 0
 		end
 	end
-	
+
 	if knifesprite:IsPlaying("Swing") then
+		if frame == math.floor(knifesprite.PlaybackSpeed) then
+			Isaac.RunCallback(OmoriModCallbacks.KNIFE_SWING_TRIGGER, knife)
+		end
+
 		Isaac.RunCallback(OmoriModCallbacks.KNIFE_SWING, knife)
 	end
-		
-	if playerData.Swings > 1 then
-		knifesprite.PlaybackSpeed = 1.5
-	end
+	
+	
 
 	if knifesprite:IsFinished("Swing") then
 		knifeData.HitBlacklist = {}
 		knifesprite:Play("Idle")
 		
+		Isaac.RunCallback(OmoriModCallbacks.KNIFE_SWING_FINISH, knife)
+
 		if playerData.Swings == 0 and knifesprite:IsPlaying("Idle") then
 			playerData.shinyKnifeCharge = 0
-		elseif playerData.Swings > 0 and knifesprite:IsPlaying("Idle") and isShooting then
-			knifesprite:Play("Swing")
+		elseif playerData.Swings > 0 and knifesprite:IsPlaying("Idle") and isShooting and not knifeData.SwordSwing then
+			OmoriMod:InitKnifeSwing(knife)
 			playerData.Swings = playerData.Swings - 1
-			Isaac.RunCallback(OmoriModCallbacks.KNIFE_SWING_TRIGGER, knife)
 		end
 		knifeData.IsCriticAtack = false
 		knife.Color = Color.Default
+
+		if knifeData.SwordSwing then
+			knifeData.SwordSwing = false
+		end
+
+		OmoriMod:SetKnifeSizeMult(knife, 1)
 	end	
+
+	local swingSpeed = 1
+
+	if knifeData.SwordSwing then
+		swingSpeed = 2.5
+	else
+		if numTears > 1 then
+			swingSpeed = 1.5
+		else
+			swingSpeed = 1
+		end
+	end
+
+	knifesprite.PlaybackSpeed = swingSpeed
 end
 mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, mod.ShinyKnifeUpdate, OmoriMod.Enums.EffectVariant.EFFECT_SHINY_KNIFE)
 
@@ -255,6 +279,8 @@ function mod:OnKnifeSwingTrigger(knife)
 	
 	if not player then return end
 	
+	if not (OmoriMod:IsAnyOmori(player) or player:HasCollectible(enums.CollectibleType.COLLECTIBLE_SHINY_KNIFE)) then return end
+
 	local soundEffect = (OmoriMod:IsOmori(player, true) and sounds.SOUND_VIOLIN_BOW_SLASH) or sounds.SOUND_BLADE_SLASH
 
 	local randomPitch = soundEffect == sounds.SOUND_VIOLIN_BOW_SLASH and OmoriMod.randomfloat(0.9, 1.1, rng) or 1
@@ -304,28 +330,24 @@ function mod:OnKnifeSwing(knife)
 			if entity:ToPlayer() or entity:ToTear() then return end
 
 			if not knifeData.HitBlacklist[GetPtrHash(entity)] then
-				knifeData.Damage = getWeaponDMG(player)
-
 				if entity:ToNPC() then
+					knifeData.Damage = getWeaponDMG(player)
+
 					local ret = Isaac.RunCallback(OmoriModCallbacks.KNIFE_HIT_ENEMY, knife, entity, knifeData.Damage)
 
-					local Damage = knifeData.Damage
+					entity:TakeDamage(knifeData.Damage, 0, EntityRef(knife), 0)
 
-					if ret then
-						Damage = ret
-					end
-
-					entity:TakeDamage(Damage, 0, EntityRef(knife), 0)
-
-					if entity.HitPoints <= Damage then
+					if entity.HitPoints <= knifeData.Damage then
 						Isaac.RunCallback(OmoriModCallbacks.KNIFE_KILL_ENEMY, knife, entity)
 					end
 				else
 					Isaac.RunCallback(OmoriModCallbacks.KNIFE_ENTITY_COLLISION, knife, entity)	
 				end
+
+				
+
 				knifeData.HitBlacklist[GetPtrHash(entity)] = true
 			end
-			
 		end
 	end
 end
@@ -349,7 +371,7 @@ mod:AddCallback(OmoriModCallbacks.KNIFE_ENTITY_COLLISION, mod.KnifeColliding)
 ---@param knife EntityEffect
 ---@param entity Entity
 ---@param damage number
----@return number
+---@return number?
 function mod:OnDamagingWithShinyKnife(knife, entity, damage)
 	local player = knife.SpawnerEntity:ToPlayer()
 	local knifeData = OmoriMod:GetData(knife)
@@ -391,10 +413,13 @@ function mod:OnDamagingWithShinyKnife(knife, entity, damage)
 	local resizer = (20 * sadKnockbackMult) * (player.ShotSpeed)
 	entity:AddEntityFlags(EntityFlag.FLAG_KNOCKED_BACK | EntityFlag.FLAG_APPLY_IMPACT_DAMAGE)
 	entity.Velocity = (entity.Position - player.Position):Resized(resizer) 
-
-	return Damage
 end
 mod:AddCallback(OmoriModCallbacks.KNIFE_HIT_ENEMY, mod.OnDamagingWithShinyKnife)
+
+function mod:KnifeRenderMan(knife)
+	Isaac.RunCallback(OmoriModCallbacks.POST_KNIFE_RENDER, knife)
+end
+mod:AddCallback(ModCallbacks.MC_POST_EFFECT_RENDER, mod.KnifeRenderMan, enums.EffectVariant.EFFECT_SHINY_KNIFE)
 
 function mod:ShinyKnifeKill(knife, enemy)
 	local knifeData = OmoriMod:GetData(knife)

@@ -2,6 +2,7 @@ local path = "resources/scripts/"
 local players = "players/"
 local far = players .. "Faraway/"
 local dw = players .. "Dreamworld/"
+local knifeSyn = "misc/KnifeSynergies/"
 
 local scriptTable = {
 	"definitions",
@@ -18,6 +19,10 @@ local scriptTable = {
 	"misc/EmotionRender",
 	"misc/EmotionLogic",
 	"translations",
+
+	knifeSyn .. "Brimstone",
+	knifeSyn .. "SpiritSword",
+	knifeSyn .. "GodHead",
 }
 
 for _, v in ipairs(scriptTable) do

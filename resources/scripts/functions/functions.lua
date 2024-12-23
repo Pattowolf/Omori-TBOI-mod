@@ -146,6 +146,8 @@ function OmoriMod:TriggerHBParams(player, changeEmotion, SetEmotionCounter)
 
 	game:ShakeScreen(10)
 
+	player:SetMinDamageCooldown(60)
+
 	playerData.HeadButt = false
 end
 
@@ -160,7 +162,23 @@ function OmoriMod:InitHeadbutt(player)
     playerData.HeadButt = true
     playerData.FixedDir = OmoriMod:IsPlayerMoving(player, true) and player:GetMovementInput():Normalized() or Vector(0, 1)
     playerData.HeadButtDir = (playerData.FixedDir):Resized(12)
+
+	player:SetColor(misc.ReadyColor, 5, -1, true, true)
 end
+
+---comment
+---@param knife EntityEffect
+function OmoriMod:InitKnifeSwing(knife)
+	local sprite = knife:GetSprite() ---@type Sprite
+
+	if sprite:IsPlaying("Swing") then return end
+	sprite:Play("Swing")
+end	
+
+function OmoriMod:SetKnifeSizeMult(knife, sizeMult)
+	knife.SpriteScale = Vector.One * (sizeMult or 1)
+end
+
 
 ---comment
 ---@param firedelay number
@@ -331,6 +349,18 @@ function OmoriMod:IsPlayerShooting(player, CheckInput)
 		local aim = OmoriMod:GetAimingDirection(player)
 		return aim.X ~= 0 or aim.Y ~= 0
 	end
+end
+
+---comment
+---@param player EntityPlayer
+---@return boolean
+function OmoriMod:IsShootTriggered(player)
+	return (
+		Input.IsActionTriggered(ButtonAction.ACTION_SHOOTDOWN, player.ControllerIndex) or
+		Input.IsActionTriggered(ButtonAction.ACTION_SHOOTLEFT, player.ControllerIndex) or
+		Input.IsActionTriggered(ButtonAction.ACTION_SHOOTRIGHT, player.ControllerIndex) or
+		Input.IsActionTriggered(ButtonAction.ACTION_SHOOTUP, player.ControllerIndex) 
+	)
 end
 
 ---@param player EntityPlayer

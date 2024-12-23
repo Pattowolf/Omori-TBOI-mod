@@ -35,8 +35,11 @@
 	<sound name="Heart Heal">
 		<sample weight="1" path="BA_Heart_Heal.wav" />
 	</sound>
-	<sound name="MrEggplant Attack">
-		<sample weight="1" path="BA_basic_attack_aubrey.wav" />
+	<sound name="AubreySwing">
+		<sample weight="1" path="BA_basic_attack_aubrey_swing.wav" />
+	</sound>
+	<sound name="AubreyHit">
+		<sample weight="1" path="BA_basic_attack_aubrey_hit.wav" />
 	</sound>
 
 	

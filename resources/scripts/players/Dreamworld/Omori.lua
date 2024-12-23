@@ -33,6 +33,7 @@ mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_ADD_COSTUME, mod.PreAddOmoriCostume)
 local overrideWeapons = {
 	[WeaponType.WEAPON_KNIFE] = true,
 	[WeaponType.WEAPON_SPIRIT_SWORD] = true,
+	[WeaponType.WEAPON_BRIMSTONE] = true
 }
 
 function mod:OmoriUpdate(player)

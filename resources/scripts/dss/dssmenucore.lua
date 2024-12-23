@@ -2810,7 +2810,7 @@ function dssmenucore.init(DSSModName, MenuProvider)
                     entity.Type == EntityType.ENTITY_PROJECTILE
                     and entity:ToProjectile().ProjectileFlags & ProjectileFlags.CANT_HIT_PLAYER == 0
                     )
-                    or entity.Type == EntityType.ENTITY_BOMBDROP
+                    or entity.Type == EntityType.ENTITY_BOMB
                 then
                     roomHasDanger = true
                     break
