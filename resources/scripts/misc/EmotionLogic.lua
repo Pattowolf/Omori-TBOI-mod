@@ -112,7 +112,7 @@ function mod:OmoStats(player, flag)
 			local tearsMult = TearsEmotion.tearsMult
 			local birthrightMult = TearsEmotion.birthrightMult
 			
-			if OmoriMod:IsAnyAubrey(player) < 1 then return end
+			if OmoriMod:IsAnyAubrey(player) and tearsMult < 1 then return end
 
 			if isOmori then
 				local birthrightMultiplier = hasBirthright and birthrightMult or 1
