@@ -1,8 +1,8 @@
 --- OMORI ---
 	Stats: 
-		Speed: 1.00
+		Speed: 1.10
 		Tears: 2.73
-		Damage: 2.80 (x0.8)
+		Damage: 3.85 (x1.1)
 		Range: 6.50
 		ShotSpeed: 1.00
 		Luck: 0.00
@@ -114,7 +114,7 @@
 		- Birthright (It means everything)
 			- Aubrey will get Angry much faster
 			- Reduced Homerun charge time (2 > 1.5)
-			- Increased Headbutt damage mult: (2 > 3)
+			- Increased Headbutt damage mult: (3 > 4)
 --- KEL (DW, expect him in 3.0) ---
 
 ---

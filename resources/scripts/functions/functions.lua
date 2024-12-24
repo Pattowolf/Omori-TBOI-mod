@@ -151,6 +151,13 @@ function OmoriMod:TriggerHBParams(player, changeEmotion, SetEmotionCounter)
 	playerData.HeadButt = false
 end
 
+---comment
+---@param knife EntityEffect
+---@return EntityPlayer
+function OmoriMod:GetKnifeOwner(knife)
+	return knife.SpawnerEntity:ToPlayer() ---@type EntityPlayer
+end
+
 ---@param player EntityPlayer
 function OmoriMod:InitHeadbutt(player)
     local playerData = OmoriMod:GetData(player)
@@ -425,18 +432,23 @@ function OmoriMod:ChangeEmotionEffect(player)
 	EmotionCostumeSprite:ReplaceSpritesheet(0, spriteRoot .. charFolderTarget .. EmotionSuffix .. ".png", true)
 end
 
-function OmoriMod:AAAAA()
+function OmoriMod:EmotionEffectCall()
 	local players = PlayerManager.GetPlayers()
-
 	for _, player in pairs(players) do
 		local emotion = OmoriMod.GetEmotion(player)
-
 		if not emotion then return end
-
 		OmoriMod:ChangeEmotionEffect(player)
 	end	
 end
-OmoriMod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, OmoriMod.AAAAA)
+OmoriMod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, OmoriMod.EmotionEffectCall)
+
+---comment
+---@param flag1 integer
+---@param flag2 integer
+---@return boolean
+function OmoriMod:isFlagInBitmask(flag1, flag2)
+    return flag1 & flag2 > 0
+end
 
 ---@param player EntityPlayer
 ---@param TearFlag TearFlags

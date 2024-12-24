@@ -157,9 +157,6 @@ function mod:AubreyHittingButthead(player, collider)
 end
 mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, mod.AubreyHittingButthead)
 
-local function isFlagInBitmask(flag1, flag2)
-    return flag1 & flag2 > 0
-end
 ---comment
 ---@param entity Entity
 ---@param source EntityRef
@@ -179,7 +176,7 @@ function mod:NullHeadbuttDamage(entity, _, flags, source)
     local SpikeAcidFlags = DamageFlag.DAMAGE_ACID | DamageFlag.DAMAGE_SPIKES | DamageFlag.DAMAGE_CURSED_DOOR
 
     if playerData.HeadButt then
-        if isFlagInBitmask(flags, SpikeAcidFlags) then
+        if OmoriMod:isFlagInBitmask(flags, SpikeAcidFlags) then
             return false
         end 
     end
@@ -249,9 +246,9 @@ end
 mod:AddCallback(Callbacks.PRE_KNIFE_UPDATE, mod.MrEggplantBehavior)
 
 local healChance = {
-    ["Neutral"] = 20,
-    ["Angry"] = 25,
-    ["Enraged"] = 35,
+    ["Neutral"] = 30,
+    ["Angry"] = 35,
+    ["Enraged"] = 45,
 }
 
 ---@param Eggplant EntityEffect
@@ -266,7 +263,7 @@ function mod:OnMrEggplantKill(Eggplant)
     local maxChance = healChance[emotion]
 
     if healChance[emotion] == nil then
-        maxChance = 20
+        maxChance = 30
     end
 
     local birthrightMult = player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) and 1.5 or 1

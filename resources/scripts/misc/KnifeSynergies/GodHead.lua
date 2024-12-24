@@ -7,7 +7,7 @@ local function hasGodHead(player)
 end
 function mod:SpawnGodHeadAura(knife)
     local knifeData = OmoriMod:GetData(knife)
-    local player = knife.SpawnerEntity:ToPlayer()
+    local player = OmoriMod:GetKnifeOwner(knife)
 
     if not player then return end
 

@@ -4,7 +4,7 @@ local Callbacks = enums.Callbacks
 
 
 function mod:BrimstoneKnifeSynergy(knife)
-    local player = knife.SpawnerEntity:ToPlayer() ---@type EntityPlayer
+    local player = OmoriMod:GetKnifeOwner(knife)
 
     local playerData = OmoriMod:GetData(player)
 

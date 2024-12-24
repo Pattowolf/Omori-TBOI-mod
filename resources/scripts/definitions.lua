@@ -68,6 +68,7 @@ OmoriMod.Enums = {
 		PRE_KNIFE_UPDATE = "OmoriModCallbacks_PRE_KNIFE_UPDATE", -- Fires every knife update, return false to cancel knife logic
 		PRE_KNIFE_CHARGE = "OmoriModCallbacks_PRE_KNIFE_CHARGE", -- Fires when knife is charging, return a number to change knife charge rythm 
 		POST_KNIFE_RENDER = "OmoriModCallbacks_POST_KNIFE_RENDER", -- Fires when knife is charging, return a number to change knife charge rythm 
+		POST_KNIFE_UPDATE = "OmoriModCallbacks_POST_KNIFE_UPDATE", -- Fires when knife is charging, return a number to change knife charge rythm 
 	},
 	Tables = {
 		NoDischargeEmotions = {

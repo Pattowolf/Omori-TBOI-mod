@@ -12,8 +12,7 @@ end
 ---@param knife EntityEffect
 ---@return boolean?
 function mod:SwordSwing(knife)
-    local player = knife.SpawnerEntity:ToPlayer()
-    local knifeSprite = knife:GetSprite()
+    local player = OmoriMod:GetKnifeOwner(knife)
 
     local knifeData = OmoriMod:GetData(knife)
 
@@ -35,7 +34,7 @@ end
 mod:AddCallback(Callbacks.POST_KNIFE_RENDER, mod.SwordSwing)
 
 function mod:FullChargeAttack(knife, _, damage)
-    local player = knife.SpawnerEntity:ToPlayer()
+    local player = OmoriMod:GetKnifeOwner(knife)
     local knifeData = OmoriMod:GetData(knife)
 
     if not player then return end
@@ -51,7 +50,6 @@ mod:AddCallback(Callbacks.KNIFE_HIT_ENEMY, mod.FullChargeAttack)
 
 function mod:OnSwordFullSwinging(knife)
     local player = knife.SpawnerEntity:ToPlayer()
-    local knifeData = OmoriMod:GetData(knife)
 
     if not player then return end
     local playerData = OmoriMod:GetData(player)

@@ -1,14 +1,4 @@
--- Debe haber una mejor manera de hacer esto
-
 local itemConfig = Isaac.GetItemConfig()
-
--- local items = {
-	-- [OmoriMod.Enums.CollectibleType.COLLECTIBLE_SHINY_KNIFE] = 
-	-- {Name = "Cuchillo Brillante", Description = "Puedes ver tu reflejo en la hoja"},
-	-- [OmoriMod.Enums.CollectibleType.COLLECTIBLE_SELF_HELP_GUIDE] = {Name = "Guía de auto-ayuda", Description = "Un libro sobre batallas, escrito por HERO. Wow..."},
-	-- [OmoriMod.Enums.CollectibleType.COLLECTIBLE_CALM_DOWN] = {Name = "Calmarse", Description = "Respira profundo"},
-	-- [OmoriMod.Enums.CollectibleType.COLLECTIBLE_OVERCOME] = {Name = "Superar", Description = "Ármate de valor"},
--- }
 
 if Options.Language == "es" then
 	local items = {

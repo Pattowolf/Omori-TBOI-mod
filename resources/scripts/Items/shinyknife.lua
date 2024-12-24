@@ -117,8 +117,6 @@ function mod:KnifeSmoothRotation(player)
 	local isIdle = knifesprite:IsPlaying("Idle")
 	local isMoving = OmoriMod:IsPlayerMoving(player)
 
-	local finishedSwing = knifesprite:IsFinished("Swing")
-
 	knife.Position = player.Position
 
 	if isShooting then
@@ -131,21 +129,14 @@ function mod:KnifeSmoothRotation(player)
 
 	knife.DepthOffset = (renderBelowPlayer and -10) or 10
 
-	if finishedSwing == true then
-		if isShooting then
-			knife.SpriteRotation = knifeData.Aiming
-		end
+	if isShooting then
+		knife.SpriteRotation = knifeData.Aiming
 	else
-		if not isShooting then
-			if isIdle then
-				if isMoving then
-					knife.SpriteRotation = player:GetSmoothBodyRotation()
-				else
-					knife.SpriteRotation = tables.DirectionToDegrees[player:GetHeadDirection()]
-				end
+		if isIdle then
+			knife.SpriteRotation = player:GetSmoothBodyRotation()
+			if not isMoving then
+				knife.SpriteRotation = tables.DirectionToDegrees[player:GetHeadDirection()]
 			end
-		else
-			knife.SpriteRotation = knifeData.Aiming
 		end
 	end
 end
@@ -201,12 +192,9 @@ function mod:ShinyKnifeUpdate(knife)
 			
 			if playerData.shinyKnifeCharge >= 99 then playerData.shinyKnifeCharge = 100 end
 
-			-- if playerData.Swings < 1 then
-				playerData.Swings = numTears + baseSwings
-			-- end
-		
+			playerData.Swings = numTears + baseSwings		
+			
 			if HasMarked and playerData.shinyKnifeCharge == 100 and playerData.Swings > 0 and isIdle then
-				-- print("sdsdji\sd")
 				OmoriMod:InitKnifeSwing(knife)
 				playerData.Swings = playerData.Swings - 1
 			end
@@ -226,11 +214,8 @@ function mod:ShinyKnifeUpdate(knife)
 		if frame == math.floor(knifesprite.PlaybackSpeed) then
 			Isaac.RunCallback(OmoriModCallbacks.KNIFE_SWING_TRIGGER, knife)
 		end
-
 		Isaac.RunCallback(OmoriModCallbacks.KNIFE_SWING, knife)
 	end
-	
-	
 
 	if knifesprite:IsFinished("Swing") then
 		knifeData.HitBlacklist = {}
@@ -254,19 +239,11 @@ function mod:ShinyKnifeUpdate(knife)
 		OmoriMod:SetKnifeSizeMult(knife, 1)
 	end	
 
-	local swingSpeed = 1
-
-	if knifeData.SwordSwing then
-		swingSpeed = 2.5
-	else
-		if numTears > 1 then
-			swingSpeed = 1.5
-		else
-			swingSpeed = 1
-		end
-	end
+	local swingSpeed = knifeData.SwordSwing and 2.5 or ((numTears > 1 and 1.5) or 1)
 
 	knifesprite.PlaybackSpeed = swingSpeed
+
+	Isaac.RunCallback(OmoriModCallbacks.POST_KNIFE_UPDATE, knife)
 end
 mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, mod.ShinyKnifeUpdate, OmoriMod.Enums.EffectVariant.EFFECT_SHINY_KNIFE)
 
@@ -322,20 +299,26 @@ function mod:OnKnifeSwing(knife)
 	knifeData.HitBlacklist = knifeData.HitBlacklist or {}		
 	knife.SpriteRotation = knifeData.Aiming
 		
-	local player = knife.SpawnerEntity:ToPlayer()
+	local player = OmoriMod:GetKnifeOwner(knife)
 
 	for i = 1, 2 do
 		local capsule = knife:GetNullCapsule("KnifeHit" .. i)
 		for _, entity in ipairs(Isaac.FindInCapsule(capsule)) do
 			if entity:ToPlayer() or entity:ToTear() then return end
-
 			if not knifeData.HitBlacklist[GetPtrHash(entity)] then
-				if entity:ToNPC() then
+				local isEnemy = entity:IsVulnerableEnemy() and entity:IsActiveEnemy()
+
+				
+				if isEnemy then
 					knifeData.Damage = getWeaponDMG(player)
 
-					local ret = Isaac.RunCallback(OmoriModCallbacks.KNIFE_HIT_ENEMY, knife, entity, knifeData.Damage)
+					local hasKnife = player:HasCollectible(CollectibleType.COLLECTIBLE_MOMS_KNIFE)
+					local numberHits = hasKnife and 4 or 1
 
-					entity:TakeDamage(knifeData.Damage, 0, EntityRef(knife), 0)
+					for _ = 1, numberHits do
+						Isaac.RunCallback(OmoriModCallbacks.KNIFE_HIT_ENEMY, knife, entity, knifeData.Damage)
+						entity:TakeDamage(knifeData.Damage, 0, EntityRef(knife), 0)
+					end
 
 					if entity.HitPoints <= knifeData.Damage then
 						Isaac.RunCallback(OmoriModCallbacks.KNIFE_KILL_ENEMY, knife, entity)
@@ -343,9 +326,6 @@ function mod:OnKnifeSwing(knife)
 				else
 					Isaac.RunCallback(OmoriModCallbacks.KNIFE_ENTITY_COLLISION, knife, entity)	
 				end
-
-				
-
 				knifeData.HitBlacklist[GetPtrHash(entity)] = true
 			end
 		end

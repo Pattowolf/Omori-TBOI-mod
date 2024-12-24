@@ -122,7 +122,6 @@ local omoridir = {
                 choices = {
                     "english",
 					"spanish",
-                    -- "never",
                 },
                 setting = 1,
                 variable = "emotionLanguage",

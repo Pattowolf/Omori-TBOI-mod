@@ -23,6 +23,14 @@ local scriptTable = {
 	knifeSyn .. "Brimstone",
 	knifeSyn .. "SpiritSword",
 	knifeSyn .. "GodHead",
+	knifeSyn .. "TechX",
+	knifeSyn .. "HolyLight",
+	knifeSyn .. "Terra",
+	knifeSyn .. "Ludovico",
+	knifeSyn .. "JacobsLadder",
+	knifeSyn .. "MomsKnife",
+	knifeSyn .. "OcularRift",
+	knifeSyn .. "ChocolateMilk",
 }
 
 for _, v in ipairs(scriptTable) do
