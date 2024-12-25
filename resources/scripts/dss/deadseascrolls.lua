@@ -100,23 +100,6 @@ local omoridir = {
     settings = {
         title = "settings",
         buttons = {
-            {
-                str = "emotion display",
-                choices = {
-                    "always",
-					"pressing map btn",
-                    "never",
-                },
-                setting = 1,
-                variable = "emotionDisplay",
-                load = function()
-                    return OmoriMod.saveManager.GetDeadSeaScrollsSave().emotiondisplay or 1
-                end,
-                store = function(var)
-                    OmoriMod.saveManager.GetDeadSeaScrollsSave().emotiondisplay = var
-                end,
-                tooltip = GenerateTooltip("choose the emotion title display mode")
-			},
 			{
                 str = "emotion language",
                 choices = {

@@ -2,6 +2,23 @@ local mod = OmoriMod
 
 local enums = OmoriMod.Enums
 local costumes = enums.NullItemID
+local players = enums.PlayerType
+
+local modCharacters = {
+	[players.PLAYER_AUBREY] = costumes.ID_DW_AUBREY,
+	[players.PLAYER_AUBREY_B] = costumes.ID_RW_AUBREY,
+	[players.PLAYER_OMORI] = costumes.ID_OMORI,
+	[players.PLAYER_OMORI_B] = costumes.ID_SUNNY,
+}
+
+function mod:ResetCostumes(player)
+	local costume = OmoriMod.When(player:GetPlayerType(), modCharacters, nil)
+
+	if not costume then return end
+	player:AddNullCostume(costume)
+	player:AddNullCostume(costumes.ID_EMOTION)
+end
+mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.ResetCostumes)
 
 ---comment
 ---@param player EntityPlayer
@@ -48,6 +65,9 @@ function mod:OmoriUpdate(player)
 end
 mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.OmoriUpdate)
 
+
+local nullIOmoriItem = Isaac:GetItemConfig():GetNullItem(costumes.ID_EMOTION)
+
 --- comment
 --- @param player EntityPlayer
 function mod:OmoUpdate(player)
@@ -78,6 +98,10 @@ mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.OmoUpdate)
 ---@param flags CacheFlag
 function mod:OmoriStats(player, flags)
 	if not OmoriMod:IsOmori(player, false) then return end
+
+	player:AddNullCostume(costumes.ID_OMORI)
+	player:AddNullCostume(costumes.ID_EMOTION)
+
 	if flags == CacheFlag.CACHE_DAMAGE then
 		player.Damage = player.Damage * 1.1
 	elseif flags == CacheFlag.CACHE_SPEED then

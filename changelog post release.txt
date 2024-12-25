@@ -108,5 +108,27 @@ Ver 1.4.0 (06/27/2024)
 
 
 Ver 2.0 (12/25/2024)
+- Fixed:
+	- Fixed, remade and reworked some functions from functions.lua
+	- Fixed Omori having issues with some costumes (he won't have any costume)
+	- Fixed EmotionRender.lua trying to render something when player has no emotion
+	- Fixed all active items triggering emotion changes
 - Additions:
-	- Added Aubrey!
+	- Added Aubrey: Both Aubrey versions are available without unlock nothing, check the pastebin for more information
+	- Added some ModCallbacks to make things easier at coding
+	- Added Helper functions (well these 2 changes are most technicall and average user won't mind about it)
+- Changes:
+	- Shiny Knife code has been completely revamped, it should work better now
+	- Shiny Knife synergies completely remade from scratch
+	- Rebranded Self Help Guide to Emotion Chart (Self Help Guide now is unused)
+	- Major Rewrites to Calm Down, Overcome and Emotion Chart
+	- Rebalanced Omori:
+		- Increaded Damage: 2.80 (x0.8) > 3.85 (x1.5)
+		- Increased Speed: 1.00 > 1.10
+		- Decreased Knife damage multipler: 3 > 2.5
+	- Changes to emotions: 
+		- Sadness:
+			- Ignoring damage wont have a chance to reduce Active item charfe
+			- Sadness tears has increased knockback
+	- Major rewrite to EmotionLogic.lua
+	- Updated Save Manager 

@@ -21,11 +21,9 @@
 				- Angry: Increased damage, reduced tears, Omori will have a chance to double receiving damage
 		Emotion chart: 
 			- A 4 charges active that upgrades current Omori's Emotion, changing emotion with emotion change key will reset emotion upgrade
-		Birthright (feel more):
-			- Emotions can be upgraded, each emotion stage has the same effect over Omori, but powered
-				- Happy > Ecstatic > Manic
-				- Sad > Depressed > Miserable
-				- Angry > Enraged > Furious
+		Birthright (Feel more):
+			- Reduced Emotion chart charges (4 > 2)
+			- Emotions will be powered, with both upsides and downgrades
 --- SUNNY ---
 	Stats: 
 		Speed: 1.00

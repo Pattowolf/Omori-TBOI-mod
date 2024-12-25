@@ -39,17 +39,24 @@ function mod:GetWeaponCharge(player)
 
     if not OmoriMod:isFlagInBitmask(weaponMod, WeaponModifier.CHOCOLATE_MILK) then return end
 
+    playerData.ChoccyCharge = playerData.ChoccyCharge or 0
+
     local baseMaxCharge = 26.5
 
-    local chargeFactor = (2.7272727272727 / OmoriMod:GetTPS(player)) -- it's not exact but it works 
+    local chargeFactor = (2.7272727272727 / OmoriMod:GetTPS(player)) -- it's not exact but it works, i want to kill myself
 
     local charge = weapon:GetCharge()
 
     if charge ~= 0 then
         playerData.ChoccyCharge = OmoriMod:Round (charge / (chargeFactor * baseMaxCharge), 2)
+
+        if (player:HasCollectible(CollectibleType.COLLECTIBLE_SOY_MILK) or player:HasCollectible(CollectibleType.COLLECTIBLE_ALMOND_MILK)) or playerData.ChoccyCharge >= 0.95 then
+            playerData.ChoccyCharge = 1
+        end
     end
 
     playerData.shinyKnifeCharge = (playerData.ChoccyCharge * 100)
+
 
     print(playerData.shinyKnifeCharge)
 end
@@ -68,7 +75,10 @@ function mod:ChocolateDamage(knife, _, damage)
     local weaponMod = weapon:GetModifiers()
 
     if not OmoriMod:isFlagInBitmask(weaponMod, WeaponModifier.CHOCOLATE_MILK) then return end
+    local knifeData = OmoriMod:GetData(knife)
 
-    -- print(playerData.ChoccyCharge)
+    local mult = player:HasCollectible(CollectibleType.COLLECTIBLE_MOMS_KNIFE) and 1.1 or 4
+
+    knifeData.Damage = (damage * playerData.ChoccyCharge) * mult
 end
 mod:AddCallback(Callbacks.KNIFE_HIT_ENEMY, mod.ChocolateDamage)

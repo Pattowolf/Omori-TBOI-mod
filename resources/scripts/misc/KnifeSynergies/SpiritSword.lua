@@ -23,6 +23,8 @@ function mod:SwordSwing(knife)
 
     knifeData.SwordSwing = knifeData.SwordSwing or false
 
+    if not playerData.shinyKnifeCharge then return end
+
     if playerData.shinyKnifeCharge >= 10 then return end 
 
     if OmoriMod:IsShootTriggered(player) then
