@@ -482,6 +482,8 @@ function mod:KnifeCollidingNonEnemies(knife, entity)
 			OmoriMod:TriggerPush(entity, player, 30)
 		end,
 	}
+
+	if not NonEnemyEntities[entity.Type] then return end
 	OmoriMod.When(entity.Type, NonEnemyEntities, 2)()
 end
 mod:AddCallback(OmoriModCallbacks.KNIFE_ENTITY_COLLISION, mod.KnifeCollidingNonEnemies)

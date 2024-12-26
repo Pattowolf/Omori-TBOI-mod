@@ -76,7 +76,6 @@ function mod:ChocolateDamage(knife, _, damage)
 
     if not OmoriMod:isFlagInBitmask(weaponMod, WeaponModifier.CHOCOLATE_MILK) then return end
     local knifeData = OmoriMod:GetData(knife)
-
     local mult = player:HasCollectible(CollectibleType.COLLECTIBLE_MOMS_KNIFE) and 1.1 or 4
 
     knifeData.Damage = (damage * playerData.ChoccyCharge) * mult

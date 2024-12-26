@@ -3,59 +3,75 @@
     <name>OMORI (Character Mod)</name>
     <directory>omoricharactermod</directory>
     <id>3122837906</id>
-    <description>[h1] THIS MOD NOW REQUIRES [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3127536138] REPENTOGON[/url] TO WORK[/h1]
-	
-“You are here again, DREAMER. To what do we owe the occasion?”
+    <description>[h1] THIS MOD REQUIRES [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3127536138] REPENTOGON[/url] TO WORK, NOT AVAILABLE FOR REPENTANCE+ AT THE MOMENT[/h1]
+    
+[i]“Wow, it really is you. It’s been a while, but you haven’t changed a bit.”[/i]
 
-—-----------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------
 
-After a long hiatus, the OMORI Character Mod returns with a full release and a host of new features to fully merge a faraway dream with the unknown depths below!
+Everything's better with friends; even the exploration of hellish, metaphorically-rich dreamscapes. [h3]The OMORI Character Mod[/h3] certainly agrees and returns with a new release, adding an entirely new character and a ton of fixes as the hot-headed aubergine [i]SMASHES[/i] her way into [b]version 2.0![/b]
 
-From one dream world to the next, fight your way through the basement as the stoic, knife-welding OMORI!
+By your side with a cheer and a smile, [i][h3]HEADSPACE AUBREY[/h3][/i] comes out swinging with an aptly aggressive playstyle to complement her energy!
 
-Starting with his trusty SHINY KNIFE in hand, a chargeable melee weapon, OMORI is a well rounded yet powerful combatant who relies on changing EMOTIONS to adapt to his current run!
+To help dispatch foes, players will have to use their heads - and not for thinking. By pressing Shift, HEADSPACE AUBREY will launch herself in the last direction she was facing for a powerful [i][b]HEADBUTT![/b][/i] You’re unable to change directions or stop yourself once a headbutt is started, so be sure to choose your timing well.
+
+If HEADSPACE AUBREY misses a headbutt and rams into a wall, she’ll grow [i][b]ANGRY,[/b][/i] increasing her damage temporarily, but also increasing the damage she takes from enemies. She’ll calm down after a few seconds, but her headbutt is significantly more powerful while ANGRY, though it will take longer to charge. It’s up to you if the extra damage is worth the risk.
+
+As a back-up, HEADSPACE AUBREY also wields [i][b]MR. PLANTEGG,[/b][/i] her own melee weapon that is automatically used as a counter-attack whenever coming into contact with an enemy. This counter-attack has a chance to heal or anger her, but neither is guaranteed.
+
+-------------------------------------------------------------------------------------------
+
+Naturally, [i][h3]FARAWAY AUBREY[/h3][/i] makes a debut alongside her younger self, as the tainted counterpart! She doesn’t seem particularly excited to be here, and her weapon of choice is decidedly more deadly than a stuffed toy.
+
+[i][b]NAIL BAT[/b][/i] in hand, FARAWAY AUBREY is able to swing freely after charging, dealing heavy damage. There’s even a small chance for her to land a home run and instantly kill regular enemies with a single strike!
+
+Though, FARAWAY AUBREY isn’t the most in control of her emotions, having [i][b]anger issues…[/b][/i] While in an uncleared room, she will naturally become ANGRY without your control and begin launching into headbutts after a short time, potentially throwing you into the middle of danger. Landing a headbutt on an enemy will calm her down, and killing an enemy will heal her slightly, but it’s important to always be aware of what location you’re soon to be flung at!
+
+-------------------------------------------------------------------------------------------
+
+For those unaware of the character already in this mod…
+
+From one dream world to the next, fight your way through the basement as the stoic, knife-welding [i][h3]OMORI![/h3][/i]
+
+Starting with his trusty [i][b]SHINY KNIFE[/b][/i] in hand, a chargeable melee weapon, OMORI is a well rounded yet powerful combatant who relies on changing [i][b]EMOTIONS[/b][/i] using CTRL or SHIFT to adapt to his current run!
 
 As OMORI, you have the ability to cycle between three different EMOTIONS, each with their own advantages and disadvantages:
 
-HAPPY: Feeling lucky? While happy, you gain a sizable speed and luck upgrade, as well as the chance for tears to be critical hits, dealing double your current damage! Though, your shots will become inaccurate as a result…
+[i][b]HAPPY:[/b][/i] [i]Feeling lucky?[/i] While happy, you gain a sizable speed and luck upgrade, as well as the chance for tears to be critical hits, dealing double your current damage! Though, your shots will become inaccurate as a result…
 
-SAD: In a defensive pinch? While sad, you’ll find your speed and damage decreasing… but in return, you gain a large tears upgrade, as well as the chance to ignore any incoming damage!
+[i][b]SAD:[/b][/i] [i]In a defensive pinch?[/i] While sad, you’ll find your speed and damage decreasing… but in return, you gain a large tears upgrade, as well as the chance to ignore any incoming damage!
 
-ANGRY: Or perhaps, you’re looking to put down the hurt? While angry, you gain a damage multiplier to help put down the toughest foes! Consequently, however, you also gain a small tears decrease and the chance to take double damage when hit…
+[i][b]ANGRY:[/b][/i] [i]Or perhaps, you’re looking to put down the hurt?[/i] While angry, you gain a damage multiplier to help put down the toughest foes! Consequently, however, you also gain a small tears decrease and the chance to take double damage when hit…
 
-Though, that’s not the end of your EMOTIONS… Utilizing OMORI’s second starting item, SELF-HELP GUIDE, you can upgrade your currently selected emotion up to two times, increasing both the positive and negative effects of each for maximum adaptability!
+Though, that’s not the end of your EMOTIONS… Utilizing OMORI’s second starting item, [i][b]SELF-HELP GUIDE,[/b][/i] you can upgrade your currently selected emotion up to two times, increasing both the positive and negative effects of each for maximum adaptability!
 
-Lastly, OMORI has one more trick up his lack of sleeves… Upon taking fatal damage in a room for the first time, OMORI will not succumb, surviving with the last of your HP and giving you a last chance.
+Lastly, OMORI has one more trick up his lack of sleeves… Upon taking fatal damage in a room for the first time, [i]OMORI will not succumb,[/i] surviving with the last of your HP and giving you a last chance.
 
+-------------------------------------------------------------------------------------------
 
+[i][h3]SUNNY,[/h3][/i] the similarly stoic DREAMER makes his appearance as well, although his knife seems to have already been taken by an absent minded friend of his… He’ll have to rely on his [i][b]VIOLIN BOW[/b][/i] once more to dispel the demons of the depths…
 
-But that's not all...
+Though, getting up close and personal comes at a risk… For SUNNY has EMOTIONS as well, but of a less helpful and more involuntary variety. Staying close to enemies for too long will have SUNNY become [i][b]AFRAID,[/b][/i] leading to a large all stats down. Stay close for longer, and you’ll soon become [i][b]STRESSED OUT,[/b][/i] compounding the all stats down with an increase in all damage taken.
 
+SUNNY has a way to counteract these EMOTIONS through the use of his pocket active item, [i][b]CALM DOWN,[/b][/i] which will dispel AFRAID or STRESSED OUT, restoring your stats and even healing you in the process. Be sure to manage your charges wisely so as to not find yourself in an unfortunate situation…
 
+-------------------------------------------------------------------------------------------
 
-SUNNY, the similarly stoic DREAMER makes his appearance as well, although his knife seems to have already been taken by an absent minded friend of his… He’ll have to rely on his VIOLIN BOW once more to dispel the demons of the depths…
+[i]“Break a leg for me, alright?”[/i]
 
-Though, getting up close and personal comes at a risk… For SUNNY has EMOTIONS as well, but of a less helpful and more involuntary variety. Staying close to enemies for too long will have SUNNY become AFRAID, leading to a large all stats down. Stay close for longer, and you’ll soon become STRESSED OUT, compounding the all stats down with an increase in all damage taken.
+-------------------------------------------------------------------------------------------
 
-SUNNY has a way to counteract these EMOTIONS through the use of his pocket active item, CALM DOWN, which will dispel AFRAID or STRESSED OUT, restoring your stats and even healing you in the process. Be sure to manage your charges wisely so as to not find yourself in an unfortunate situation…
-
-—-----------------------------------------------------------------------------------------
-
-“This place has changed a great deal since you were last here. Will you be able to find your way out, or will you finally lose yourself?”
-
-
-—-----------------------------------------------------------------------------------------
-
-This mod wouldn’t have been possible without the help of Kotry and their programming knowledge, along with all of the support the previous version of the mod was shown! Thank you, all! If you enjoyed the mod, please send some support in Kotry's way!
+This mod wouldn’t have been possible without the help of Kotry and their programming knowledge, along with all of the support the previous version of the mod was shown! Thank you, all! If you enjoyed the mod, please send some support in Kotry's way, I can’t stress enough how much they helped to realize this project!
 
 Furthermore, aspects of this mod are subject to change, as we plan to continue updating this into the future! Be sure to give me your feedback and bug reports in the comments below. Thanks again! Have fun!
 
-For more information about how character works, check out our [url=https://pastebin.com/raw/69MQMT4V] pastebin[/url]
+For more precise information about how a character works, check out our [url=https://pastebin.com/raw/69MQMT4V] pastebin[/url]
 
 All characters represented belong to OMOCAT and the rest of the OMORI Team.
+Mirror download: https://github.com/AutisticGoat/Omori-TBOI-mod
 </description>
-    <version>1.12</version>
-    <visibility>Public</visibility>
+    <version>1.14</version>
+    <visibility>Private</visibility>
     <tag id="Lua"/>
     <tag id="Items"/>
     <tag id="Active Items"/>
