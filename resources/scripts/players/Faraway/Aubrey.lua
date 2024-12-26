@@ -32,7 +32,6 @@ mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, mod.InitFarawayAubrey)
 ---@param player EntityPlayer
 function mod:FarawayAubreyUpdate(player)
     if not OmoriMod:IsAubrey(player, true) then return end
-
     OmoriMod:GiveKnife(player)
 
     if player:CollidesWithGrid() then
@@ -72,6 +71,16 @@ local function DisplayData(entity)
     end
 end
 
+local function thereAreEnemies()
+    local bool = false
+    for _, entity in ipairs(Isaac.GetRoomEntities()) do
+        if entity:IsActiveEnemy() and entity:IsVulnerableEnemy() then
+            bool = true
+        end
+    end
+    return bool
+end
+
 ---comment
 ---@param player EntityPlayer
 function mod:FarawayAubreyEffectUpdate(player)
@@ -83,7 +92,7 @@ function mod:FarawayAubreyEffectUpdate(player)
 
     local emotionCounterMax = player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) and 5 or 6
 
-    if room:IsClear() then
+    if (room:IsClear() or room:HasCurseMist() or thereAreEnemies() == false) then
         playerData.EmotionCounter = OmoriMod:SecsToFrames(emotionCounterMax)
         playerData.HeadButtCooldown = OmoriMod:SecsToFrames(4)
         return 
@@ -115,12 +124,18 @@ function mod:FarawayAubreyEffectUpdate(player)
             sfx:Play(SoundEffect.SOUND_BEEP)
         end
     end
-
-    if playerData.HeadButt then
-        player.Velocity = playerData.FixedDir:Resized(12)
+    if room:GetType() ~= RoomType.ROOM_DUNGEON then
+        if playerData.HeadButt == true then
+            player.Velocity = playerData.HeadButtDir
+        end
+    else
+        if OmoriMod:GetAceleration(player) < 1 then
+            if playerData.HeadButt == true then
+                playerData.HeadButt = false
+            end
+        end
     end
-     
-    player.Size = playerData.HeadButt and 20 or 10
+    player.Size = (playerData.HeadButt == true and thereAreEnemies()) and 20 or 10
 end
 mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.FarawayAubreyEffectUpdate)
 
@@ -153,7 +168,7 @@ function mod:OnFarawayAubreyCollide(player, collider)
 
     for _, entity in ipairs(Isaac.FindInRadius(player.Position, 60, EntityPartition.ENEMY)) do
         entity:TakeDamage(DamageFormula, 0, EntityRef(player), 0)
-        collider.Velocity = (collider.Position - player.Position) * 1.5
+        OmoriMod:TriggerPush(collider, player, 20)
     end
 
     if collider.HitPoints <= DamageFormula then
@@ -163,7 +178,6 @@ function mod:OnFarawayAubreyCollide(player, collider)
     player:SetMinDamageCooldown(40)
 
     mod:TriggerHBParams(player)
-    collider.Velocity = (collider.Position - player.Position)
 
     OmoriMod.SetEmotion(player, "Neutral")
     playerData.EmotionCounter = OmoriMod:SecsToFrames(6)
@@ -182,14 +196,13 @@ function mod:NailbatHit(bat, entity)
     sfx:Play(sounds.SOUND_AUBREY_HIT, 1, 2, false, 1, 0)
 
     local homeRunChance = OmoriMod.randomNumber(1, 100, rng)
-
     local maxChance = entity:IsBoss() == true and 2 or 10
 
     if homeRunChance <= maxChance then
         return math.huge
     end
-
-    entity.Velocity = (entity.Position - player.Position):Resized(30)
+    
+    OmoriMod:TriggerPush(entity, player, 20)
 end
 mod:AddCallback(callbacks.KNIFE_HIT_ENEMY, mod.NailbatHit)
 
@@ -207,7 +220,6 @@ function mod:NullFarawayHeadbuttDamage(entity, _, flags, source)
     local player = entity:ToPlayer()    
 
     if not player then return end
-
     if not OmoriMod:IsAubrey(player, true) then return end
 
     local playerData = OmoriMod:GetData(player)

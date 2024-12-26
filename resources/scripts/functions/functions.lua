@@ -7,7 +7,6 @@ local tables = enums.Tables
 local players = enums.PlayerType
 local HBParams = tables.AubreyHeadButtParams
 local misc = enums.Misc
-
 local sounds = enums.SoundEffect
 
 function OmoriMod.GetScreenCenter()
@@ -15,7 +14,6 @@ function OmoriMod.GetScreenCenter()
 	local pos = room:WorldToScreenPosition(Vector(0,0)) - room:GetRenderScrollOffset() - game.ScreenShakeOffset	
 	local rx = pos.X + 60 * 26 / 40
 	local ry = pos.Y + 140 * (26 / 40)
-			
 	return Vector(rx * 2 + 13 * 26, ry * 2 + 7 * 26) / 2
 end 
 
@@ -48,7 +46,6 @@ function OmoriMod.randomNumber(x, y, rng)
     return (rng:RandomInt(y - x + 1)) + x
 end
 
---- comment
 --- @param x number
 --- @param y number
 --- @param rng RNG
@@ -92,7 +89,6 @@ function OmoriMod:IsAnyAubrey(player)
 	return OmoriMod:IsAubrey(player, true) or OmoriMod:IsAubrey(player, false)
 end
 
----comment
 ---@param secs number
 ---@return integer
 function OmoriMod:SecsToFrames(secs)
@@ -105,7 +101,6 @@ function OmoriMod:SecsToKnifeCharge(secs)
 	return 3 / secs
 end
 
----comment
 ---@param player EntityPlayer
 ---@return boolean
 function OmoriMod:IsEmotionChangeTriggered(player)
@@ -119,7 +114,6 @@ function OmoriMod:IsEmotionChangeTriggered(player)
 	return emotionChange
 end
 
-
 ---@param player EntityPlayer
 ---@param changeEmotion boolean?
 ---@param SetEmotionCounter boolean?
@@ -132,7 +126,6 @@ function OmoriMod:TriggerHBParams(player, changeEmotion, SetEmotionCounter)
 	if playerData.HeadButt == false then return end
 
     playerData.HeadButtCounter = HBParams[emotion].HeadButtCooldown or HBParams["Neutral"].HeadButtCooldown
-	
     playerData.FixedDir = nil
 
     if SetEmotionCounter == true then
@@ -145,30 +138,46 @@ function OmoriMod:TriggerHBParams(player, changeEmotion, SetEmotionCounter)
     end
 
 	game:ShakeScreen(10)
-
 	player:SetMinDamageCooldown(60)
-
 	playerData.HeadButt = false
 end
 
----comment
 ---@param knife EntityEffect
 ---@return EntityPlayer
 function OmoriMod:GetKnifeOwner(knife)
 	return knife.SpawnerEntity:ToPlayer() ---@type EntityPlayer
 end
 
+local function AreOppositeMovingDirectionPressed(player)
+	return (
+		Input.IsActionPressed(ButtonAction.ACTION_RIGHT, player.ControllerIndex) and 
+		Input.IsActionPressed(ButtonAction.ACTION_LEFT, player.ControllerIndex)
+	) or
+	(
+		Input.IsActionPressed(ButtonAction.ACTION_UP, player.ControllerIndex) and
+		Input.IsActionPressed(ButtonAction.ACTION_DOWN, player.ControllerIndex)
+	)
+end
+
 ---@param player EntityPlayer
 function OmoriMod:InitHeadbutt(player)
     local playerData = OmoriMod:GetData(player)
-
 	if playerData.HeadButt == true then return end
 
     sfx:Play(sounds.SOUND_HEADBUTT_START)
 
     playerData.HeadButt = true
-    playerData.FixedDir = OmoriMod:IsPlayerMoving(player, true) and player:GetMovementInput():Normalized() or Vector(0, 1)
+
+	playerData.FixedDir = (OmoriMod:IsPlayerMoving(player, true) and not AreOppositeMovingDirectionPressed(player)) and player:GetMovementInput():Normalized() or (OmoriMod:IsPlayerShooting(player) and player:GetShootingInput()) or tables.DirectionToVector[player:GetHeadDirection()]
+
+	if OmoriMod:IsPlayerMoving(player) and OmoriMod:IsPlayerShooting(player) then
+		playerData.FixedDir = player:GetShootingInput():Normalized()
+	end
     playerData.HeadButtDir = (playerData.FixedDir):Resized(12)
+
+	if game:GetRoom():GetType() == RoomType.ROOM_DUNGEON then
+		player.Velocity = playerData.FixedDir:Resized(30)
+	end
 
 	player:SetColor(misc.ReadyColor, 5, -1, true, true)
 end
@@ -177,7 +186,6 @@ end
 ---@param knife EntityEffect
 function OmoriMod:InitKnifeSwing(knife)
 	local sprite = knife:GetSprite() ---@type Sprite
-
 	if sprite:IsPlaying("Swing") then return end
 	sprite:Play("Swing")
 end	
@@ -185,7 +193,6 @@ end
 function OmoriMod:SetKnifeSizeMult(knife, sizeMult)
 	knife.SpriteScale = Vector.One * (sizeMult or 1)
 end
-
 
 ---comment
 ---@param firedelay number
@@ -225,7 +232,6 @@ function OmoriMod.DoHappyTear(tear)
 	if not player then return end
 
 	local doubleHitChance = OmoriMod.randomNumber(1, 100, modrng)
-	
 	local birthrightDamageMult = 1
 	local birthrightVelMult = 1
 	
@@ -234,8 +240,7 @@ function OmoriMod.DoHappyTear(tear)
 		birthrightVelMult = 1.15
 	end
 	
-	local emotion = OmoriMod.GetEmotion(player)
-	
+	local emotion = OmoriMod.GetEmotion(player)	
 	local isHappy = tables.HappinessTiers[emotion] 
 	
 	if not isHappy then return end
@@ -277,9 +282,7 @@ local KnifeSprites = {
 ---@param player EntityPlayer
 ---@param knife EntityEffect
 function OmoriMod:ReplaceKnifeSprite(player, knife)
-	local knifesprite = knife:GetSprite()
-	-- local knifeReplaceSprite = "ShinyKnife"
-	
+	local knifesprite = knife:GetSprite()	
 	local knifeReplaceSprite = KnifeSprites[player:GetPlayerType()] or "ShinyKnife"
 
 	if OmoriMod:IsOmori(player, false) then
@@ -307,7 +310,6 @@ end
 ---@return EntityEffect
 function OmoriMod:GiveKnife(player)
 	local playerData = OmoriMod:GetData(player)
-	-- if OmoriMod:IsKnifeUser(player) then
 		local knife = playerData.ShinyKnife
 		if not knife then
 			playerData.ShinyKnife = Isaac.Spawn(
@@ -321,8 +323,6 @@ function OmoriMod:GiveKnife(player)
 			OmoriMod:ReplaceKnifeSprite(player, playerData.ShinyKnife)
 			playerData.ShinyKnife.SpriteRotation = tables.DirectionToDegrees[player:GetHeadDirection()]
 		end
-    -- end
-
 	return playerData.ShinyKnife
 end
 
@@ -344,7 +344,6 @@ end
 ---@return boolean
 function OmoriMod:IsPlayerShooting(player, CheckInput)
 	CheckInput = CheckInput or false
-
 	if CheckInput then
 		return (
 			Input.IsActionPressed(ButtonAction.ACTION_SHOOTDOWN, player.ControllerIndex) or
@@ -358,7 +357,6 @@ function OmoriMod:IsPlayerShooting(player, CheckInput)
 	end
 end
 
----comment
 ---@param player EntityPlayer
 ---@return boolean
 function OmoriMod:IsShootTriggered(player)
@@ -375,7 +373,6 @@ end
 ---@return boolean
 function OmoriMod:IsPlayerMoving(player, CheckInput)
 	CheckInput = CheckInput or false
-
 	if CheckInput then
 		return (
 			Input.IsActionPressed(ButtonAction.ACTION_DOWN, player.ControllerIndex) or
@@ -414,22 +411,18 @@ function OmoriMod:ChangeEmotionEffect(player)
 	if OmoriMod:IsOmori(player, true) then return end
 
 	local emotion = OmoriMod.GetEmotion(player)
-
 	local charFolderTarget = characterFolder[player:GetPlayerType()]
-
 	local emotionTable = OmoriEmotionChange[emotion]
-
 	local EmotionSuffix = emotionTable.suffix
 	local EmotionSound = emotionTable.sound	
-			
 	local EmotionCostume = player:GetCostumeSpriteDescs()[3]
-
-	sfx:Play(EmotionSound, 2, 0, false, 1, 0)
 	if not EmotionCostume then return end
-
 	local EmotionCostumeSprite = EmotionCostume:GetSprite()
 		
 	EmotionCostumeSprite:ReplaceSpritesheet(0, spriteRoot .. charFolderTarget .. EmotionSuffix .. ".png", true)
+
+	if player.FrameCount == 0 then return end
+	sfx:Play(EmotionSound, 2, 0, false, 1, 0)
 end
 
 function OmoriMod:EmotionEffectCall()
@@ -477,16 +470,12 @@ function OmoriMod:SunnyChangeEmotionEffect(player)
 	if not OmoriMod:IsOmori(player, true) then return end
 	local emotion = OmoriMod.GetEmotion(player)
 	local emotionTable = SunnyEmotionChange[emotion]
-
 	local playerSprite = player:GetSprite()
-
 	local Suffix = emotionTable.suffix
 	local Sound = emotionTable.sound
 	local Pitch = emotionTable.pitch
-
 	local EmotionSpriteDesc = player:GetCostumeSpriteDescs()[3]
 	local EmotionSprite = EmotionSpriteDesc:GetSprite()
-
 	local color = emotion ~= "Neutral" and "_bw" or ""
 	
 	for i = 1, 2 do
@@ -504,6 +493,7 @@ function OmoriMod:SunnyChangeEmotionEffect(player)
 		playerSprite:ReplaceSpritesheet(i, "gfx/characters/players/player_omori2" .. color .. ".png", true)
 	end
 
+	if player.FrameCount == 0 then return end
 	sfx:Play(Sound, 1, 0, false, Pitch, 0)
 end
 
@@ -518,8 +508,8 @@ local EmotionColor = {
 	["Angry"] = misc.AngryColor,
 	["Enraged"] = misc.AngryColor,
 	["Furious"] = misc.AngryColor,
-	["Afraid"] = misc.NeutralColorColor,
-	["StressedOut"] = misc.NeutralColorColor,
+	["Afraid"] = misc.NeutralColor,
+	["StressedOut"] = misc.StressColor,
 }
 --- comment
 --- @param player EntityPlayer
@@ -597,9 +587,6 @@ function OmoriMod:ResetSunnyEmotion(player, healAmount, focus)
 	player:AddHearts(healAmount)
 	
 	player:SetColor(ResetColor, 8, -1, true, true)
-
-	OmoriMod:SunnyChangeEmotionEffect(player)
-
 	playerData.IncreasedBowDamage = focus
 end
 ---comment
@@ -644,12 +631,20 @@ local emotionGlow = {
 	["StressedOut"] = "StressedOut",
 }
 
+---comment
+---@param pushed Entity
+---@param pusher Entity
+---@param strength number
+function OmoriMod:TriggerPush(pushed, pusher, strength)
+	pushed.Velocity = (pushed.Position - pusher.Position):Resized(strength)
+end
+
+
 ---@param player EntityPlayer
 ---@param effect EntityEffect
 function OmoriMod:ReplaceGlowSprite(player, effect)
 	local glowSprite = effect:GetSprite()
 	local emotion = OmoriMod.GetEmotion(player)
-	
 	local Glow = emotionGlow[emotion] 
 	glowSprite:ReplaceSpritesheet(0, GlowRoot .. Glow .. ".png", true)
 end
@@ -674,6 +669,5 @@ end
 function OmoriMod:GetData(entity)
 	local data = entity:GetData()
 	data.OmoriMod = data.OmoriMod or {}
-	
 	return data.OmoriMod
 end

@@ -5,7 +5,6 @@ local rng = utils.RNG
 local Callbacks = enums.Callbacks
 
 function mod:TearFlagsHit(knife, entity)
-
     local player = OmoriMod:GetKnifeOwner(knife)
     local tearEffects = {
         [TearFlags.TEAR_SLOW] = function()

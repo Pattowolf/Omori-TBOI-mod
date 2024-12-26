@@ -7,9 +7,7 @@ local rng = utils.RNG
 local game = utils.Game
 local OmoriModCallbacks = enums.Callbacks
 local misc = enums.Misc
-
 local sounds = enums.SoundEffect
-
 local debug = false
 
 ---@param player EntityPlayer
@@ -36,7 +34,6 @@ local function getWeaponDMG(player)
     if OmoriMod:IsOmori(player, true) then
 		local isFocus = playerData.IncreasedBowDamage
 		local FocusBonus = isFocus == true and 1 or 0
-		
 		local SunnyMult = SunnyEmotionsMult[emotion]
 
 		DamageMult = DamageMult + SunnyMult + FocusBonus
@@ -110,10 +107,8 @@ function mod:KnifeSmoothRotation(player)
 	local knife = playerData.ShinyKnife
 	local knifesprite = knife:GetSprite()
 	local knifeData = OmoriMod:GetData(knife)
-		
 	local isShooting = OmoriMod:IsPlayerShooting(player)
 	local aimDegrees = player:GetAimDirection():GetAngleDegrees() 
-		
 	local isIdle = knifesprite:IsPlaying("Idle")
 	local isMoving = OmoriMod:IsPlayerMoving(player)
 
@@ -124,7 +119,6 @@ function mod:KnifeSmoothRotation(player)
 	end
 
 	local headDir = player:GetHeadDirection()
-
 	local renderBelowPlayer = headDir == 0 or headDir == 1
 
 	knife.DepthOffset = (renderBelowPlayer and -10) or 10
@@ -151,28 +145,22 @@ function mod:ShinyKnifeUpdate(knife)
 	local Ret = Isaac.RunCallback(OmoriModCallbacks.PRE_KNIFE_UPDATE, knife)
 
 	if Ret == false then return end
-
     local knifeData = OmoriMod:GetData(knife)
 
 	if not player then return end
-
     local playerData = OmoriMod:GetData(player)
 	
 	local isShooting = OmoriMod:IsPlayerShooting(player)	
 	local multiShot = player:GetMultiShotParams(WeaponType.WEAPON_TEARS)
 	local numTears = multiShot:GetNumTears()
-		
 	local isIdle = knifesprite:IsPlaying("Idle")
-
 	local baseSwings = OmoriMod:IsOmori(player, true) and 2 or 0
-	
 	local frame = knifesprite:GetFrame()
+	local HasMarked = player:GetMarkedTarget() ~= nil
 
 	playerData.shinyKnifeCharge = playerData.shinyKnifeCharge or 0
 	playerData.Swings = playerData.Swings or 0
-	
-	local HasMarked = player:GetMarkedTarget() ~= nil
-		
+			
 	if isShooting then
 		if player:HasCollectible(CollectibleType.COLLECTIBLE_SOY_MILK) and isIdle then
 			knifeData.HitBlacklist = {}
@@ -307,21 +295,21 @@ function mod:OnKnifeSwing(knife)
 		
 	local player = OmoriMod:GetKnifeOwner(knife)
 
+	OmoriMod:SetKnifeSizeMult(knife, math.max((player.TearRange / 40) / 6.5, 1))
+
 	for i = 1, 2 do
 		local capsule = knife:GetNullCapsule("KnifeHit" .. i)
 		for _, entity in ipairs(Isaac.FindInCapsule(capsule)) do
 			if entity:ToPlayer() or entity:ToTear() then return end
 			if not knifeData.HitBlacklist[GetPtrHash(entity)] then
 				local isEnemy = entity:IsVulnerableEnemy() and entity:IsActiveEnemy()
-
-				
 				if isEnemy then
 					knifeData.Damage = getWeaponDMG(player)
 
 					local hasKnife = player:HasCollectible(CollectibleType.COLLECTIBLE_MOMS_KNIFE)
 					local numberHits = hasKnife and 4 or 1
 
-					for _ = 1, numberHits do
+					for _ =1, numberHits do
 						Isaac.RunCallback(OmoriModCallbacks.KNIFE_HIT_ENEMY, knife, entity, knifeData.Damage)
 						entity:TakeDamage(knifeData.Damage, 0, EntityRef(knife), 0)
 					end
@@ -342,20 +330,6 @@ mod:AddCallback(OmoriModCallbacks.KNIFE_SWING, mod.OnKnifeSwing)
 ---comment
 ---@param knife EntityEffect
 ---@param entity Entity
-function mod:KnifeColliding(knife, entity)
-	local familiar = entity:ToFamiliar()
-	
-	if not familiar then return end
-	
-	if familiar.Variant ~= FamiliarVariant.CUBE_BABY then return end
-	
-	entity.Velocity = (entity.Position - knife.Position):Resized(20) 
-end
-mod:AddCallback(OmoriModCallbacks.KNIFE_ENTITY_COLLISION, mod.KnifeColliding)
-
----comment
----@param knife EntityEffect
----@param entity Entity
 ---@param damage number
 ---@return number?
 function mod:OnDamagingWithShinyKnife(knife, entity, damage)
@@ -367,7 +341,6 @@ function mod:OnDamagingWithShinyKnife(knife, entity, damage)
 	if not (OmoriMod:IsAnyOmori(player) or player:HasCollectible(enums.CollectibleType.COLLECTIBLE_SHINY_KNIFE)) then return end
 
 	local emotion = OmoriMod.GetEmotion(player)
-	
 	local IsHappy = tables.HappinessTiers[emotion]
 	
 	local Damage = damage
@@ -410,7 +383,6 @@ mod:AddCallback(ModCallbacks.MC_POST_EFFECT_RENDER, mod.KnifeRenderMan, enums.Ef
 function mod:ShinyKnifeKill(knife, enemy)
 	local knifeData = OmoriMod:GetData(knife)
 	local player = knife.SpawnerEntity:ToPlayer()
-
 	local emotion = OmoriMod.GetEmotion(player)
 	if not knifeData.IsCriticAtack then return end
 
@@ -452,17 +424,16 @@ mod:AddCallback(OmoriModCallbacks.KNIFE_KILL_ENEMY, mod.ShinyKnifeKill)
 ---@param entity Entity
 function mod:KnifeCollidingNonEnemies(knife, entity)
 	local player = OmoriMod:GetKnifeOwner(knife)
-	local knifeData = OmoriMod:GetData(knife)
 	local playerData = OmoriMod:GetData(player)
 
 	local NonEnemyEntities = {
 		[EntityType.ENTITY_FAMILIAR] = function()
 			if entity.Variant == FamiliarVariant.PUNCHING_BAG or entity.Variant == FamiliarVariant.CUBE_BABY then
-				entity.Velocity = (entity.Position - player.Position):Resized(30)
+				OmoriMod:TriggerPush(entity, player, 30)
 			end
 		end,
 		[EntityType.ENTITY_BOMB] = function()
-			entity.Velocity = (entity.Position - player.Position):Resized(30)
+			OmoriMod:TriggerPush(entity, player, 30)
 		end,
 		[EntityType.ENTITY_FIREPLACE] = function()
 			local BlacklistedFireplaces = {
@@ -495,23 +466,23 @@ function mod:KnifeCollidingNonEnemies(knife, entity)
 		[EntityType.ENTITY_PROJECTILE] = function()
 			local projectile = entity:ToProjectile()
 			if not projectile then return end
-							
-			print(knifeData.SwordSwing, playerData.shinyKnifeCharge)
-
 			if player:HasCollectible(CollectibleType.COLLECTIBLE_SPIRIT_SWORD) then
 				if playerData.shinyKnifeCharge >= 100 then
 					projectile:AddProjectileFlags(ProjectileFlags.HIT_ENEMIES | ProjectileFlags.CANT_HIT_PLAYER)
 					projectile.Damage = player.Damage * 2
-					entity.Velocity = (entity.Position - player.Position):Resized(20)
+					OmoriMod:TriggerPush(entity, player, 20)
 				end
 			end
 
 			if player:HasCollectible(CollectibleType.COLLECTIBLE_LOST_CONTACT) then
 				projectile:Kill()
 			end
-		end
+		end,
+		[EntityType.ENTITY_STONEY] = function()
+			OmoriMod:TriggerPush(entity, player, 30)
+		end,
 	}
-	OmoriMod.When(entity.Type, NonEnemyEntities, 1)()
+	OmoriMod.When(entity.Type, NonEnemyEntities, 2)()
 end
 mod:AddCallback(OmoriModCallbacks.KNIFE_ENTITY_COLLISION, mod.KnifeCollidingNonEnemies)
 

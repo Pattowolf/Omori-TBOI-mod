@@ -4,21 +4,17 @@ local enums = OmoriMod.Enums
 local costumes = enums.NullItemID
 local players = enums.PlayerType
 
-local modCharacters = {
-	[players.PLAYER_AUBREY] = costumes.ID_DW_AUBREY,
-	[players.PLAYER_AUBREY_B] = costumes.ID_RW_AUBREY,
-	[players.PLAYER_OMORI] = costumes.ID_OMORI,
-	[players.PLAYER_OMORI_B] = costumes.ID_SUNNY,
-}
 
-function mod:ResetCostumes(player)
-	local costume = OmoriMod.When(player:GetPlayerType(), modCharacters, nil)
+-- function mod:ResetCostumes(player)
+-- 	local costume = OmoriMod.When(player:GetPlayerType(), modCharacters, nil)
 
-	if not costume then return end
-	player:AddNullCostume(costume)
-	player:AddNullCostume(costumes.ID_EMOTION)
-end
-mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.ResetCostumes)
+-- 	if not costume then return end
+-- 	player:AddNullCostume(costume)
+-- 	player:AddNullCostume(costumes.ID_EMOTION)
+-- 	OmoriMod:ChangeEmotionEffect(player)
+-- 	OmoriMod:SunnyChangeEmotionEffect(player)
+-- end
+-- mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.ResetCostumes)
 
 ---comment
 ---@param player EntityPlayer
@@ -31,17 +27,29 @@ function mod:OmoriInit(player)
 end
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, mod.OmoriInit)
 
+
+local modCharacters = {
+	[players.PLAYER_AUBREY] = costumes.ID_DW_AUBREY,
+	[players.PLAYER_AUBREY_B] = costumes.ID_RW_AUBREY,
+	[players.PLAYER_OMORI] = costumes.ID_OMORI,
+	[players.PLAYER_OMORI_B] = costumes.ID_SUNNY,
+}
+
 ---comment
 ---@param itemconfig ItemConfigItem
 ---@param player EntityPlayer
 ---@return boolean
 function mod:PreAddOmoriCostume(itemconfig, player)	
-	if not OmoriMod:IsOmori(player, false) then return end
+	-- if not OmoriMod:IsOmori(player, false) then return end
+
+	local rawCostume = modCharacters[player:GetPlayerType()] or nil
+
+	if not rawCostume then return end
 
 	local costume = itemconfig.Costume
 	local ID = costume.ID
 		
-	if ID == costumes.ID_OMORI or ID == costumes.ID_EMOTION then return end
+	if ID == rawCostume or ID == costumes.ID_EMOTION then return end
 	
 	return true
 end
@@ -64,9 +72,6 @@ function mod:OmoriUpdate(player)
 	OmoriMod:GiveKnife(player)
 end
 mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.OmoriUpdate)
-
-
-local nullIOmoriItem = Isaac:GetItemConfig():GetNullItem(costumes.ID_EMOTION)
 
 --- comment
 --- @param player EntityPlayer

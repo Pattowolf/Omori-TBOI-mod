@@ -91,7 +91,7 @@
 
 	Description: Just like Sunny, Aubrey has some problems to control her emotions, due the way how her friends left her behind after Mari's death, she got anger problems she still can't control, trying to land headbutts to relax her growing rage, also, she has her nailbat to smash some enemies with it:
 		- Headbutt: Like her Dreamworld counterpart, Faraway Aubrey has a Headbutt to attack, but instead of having control of it, she can't control it when she gets Angry
-			- Aubrey will charge in the direction she was walking
+			- Aubrey will charge in the direction she was walking (shooting if walking and shooting at the same time, head direction when not moving)
 			- Aubrey is inmune to damage while headbutting
 			- Hitting an enemy will damage it
 			- Damage formula is (Aubrey's Damage * 2) * Aubrey's Speed stat
@@ -102,7 +102,7 @@
 			- Charges when firing
 			- Damage formula is: Aubrey's Damage * 2.5
 			- When hitting an enemy, it will be pushed very hard
-			- Small chance to instantly kill on hit (10%)
+			- Small chance to instantly kill on hit (10%, 2% for bosses)
 		- Emotions: Faraway Aubrey can also inherit Emotions, but, again, they'll work different
 			- Aubrey can only reach 2nd stage Emotions (Ecstatic, Enraged, Depressed)
 			- Aubrey will start Neutral, but if enough time passes, she'll got Angry, then Enraged 

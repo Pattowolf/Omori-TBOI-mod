@@ -16,8 +16,6 @@ function mod:SunnyInit(player)
     
 	playerData.AfraidCounter = playerData.AfraidCounter or 90
     playerData.StressCounter = playerData.StressCounter or 150
-    playerData.TriggerAfraid = playerData.TriggerAfraid or false
-    playerData.TriggerStress = playerData.TriggerStress or false
 	
     player:AddNullCostume(costumes.ID_SUNNY)
     player:AddNullCostume(costumes.ID_EMOTION)
@@ -61,17 +59,14 @@ function mod:SunnyStressingOut(player)
     end
     
     local emotions = {
-        Afraid = "AfraidCounter",
-        StressedOut = "StressCounter"
+        ["Afraid"] = "AfraidCounter",
+        ["StressedOut"] = "StressCounter"
     }
 
-    for emotion, counter in pairs(emotions) do
-        local color = (emotion == "Afraid" and misc.AfraidColor) or misc.StressColor
-
+    for emo, counter in pairs(emotions) do
+        local color = (emo == "Afraid" and misc.AfraidColor) or misc.StressColor
         if playerData[counter] == 1 then
-            OmoriMod.SetEmotion(player, emotion)
-            OmoriMod:SunnyChangeEmotionEffect(player)
-            player:SetColor(color, 8, -1, true, true)
+            OmoriMod.SetEmotion(player, emo)
             playerData[counter] = 0
         end
 
@@ -80,7 +75,5 @@ function mod:SunnyStressingOut(player)
             player:SetColor(color, 8, -1, true, true)
         end
     end    
-    
-    print(playerData.AfraidCounter, playerData.StressCounter)
 end
 mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.SunnyStressingOut)

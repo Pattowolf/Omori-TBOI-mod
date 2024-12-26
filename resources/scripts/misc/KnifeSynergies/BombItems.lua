@@ -4,10 +4,16 @@ local utils = enums.Utils
 local game = utils.Game
 local Callbacks = enums.Callbacks
 
+---comment
+---@param player EntityPlayer
+---@return boolean
 local function HasBombItem(player)
     return player:HasCollectible(CollectibleType.COLLECTIBLE_DR_FETUS) or player:HasCollectible(CollectibleType.COLLECTIBLE_EPIC_FETUS)
 end
 
+---comment
+---@param knife EntityEffect
+---@param entity Entity
 function mod:BombKnifeHit(knife, entity)
     local player = OmoriMod:GetKnifeOwner(knife)
 

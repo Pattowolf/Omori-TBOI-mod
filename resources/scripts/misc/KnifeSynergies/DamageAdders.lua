@@ -44,25 +44,3 @@ function mod:KnifeDamageAdders(knife, _, damage)
     end
 end
 mod:AddCallback(Callbacks.KNIFE_HIT_ENEMY, mod.KnifeDamageAdders)
-
-                        -- if player:HasCollectible(CollectibleType.COLLECTIBLE_APPLE) then
-							-- local AppleChance = OmoriMod.randomfloat(0.01, 1, rng)
-							-- local maxChance = math.min(1 / (15 - player.Luck), 1)
-							-- if AppleChance <= maxChance then
-								-- dmg = dmg * 4
-							-- end
-						-- end
-						-- if player:HasCollectible(CollectibleType.COLLECTIBLE_TOUGH_LOVE) then
-							-- local ToughLoveChance = OmoriMod.randomNumber(1, 100, rng)
-							-- local maxChance = math.min(10 + (player.Luck * 10), 100)
-							-- if ToughLoveChance <= maxChance then
-								-- dmg = dmg * 3.2
-							-- end
-						-- end
-						-- if player:HasCollectible(CollectibleType.COLLECTIBLE_STYE) then
-							-- local StyeChance = OmoriMod.randomNumber(0, 1, rng)
-							-- if StyeChance == 1 then
-								-- dmg = dmg * 1.28
-							-- end
-						-- end
-
