@@ -48,8 +48,10 @@ function mod:PreAddOmoriCostume(itemconfig, player)
 
 	local costume = itemconfig.Costume
 	local ID = costume.ID
+
+	print(ID)
 		
-	if ID == rawCostume or ID == costumes.ID_EMOTION then return end
+	if (ID == rawCostume or ID == costumes.ID_EMOTION or ID == 625 or ID == 58) then return end
 	
 	return true
 end

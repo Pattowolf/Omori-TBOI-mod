@@ -43,7 +43,7 @@ As OMORI, you have the ability to cycle between three different EMOTIONS, each w
 
 [i][b]ANGRY:[/b][/i] [i]Or perhaps, you’re looking to put down the hurt?[/i] While angry, you gain a damage multiplier to help put down the toughest foes! Consequently, however, you also gain a small tears decrease and the chance to take double damage when hit…
 
-Though, that’s not the end of your EMOTIONS… Utilizing OMORI’s second starting item, [i][b]SELF-HELP GUIDE,[/b][/i] you can upgrade your currently selected emotion up to two times, increasing both the positive and negative effects of each for maximum adaptability!
+Though, that’s not the end of your EMOTIONS… Utilizing OMORI’s second starting item, [i][b]EMOTION CHART,[/b][/i] you can upgrade your currently selected emotion up to two times, increasing both the positive and negative effects of each for maximum adaptability!
 
 Lastly, OMORI has one more trick up his lack of sleeves… Upon taking fatal damage in a room for the first time, [i]OMORI will not succumb,[/i] surviving with the last of your HP and giving you a last chance.
 
@@ -70,8 +70,8 @@ For more precise information about how a character works, check out our [url=htt
 All characters represented belong to OMOCAT and the rest of the OMORI Team.
 Mirror download: https://github.com/AutisticGoat/Omori-TBOI-mod
 </description>
-    <version>1.15</version>
-    <visibility>Private</visibility>
+    <version>1.17</version>
+    <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Items"/>
     <tag id="Active Items"/>
