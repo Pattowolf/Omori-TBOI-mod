@@ -9,11 +9,12 @@ local sfx = utils.SFX
 local sounds = enums.SoundEffect
 local misc = enums.Misc
 local rng = utils.RNG
+local knifeType = enums.KnifeType
 
 ---comment
 ---@param player EntityPlayer
 function mod:InitFarawayAubrey(player)
-    if not OmoriMod:IsAubrey(player, true) then return end
+    if not OmoriMod.IsAubrey(player, true) then return end
 
     local playerData = OmoriMod:GetData(player)
     
@@ -31,8 +32,7 @@ mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, mod.InitFarawayAubrey)
 ---comment
 ---@param player EntityPlayer
 function mod:FarawayAubreyUpdate(player)
-    if not OmoriMod:IsAubrey(player, true) then return end
-    OmoriMod:GiveKnife(player)
+    if not OmoriMod.IsAubrey(player, true) then return end
 
     if player:CollidesWithGrid() then
         OmoriMod:TriggerHBParams(player)
@@ -42,12 +42,12 @@ mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.FarawayAubreyUpdate)
 
 ---comment
 ---@param knife EntityEffect
----@return number
+---@return number?
 function mod:AubreyBatCharge(knife)
     local player = knife.SpawnerEntity:ToPlayer()
     if not player then return end
 
-    if not OmoriMod:IsAubrey(player, true) then return end
+    if not OmoriMod.IsAubrey(player, true) then return end
 
     local batCharge = player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) and 1.5 or 2
 
@@ -81,14 +81,13 @@ local function thereAreEnemies()
     return bool
 end
 
----comment
 ---@param player EntityPlayer
 function mod:FarawayAubreyEffectUpdate(player)
     local emotion = OmoriMod.GetEmotion(player)
     local playerData = OmoriMod:GetData(player)
     local room = game:GetRoom()
 
-    if not OmoriMod:IsAubrey(player, true) then return end
+    if not OmoriMod.IsAubrey(player, true) then return end
 
     local emotionCounterMax = player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) and 5 or 6
 
@@ -147,7 +146,7 @@ local HBParams = tables.AubreyHeadButtParams
 function mod:OnFarawayAubreyCollide(player, collider)
     local playerData = OmoriMod:GetData(player)
 
-    if not OmoriMod:IsAubrey(player, true) then return end
+    if not OmoriMod.IsAubrey(player, true) then return end
 
     if playerData.HeadButt == false then return end
     
@@ -191,7 +190,7 @@ mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, mod.OnFarawayAubreyCollide
 function mod:NailbatHit(bat, entity)
     local player = bat.SpawnerEntity:ToPlayer()
     if not player then return end
-    if not OmoriMod:IsAubrey(player, true) then return end
+    if not OmoriMod.IsAubrey(player, true) then return end
 
     sfx:Play(sounds.SOUND_AUBREY_HIT, 1, 2, false, 1, 0)
 
@@ -210,7 +209,7 @@ function mod:BatSwingTrigger(bat)
     local player = bat.SpawnerEntity:ToPlayer()
 
     if not player then return end
-    if not OmoriMod:IsAubrey(player, true) then return end
+    if not OmoriMod.IsAubrey(player, true) then return end
 
     sfx:Play(sounds.SOUND_AUBREY_SWING, 0.7, 2, false, 1.5, 0)
 end
@@ -220,7 +219,7 @@ function mod:NullFarawayHeadbuttDamage(entity, _, flags, source)
     local player = entity:ToPlayer()    
 
     if not player then return end
-    if not OmoriMod:IsAubrey(player, true) then return end
+    if not OmoriMod.IsAubrey(player, true) then return end
 
     local playerData = OmoriMod:GetData(player)
     

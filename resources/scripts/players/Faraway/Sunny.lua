@@ -1,16 +1,15 @@
 local mod = OmoriMod
-
-local enums = OmoriMod.Enums
+local enums = mod.Enums
 local enemyRadius = 80
 local costumes = enums.NullItemID
 local utils = enums.Utils
 local misc = enums.Misc
 local sfx = utils.SFX
+local knifeType = enums.KnifeType
 
----comment
 ---@param player EntityPlayer
 function mod:SunnyInit(player)
-    if not OmoriMod:IsOmori(player, true) then return end
+    if not OmoriMod.IsOmori(player, true) then return end
 
 	local playerData = OmoriMod:GetData(player)
     
@@ -20,11 +19,11 @@ function mod:SunnyInit(player)
     player:AddNullCostume(costumes.ID_SUNNY)
     player:AddNullCostume(costumes.ID_EMOTION)
 
+
     OmoriMod.SetEmotion(player, "Neutral")
 end
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, mod.SunnyInit)
 
----comment
 ---@param player EntityPlayer
 ---@return boolean
 function mod:AreEnemiesNearby(player)
@@ -40,9 +39,14 @@ end
 
 ---@param player EntityPlayer
 function mod:SunnyStressingOut(player)
-    if not OmoriMod:IsOmori(player, true) then return end
+    if not OmoriMod.IsOmori(player, true) then return end
 
-    OmoriMod:GiveKnife(player)
+    OmoriMod.GiveKnife(player, knifeType.VIOLIN_BOW)
+
+    local bow = OmoriMod.GetKnife(player, knifeType.VIOLIN_BOW)
+    bow.Position = player.Position
+    
+    print(bow.Position)
 
     local emotion = OmoriMod.GetEmotion(player)
 	local playerData = OmoriMod:GetData(player)    

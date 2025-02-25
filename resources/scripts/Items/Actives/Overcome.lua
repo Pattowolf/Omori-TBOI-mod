@@ -7,7 +7,7 @@ local items = enums.CollectibleType
 
 ---@param player EntityPlayer
 function mod:ReplaceCalmDown(player)
-	if not OmoriMod:IsOmori(player, true) then return end
+	if not OmoriMod.IsOmori(player, true) then return end
 	
 	if player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
 		if player:HasCollectible(items.COLLECTIBLE_CALM_DOWN) then

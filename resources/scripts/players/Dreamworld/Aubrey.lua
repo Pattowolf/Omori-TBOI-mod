@@ -1,5 +1,5 @@
 local mod = OmoriMod
-local enums = OmoriMod.Enums
+local enums = mod.Enums
 local utils = enums.Utils
 local costumes = enums.NullItemID
 local sfx = utils.SFX
@@ -10,6 +10,7 @@ local tables = enums.Tables
 local HBParams = tables.AubreyHeadButtParams
 local Callbacks = enums.Callbacks
 local misc = enums.Misc
+local knifeType = enums.KnifeType
 
 local HeadButtAOE = 60
 local NeutralColor = Color(1, 1, 1, 1, 0.2, 0.2, 0.2)
@@ -27,7 +28,7 @@ end
 ---comment
 ---@param player EntityPlayer
 function mod:InitAubrey(player)
-    if not OmoriMod:IsAubrey(player, false) then return end
+    if not OmoriMod.IsAubrey(player, false) then return end
     player:AddNullCostume(costumes.ID_DW_AUBREY)
     player:AddNullCostume(costumes.ID_EMOTION)
 
@@ -43,7 +44,7 @@ end
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, mod.InitAubrey)
 
 function mod:AubreyStats(player, flags)
-    if not OmoriMod:IsAubrey(player, false) then return end
+    if not OmoriMod.IsAubrey(player, false) then return end
 
     if flags == CacheFlag.CACHE_DAMAGE then
         player.Damage = player.Damage * 1.3
@@ -57,7 +58,7 @@ mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.AubreyStats)
 
 ---@param player EntityPlayer
 function mod:AubreyInputs(player)
-    if not OmoriMod:IsAubrey(player, false) then return end
+    if not OmoriMod.IsAubrey(player, false) then return end
     local playerData = OmoriMod:GetData(player) ---@type table
     if playerData.HeadButtCounter ~= 0 then return end
 
@@ -81,7 +82,7 @@ mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.AubreyInputs)
 ---comment
 ---@param player EntityPlayer
 function mod:AubreyButthead(player)
-    if not OmoriMod:IsAubrey(player, false) then return end
+    if not OmoriMod.IsAubrey(player, false) then return end
     local playerData = OmoriMod:GetData(player) ---@type table
     local room = game:GetRoom()
 
@@ -139,7 +140,7 @@ function mod:AubreyHittingButthead(player, collider)
     local playerData = OmoriMod:GetData(player)
     local emotion = OmoriMod.GetEmotion(player)
 
-    if not OmoriMod:IsAubrey(player, false) then return end
+    if not OmoriMod.IsAubrey(player, false) then return end
     if not (collider:IsActiveEnemy() and collider:IsVulnerableEnemy()) then return end
     if playerData.HeadButt == false then return end
 
@@ -178,7 +179,7 @@ function mod:NullHeadbuttDamage(entity, _, flags, source)
     local player = entity:ToPlayer()    
 
     if not player then return end
-    if not OmoriMod:IsAubrey(player, false) then return end
+    if not OmoriMod.IsAubrey(player, false) then return end
 
     local playerData = OmoriMod:GetData(player)
     local emotion = OmoriMod.GetEmotion(player)
@@ -205,19 +206,6 @@ function mod:NullHeadbuttDamage(entity, _, flags, source)
             OmoriMod.SetEmotion(player, HBParams[emotion].Emotion)
             playerData.EmotionCounter = HBParams[emotion].EmotionCooldown
         end
-
-        if playerData.TriggerMrEggplant == true then
-            local MrEggplant = OmoriMod:GiveKnife(player)
-            local MrESprite = MrEggplant:GetSprite()
-            local MrEData = OmoriMod:GetData(MrEggplant)
-
-            local playerPos = player.Position
-            local entPos = ent.Position
-
-            MrEData.Aiming = (entPos - playerPos):GetAngleDegrees()
-
-            MrESprite:Play("Swing")
-        end
     else
         if playerData.HeadButt == true then
             return false
@@ -240,13 +228,12 @@ mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.OnAubreyNewRoom)
 
 function mod:MrEggplantBehavior(knife)
     local player = knife.SpawnerEntity:ToPlayer()
-    if not OmoriMod:IsAubrey(player, false) then return end
+    if not OmoriMod.IsAubrey(player, false) then return end
     local playerData = OmoriMod:GetData(player)
     local sprite = knife:GetSprite()
 
     if sprite:IsFinished("Swing") then
-        knife:Remove()
-        playerData.ShinyKnife = nil
+        OmoriMod.RemoveKnife(player, knifeType.MR_PLANT_EGG)
     end
 end
 mod:AddCallback(Callbacks.PRE_KNIFE_UPDATE, mod.MrEggplantBehavior)
@@ -261,7 +248,7 @@ local healChance = {
 function mod:OnMrEggplantKill(Eggplant)
     local player = Eggplant.SpawnerEntity:ToPlayer() ---@type EntityPlayer?
     if not player then return end 
-    if not OmoriMod:IsAubrey(player, false) then return end
+    if not OmoriMod.IsAubrey(player, false) then return end
 
     local emotion = OmoriMod.GetEmotion(player)
     local maxChance = healChance[emotion]

@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-global, cast-local-type, inject-field
 ---A user may have two or more mods that each use Dead Sea Scrolls, with each mod running their own
 -- version of "dssmenucore.lua". Thus, in order to not conflict with other versions of itself, Dead
 -- Sea Scrolls will defer control to whichever version currently exists with the highest version

@@ -8,6 +8,7 @@ local players = enums.PlayerType
 local HBParams = tables.AubreyHeadButtParams
 local misc = enums.Misc
 local sounds = enums.SoundEffect
+local knifeType = enums.KnifeType
 
 function OmoriMod.GetScreenCenter()
 	local room = game:GetRoom()
@@ -66,27 +67,27 @@ end
 --- @param player EntityPlayer
 --- @param tainted boolean
 --- @return boolean
-function OmoriMod:IsOmori(player, tainted)
+function OmoriMod.IsOmori(player, tainted)
 	return player:GetPlayerType() == (tainted and players.PLAYER_OMORI_B or players.PLAYER_OMORI)
 end
 
 --- @param player EntityPlayer
 --- @param tainted boolean
 --- @return boolean
-function OmoriMod:IsAubrey(player, tainted)
+function OmoriMod.IsAubrey(player, tainted)
 	return player:GetPlayerType() == (tainted and players.PLAYER_AUBREY_B or players.PLAYER_AUBREY)
 end
 
 --- @param player EntityPlayer
 --- @return boolean
-function OmoriMod:IsAnyOmori(player)
-	return OmoriMod:IsOmori(player, true) or OmoriMod:IsOmori(player, false)
+function OmoriMod.IsAnyOmori(player)
+	return OmoriMod.IsOmori(player, true) or OmoriMod.IsOmori(player, false)
 end
 
 --- @param player EntityPlayer
 --- @return boolean
-function OmoriMod:IsAnyAubrey(player)
-	return OmoriMod:IsAubrey(player, true) or OmoriMod:IsAubrey(player, false)
+function OmoriMod.IsAnyAubrey(player)
+	return OmoriMod.IsAubrey(player, true) or OmoriMod.IsAubrey(player, false)
 end
 
 ---@param secs number
@@ -201,7 +202,7 @@ end
 ---@return number
 function OmoriMod.tearsUp(firedelay, val, IsMult)
     local currentTears = 30 / (firedelay + 1)
-    local newTears = currentTears + val
+    local newTears = currentTears + val 
 	if IsMult == true then
 		newTears = currentTears * val
 	end
@@ -235,7 +236,7 @@ function OmoriMod.DoHappyTear(tear)
 	local birthrightDamageMult = 1
 	local birthrightVelMult = 1
 	
-	if OmoriMod:IsOmori(player, false) and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
+	if OmoriMod.IsOmori(player, false) and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
 		birthrightDamageMult = 1.25
 		birthrightVelMult = 1.15
 	end
@@ -272,23 +273,22 @@ function OmoriMod:IsShinyKnife(entity)
 	return entity.Type == EntityType.ENTITY_EFFECT and entity.Variant == OmoriMod.Enums.EffectVariant.EFFECT_SHINY_KNIFE
 end
 
-
 local KnifeSprites = {
-	[players.PLAYER_OMORI_B] = "ViolinBow",
-	[players.PLAYER_AUBREY] = "MrEggplant",
-	[players.PLAYER_AUBREY_B] = "Nailbat",
+	[knifeType.SHINY_KNIFE] = "ShinyKnife",
+	[knifeType.VIOLIN_BOW] = "ViolinBow",
+	[knifeType.MR_PLANT_EGG] = "MrEggplant",
+	[knifeType.NAIL_BAT] = "Nailbat",
 }
 
 ---@param player EntityPlayer
 ---@param knife EntityEffect
-function OmoriMod:ReplaceKnifeSprite(player, knife)
+---@param Type KnifeType
+function OmoriMod:ReplaceKnifeSprite(player, knife, Type)
 	local knifesprite = knife:GetSprite()	
-	local knifeReplaceSprite = KnifeSprites[player:GetPlayerType()] or "ShinyKnife"
+	local knifeReplaceSprite = OmoriMod.When(Type, KnifeSprites, "ShinyKnife")
 
-	if OmoriMod:IsOmori(player, false) then
-		if player:HasCollectible(CollectibleType.COLLECTIBLE_MOMS_KNIFE) then
-			knifeReplaceSprite = "RedKnife"
-		end
+	if Type == knifeType.SHINY_KNIFE and player:HasCollectible(CollectibleType.COLLECTIBLE_MOMS_KNIFE) then
+		knifeReplaceSprite = "RedKnife"
 	end
 
 	for i = 0, 1 do
@@ -296,35 +296,162 @@ function OmoriMod:ReplaceKnifeSprite(player, knife)
 	end
 end
 
+--[[Perform a Switch/Case-like selection.  
+    `value` is used to index `cases`.  
+    When `value` is `nil`, returns `default`.  
+    **Note:** Type inference on this function is decent, but not perfect.
+    You might want to use things such as [casting](https://luals.github.io/wiki/annotations/#as)
+    the returned value.
+    ]]
 ---@generic In, Out, Default
 ---@param value?    In
 ---@param cases     { [In]: Out }
 ---@param default?  Default
 ---@return Out|Default
 function OmoriMod.When(value, cases, default)
-    if value == nil then return default end
-    return cases[value]
+    return value and cases[value] or default
 end
 
----@param player EntityPlayer
----@return EntityEffect
-function OmoriMod:GiveKnife(player)
-	local playerData = OmoriMod:GetData(player)
-		local knife = playerData.ShinyKnife
-		if not knife then
-			playerData.ShinyKnife = Isaac.Spawn(
-				EntityType.ENTITY_EFFECT,
-				OmoriMod.Enums.EffectVariant.EFFECT_SHINY_KNIFE,
-				0,
-				player.Position,
-				Vector.Zero,
-				player
-			):ToEffect()
-			OmoriMod:ReplaceKnifeSprite(player, playerData.ShinyKnife)
-			playerData.ShinyKnife.SpriteRotation = tables.DirectionToDegrees[player:GetHeadDirection()]
-		end
-	return playerData.ShinyKnife
+--[[Perform a Switch/Case-like selection, like @{edithMod.When}, but takes a
+    table of functions and runs the found matching case to return its result.  
+    `value` is used to index `cases`.
+    When `value` is `nil`, returns `default`, or runs it and returns its value if
+    it is a function.  
+    **Note:** Type inference on this function is decent, but not perfect.
+    You might want to use things such as [casting](https://luals.github.io/wiki/annotations/#as)
+    the returned value.
+    ]]
+---@generic In, Out, Default
+---@param value?    In
+---@param cases     { [In]: fun(): Out }
+---@param default?  fun(): Default
+---@return Out|Default
+function OmoriMod.WhenEval(value, cases, default)
+    local f = OmoriMod.When(value, cases)
+    local v = (f and f()) or (default and default())
+    return v
 end
+
+---Brings an Omori mod's knife entity to the player
+---@param player EntityPlayer
+---@param Type KnifeType
+function OmoriMod.GiveKnife(player, Type)
+	local playerData = OmoriMod:GetData(player)
+		
+	if not playerData.KnifeData then
+		playerData.KnifeData = {}
+		
+		local knifeData = playerData.KnifeData
+
+		local knife = Isaac.Spawn(
+			EntityType.ENTITY_EFFECT,
+			OmoriMod.Enums.EffectVariant.EFFECT_SHINY_KNIFE,
+			0,
+			player.Position,
+			Vector.Zero,
+			player
+		):ToEffect()
+
+		local knifeTypes = {
+			[knifeType.SHINY_KNIFE] = function() knifeData.ShinyKnife = knife end,
+			[knifeType.VIOLIN_BOW] = function() knifeData.ViolinBow = knife end,
+			[knifeType.MR_PLANT_EGG] = function() knifeData.MrPlantEgg = knife end,
+			[knifeType.NAIL_BAT] = function() knifeData.BaseballBat = knife end,
+		}
+
+		if not knife then return end
+
+		KnifeData = OmoriMod:GetData(knife)
+		KnifeData.KnifeType = Type
+
+		OmoriMod:ReplaceKnifeSprite(player, knife, Type)
+		OmoriMod.WhenEval(Type, knifeTypes)
+	end
+end
+
+---Returns a mod's Knife entity depending on its type
+---@param player EntityPlayer
+---@param type KnifeType
+---@return EntityEffect
+function OmoriMod.GetKnife(player, type)
+	local playerData = OmoriMod:GetData(player)
+	local knifeData = playerData.KnifeData
+
+	local cases = {
+		[knifeType.SHINY_KNIFE] = knifeData.ShinyKnife,
+		[knifeType.VIOLIN_BOW] = knifeData.ViolinBow,
+		[knifeType.MR_PLANT_EGG] = knifeData.MrPlantEgg,
+		[knifeType.NAIL_BAT] = knifeData.BaseballBat,
+	}
+
+	return OmoriMod.When(type, cases)
+end
+
+---Removes mod's knife of given `type` from player
+---@param player EntityPlayer
+---@param type KnifeType
+function OmoriMod.RemoveKnife(player, type)
+	local playerData = OmoriMod:GetData(player)
+	local knifeData = playerData.KnifeData
+
+	if not knifeData then return end
+
+	local cases = {
+		[knifeType.SHINY_KNIFE] = knifeData.ShinyKnife,
+		[knifeType.VIOLIN_BOW] = knifeData.ViolinBow,
+		[knifeType.MR_PLANT_EGG] = knifeData.MrPlantEgg,
+		[knifeType.NAIL_BAT] = knifeData.BaseballBat,
+	}
+
+	local knife = OmoriMod.When(type, cases)
+
+	if not knife then return end
+
+	playerData.KnifeData = nil
+	knife:Remove()
+	knife = nil
+end
+-- ---@param player EntityPlayer
+-- ---@param knifeType string
+-- ---@return EntityEffect
+-- function OmoriMod:GiveKnife(player, knifeType)
+-- 	local playerData = OmoriMod:GetData(player)
+-- 		if not playerData.ShinyKnife then
+-- 			playerData.ShinyKnife = {}
+-- 			local knife = playerData.ShinyKnife
+
+-- 			knife.Type = knifeType
+
+-- 			knife.Entity = Isaac.Spawn(
+-- 				EntityType.ENTITY_EFFECT,
+-- 				OmoriMod.Enums.EffectVariant.EFFECT_SHINY_KNIFE,
+-- 				0,
+-- 				player.Position,
+-- 				Vector.Zero,
+-- 				player
+-- 			):ToEffect()
+-- 		end		
+
+-- 		-- local knife = playerData.ShinyKnife 
+
+
+-- 		-- if not knife then
+-- 		-- 	knife.Type = knifeType
+
+
+-- 		-- 	playerData.ShinyKnife = Isaac.Spawn(
+-- 		-- 		EntityType.ENTITY_EFFECT,
+-- 		-- 		OmoriMod.Enums.EffectVariant.EFFECT_SHINY_KNIFE,
+-- 		-- 		0,
+-- 		-- 		player.Position,
+-- 		-- 		Vector.Zero,
+-- 		-- 		player
+-- 		-- 	):ToEffect()
+-- 			OmoriMod:ReplaceKnifeSprite(player, playerData.ShinyKnife)
+-- 		-- 	playerData.ShinyKnife.SpriteRotation = tables.DirectionToDegrees[player:GetHeadDirection()]
+-- 		-- end
+-- 	return playerData.ShinyKnife
+-- end
 
 ---@param player EntityPlayer
 ---@return Vector
@@ -407,8 +534,11 @@ local characterFolder = {
 }
 
 ---@param player EntityPlayer
-function OmoriMod:ChangeEmotionEffect(player)
-	if OmoriMod:IsOmori(player, true) then return end
+---@param playSound? boolean
+function OmoriMod:ChangeEmotionEffect(player, playSound)
+	if OmoriMod.IsOmori(player, true) then return end
+
+	playSound = playSound or false
 
 	local emotion = OmoriMod.GetEmotion(player)
 	local charFolderTarget = characterFolder[player:GetPlayerType()]
@@ -421,7 +551,7 @@ function OmoriMod:ChangeEmotionEffect(player)
 		
 	EmotionCostumeSprite:ReplaceSpritesheet(0, spriteRoot .. charFolderTarget .. EmotionSuffix .. ".png", true)
 
-	if player.FrameCount == 0 then return end
+	if player.FrameCount == 0 or playSound == false then return end
 	sfx:Play(EmotionSound, 2, 0, false, 1, 0)
 end
 
@@ -452,7 +582,7 @@ end
 ---@param player EntityPlayer
 ---@return boolean
 function OmoriMod:IsKnifeUser(player)
-	return player:HasCollectible(OmoriMod.Enums.CollectibleType.COLLECTIBLE_SHINY_KNIFE) or OmoriMod:IsAnyOmori(player)
+	return player:HasCollectible(OmoriMod.Enums.CollectibleType.COLLECTIBLE_SHINY_KNIFE) or OmoriMod.IsAnyOmori(player)
 end
 
 local SunnyEmotionChange = {
@@ -467,7 +597,7 @@ local sunnyHairRoot = "gfx/characters/players/costume_omori_head2"
 ---comment
 ---@param player EntityPlayer
 function OmoriMod:SunnyChangeEmotionEffect(player)
-	if not OmoriMod:IsOmori(player, true) then return end
+	if not OmoriMod.IsOmori(player, true) then return end
 	local emotion = OmoriMod.GetEmotion(player)
 	local emotionTable = SunnyEmotionChange[emotion]
 	local playerSprite = player:GetSprite()
@@ -511,7 +641,7 @@ local EmotionColor = {
 	["Afraid"] = misc.NeutralColor,
 	["StressedOut"] = misc.StressColor,
 }
---- comment
+--- Changes player's Emotion
 --- @param player EntityPlayer
 --- @param emotion string
 function OmoriMod.SetEmotion(player, emotion)
@@ -546,20 +676,19 @@ local ANGLE_SEPARATION = 360 / MAX_POINTS
 
 ---@param entity Entity
 ---@param AreaSize number
-function RenderAreaOfEffect(entity, AreaSize) -- Took from Melee lib and tweaked a little bit
-    local hitboxPosition = entity.Position
-    local renderPosition = Isaac.WorldToScreen(hitboxPosition) - Game().ScreenShakeOffset
-    local hitboxSize = AreaSize
-    local offset = Isaac.WorldToScreen(hitboxPosition + Vector(0, hitboxSize)) - renderPosition + Vector(0, 1)
-    local offset2 = offset:Rotated(ANGLE_SEPARATION)
-    local segmentSize = offset:Distance(offset2)
-    LINE_SPRITE.Scale = Vector(segmentSize * 2 / 3, 0.5)
-    for i = 1, MAX_POINTS do
-        local angle = ANGLE_SEPARATION * i
-        LINE_SPRITE.Rotation = angle
-        LINE_SPRITE.Offset = offset:Rotated(angle)
-        LINE_SPRITE:Render(renderPosition)
-    end
+function RenderAreaOfEffect(entity, AreaSize)
+	local hitboxPosition = entity.Position
+	local renderPosition = Isaac.WorldToScreen(hitboxPosition) - Game().ScreenShakeOffset
+	local offset = Isaac.WorldToScreen(hitboxPosition + Vector(0, AreaSize)) - renderPosition + Vector(0, 1)
+	local segmentSize = offset:Distance(offset:Rotated(ANGLE_SEPARATION))
+	LINE_SPRITE.Scale = Vector(segmentSize * 2 / 3, 0.5)
+	
+	for i = 1, MAX_POINTS do
+		local angle = ANGLE_SEPARATION * i
+		LINE_SPRITE.Rotation = angle
+		LINE_SPRITE.Offset = offset:Rotated(angle)
+		LINE_SPRITE:Render(renderPosition)
+	end
 end
 
 ---@param x number
@@ -573,7 +702,7 @@ local ResetColor = Color(1, 1, 1, 1, 0.6, 0.6, 0.6)
 ---@param healAmount integer
 ---@param focus boolean
 function OmoriMod:ResetSunnyEmotion(player, healAmount, focus)
-	if not OmoriMod:IsOmori(player, true) then return end
+	if not OmoriMod.IsOmori(player, true) then return end
 	local playerData = OmoriMod:GetData(player)
 
 	focus = focus or false
@@ -589,7 +718,8 @@ function OmoriMod:ResetSunnyEmotion(player, healAmount, focus)
 	player:SetColor(ResetColor, 8, -1, true, true)
 	playerData.IncreasedBowDamage = focus
 end
----comment
+
+---
 ---@param entity Entity
 ---@return EntityPlayer?
 function OmoriMod.GetPlayerFromAttack(entity)

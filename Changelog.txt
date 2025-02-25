@@ -132,7 +132,7 @@ Ver Beta 1.0 (12/20/2023)
         - stressed out increaes melee attack multiplier by x5, but any received damage will be double
     - Now Sunny starts with the pocket item Calm Down
         - Calm down removes emotions from Sunny, also heals 1/2 heart 
-    - If Sunny doesn't feel afraid, being surrounded by enemies for 1.5 will make him feel afraid 
+    - If Sunny doesn't feel afraid, being surrounded by enemies for 1.5 secs will make him feel afraid 
 - Added co-op selection icons
 - Remade Emotion title and emotion glow effect system
 
@@ -350,3 +350,12 @@ Ver 2.0.1 (12/26/2024)
 - Changes:
     - Updated some sprites 
     - Updated pastebin
+
+Ver 2.1.0
+- Fixes:
+    - Fixed Omori not visually updating his emotion when using Emotion Chart
+    - Fixed Omori visually reseting his emotion when changing floor
+- Additions:
+    - Added following items:
+        - Mr PlantEgg: Counters with MrEggPlant on getting Hit
+        - Baseball Bat: Behaves like Shiny Knife, but having a small chance to instakill enemies and bosses

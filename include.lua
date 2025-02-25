@@ -3,21 +3,28 @@ local players = "players/"
 local far = players .. "Faraway/"
 local dw = players .. "Dreamworld/"
 local knifeSyn = "misc/KnifeSynergies/"
+local items = "items/"
+local passives = items .. "Passives/"
+local actives = items .. "Actives/"
 
 local scriptTable = {
 	"definitions",
 	"functions/piberFuncs",
 	"functions/functions",
-	"items/shinyknife",
-	"items/EmotionChart",
-	"items/CalmDown",
-	"items/Overcome",
+	passives .. "shinyknife",
+	passives .. "MrPlantEgg",
+	passives .. "NailBat",
+	actives .. "EmotionChart",
+	actives .. "CalmDown",
+	actives .. "Overcome",
 	dw .. "Omori",
 	dw .. "Aubrey",
 	far .. "Sunny",
 	far .. "Aubrey",
 	"misc/EmotionRender",
 	"misc/EmotionLogic",
+	"misc/Hud_Helper",
+	"misc/MeleeWeaponApi-main/main",
 	"translations",
 
 	knifeSyn .. "Brimstone",

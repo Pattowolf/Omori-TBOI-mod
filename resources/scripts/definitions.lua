@@ -52,6 +52,8 @@ OmoriMod.Enums = {
 		COLLECTIBLE_EMOTION_CHART = Isaac.GetItemIdByName("Emotion Chart"),
 		COLLECTIBLE_CALM_DOWN = Isaac.GetItemIdByName("Calm Down"),
 		COLLECTIBLE_OVERCOME = Isaac.GetItemIdByName("Overcome"),
+		COLLECTIBLE_MR_PLANTEGG = Isaac.GetItemIdByName("Mr Plantegg"),
+		COLLECTIBLE_NAIL_BAT = Isaac.GetItemIdByName("Nail Bat"),
 	},
 	Utils = {
 		Game = Game(),
@@ -67,8 +69,15 @@ OmoriMod.Enums = {
 		KNIFE_KILL_ENEMY = "OmoriModCallbacks_KNIFE_KILL_ENEMY", -- Fires on knife colliding with non-enemy entities
 		PRE_KNIFE_UPDATE = "OmoriModCallbacks_PRE_KNIFE_UPDATE", -- Fires every knife update, return false to cancel knife logic
 		PRE_KNIFE_CHARGE = "OmoriModCallbacks_PRE_KNIFE_CHARGE", -- Fires when knife is charging, return a number to change knife charge rythm 
-		POST_KNIFE_RENDER = "OmoriModCallbacks_POST_KNIFE_RENDER", -- Fires when knife is charging, return a number to change knife charge rythm 
-		POST_KNIFE_UPDATE = "OmoriModCallbacks_POST_KNIFE_UPDATE", -- Fires when knife is charging, return a number to change knife charge rythm 
+		POST_KNIFE_RENDER = "OmoriModCallbacks_POST_KNIFE_RENDER", -- Fires on every Knife render frame
+		POST_KNIFE_UPDATE = "OmoriModCallbacks_POST_KNIFE_UPDATE", -- Fires after Knife logic update
+	},
+	---@enum KnifeType
+	KnifeType = {
+		SHINY_KNIFE = "ShinyKnife",
+		VIOLIN_BOW = "ViolinBow",
+		MR_PLANT_EGG = "MrPlantEgg",
+		NAIL_BAT = "BaseballBat",
 	},
 	Tables = {
 		NoDischargeEmotions = {
@@ -97,7 +106,7 @@ OmoriMod.Enums = {
 			["Enraged"] = 70,
 			["Furious"] = 85,
 		},
-		HappynessCriticDamageChance = {
+		HappynessCriticDamageChance = { -- Change for critic damage
 			["Happy"] = {VelMult = 1, HappyChance = 25},
 			["Ecstatic"] = {VelMult = 2, HappyChance = 38},
 			["Manic"] = {VelMult = 3, HappyChance = 50},
@@ -260,7 +269,7 @@ OmoriMod.Enums = {
 				EmotionCooldown = secsToFrames(7),
 				Emotion = "Enraged",
 				DamageMult = 1.5
-			}
+			},
 		},
 	},
 	Misc = {
@@ -273,7 +282,8 @@ OmoriMod.Enums = {
 		SadColor = Color(1, 1, 1, 1, 0.0, 0.1, 0.8),
 		AfraidColor = Color(1, 1, 1, 1, 0.2, 0.2, 0.2),
 		StressColor = Color(1, 1, 1, 1, 0.2),
-		ReadyColor = Color(1, 1, 1, 1, 0.2, 0.6)
+		ReadyColor = Color(1, 1, 1, 1, 0.2, 0.6),
+		EmotionTitleOffset = Vector(0, -75)
 	},
 }
 -- Globals end

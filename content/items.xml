@@ -37,4 +37,20 @@
 		maxcharges="2"
 		hidden="true"
 	/>
+	<passive
+		id="5" 
+		name="Mr Plantegg" 
+		description="Makes a weird noise when you punch it" 
+		gfx="MrEggPlant.png"
+		quality="3"
+		tags="offensive summonable"
+	/>
+	<passive
+		id="6" 
+		name="Nail Bat" 
+		description="More dangerous than a Steak Knife" 
+		gfx="NailBat.png"
+		quality="3"
+		tags="offensive summonable"
+	/>
 </items>

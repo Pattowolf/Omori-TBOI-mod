@@ -1,32 +1,19 @@
 local mod = OmoriMod
 
-local enums = OmoriMod.Enums
+local enums = mod.Enums
 local costumes = enums.NullItemID
 local players = enums.PlayerType
+local knifeType = enums.KnifeType
 
-
--- function mod:ResetCostumes(player)
--- 	local costume = OmoriMod.When(player:GetPlayerType(), modCharacters, nil)
-
--- 	if not costume then return end
--- 	player:AddNullCostume(costume)
--- 	player:AddNullCostume(costumes.ID_EMOTION)
--- 	OmoriMod:ChangeEmotionEffect(player)
--- 	OmoriMod:SunnyChangeEmotionEffect(player)
--- end
--- mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.ResetCostumes)
-
----comment
 ---@param player EntityPlayer
 function mod:OmoriInit(player)
-	if OmoriMod:IsOmori(player, false) then
+	if OmoriMod.IsOmori(player, false) then
 		player:AddNullCostume(costumes.ID_OMORI)
 		player:AddNullCostume(costumes.ID_EMOTION)
 		OmoriMod.SetEmotion(player, "Neutral")
 	end
 end
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, mod.OmoriInit)
-
 
 local modCharacters = {
 	[players.PLAYER_AUBREY] = costumes.ID_DW_AUBREY,
@@ -35,24 +22,22 @@ local modCharacters = {
 	[players.PLAYER_OMORI_B] = costumes.ID_SUNNY,
 }
 
----comment
 ---@param itemconfig ItemConfigItem
 ---@param player EntityPlayer
----@return boolean
-function mod:PreAddOmoriCostume(itemconfig, player)	
-	-- if not OmoriMod:IsOmori(player, false) then return end
-
-	local rawCostume = modCharacters[player:GetPlayerType()] or nil
+---@return boolean?
+function mod:PreAddOmoriCostume(itemconfig, player)
+	local rawCostume = modCharacters[player:GetPlayerType()]
 
 	if not rawCostume then return end
 
-	local costume = itemconfig.Costume
-	local ID = costume.ID
+	local costumeID = itemconfig.Costume.ID
 
-	print(ID)
-		
-	if (ID == rawCostume or ID == costumes.ID_EMOTION or ID == 625 or ID == 58) then return end
+	if costumeID == rawCostume or costumeID == costumes.ID_EMOTION or costumeID == 625 or costumeID == 58 then
+		return
+	end
 	
+	OmoriMod:ChangeEmotionEffect(player, false)
+
 	return true
 end
 mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_ADD_COSTUME, mod.PreAddOmoriCostume)
@@ -65,13 +50,12 @@ local overrideWeapons = {
 	[WeaponType.WEAPON_ROCKETS] = true,
 	[WeaponType.WEAPON_TECH_X] = true,
 	[WeaponType.WEAPON_SPIRIT_SWORD] = true,
-	-- [WeaponType.WEAPON_LUDOVICO_TECHNIQUE] = true,
 }
 
 function mod:OmoriUpdate(player)
-	if not OmoriMod:IsOmori(player, false) then return end
+	if not OmoriMod.IsOmori(player, false) then return end
 
-	OmoriMod:GiveKnife(player)
+	OmoriMod.GiveKnife(player, knifeType.SHINY_KNIFE)
 end
 mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.OmoriUpdate)
 
@@ -88,8 +72,6 @@ function mod:OmoUpdate(player)
 	if override == true then
 		local newWeapon = Isaac.CreateWeapon(WeaponType.WEAPON_TEARS, player)
 		Isaac.DestroyWeapon(weapon)
-
-
 		player:EnableWeaponType(WeaponType.WEAPON_TEARS, true)
 		player:SetWeapon(newWeapon, 1)
 	end
@@ -104,7 +86,7 @@ mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.OmoUpdate)
 ---@param player EntityPlayer
 ---@param flags CacheFlag
 function mod:OmoriStats(player, flags)
-	if not OmoriMod:IsOmori(player, false) then return end
+	if not OmoriMod.IsOmori(player, false) then return end
 
 	player:AddNullCostume(costumes.ID_OMORI)
 	player:AddNullCostume(costumes.ID_EMOTION)
@@ -116,3 +98,4 @@ function mod:OmoriStats(player, flags)
 	end
 end
 mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.OmoriStats)
+
