@@ -38,6 +38,16 @@ function mod:BatSwingTrigger(bat)
 end
 mod:AddCallback(callbacks.KNIFE_SWING_TRIGGER, mod.BatSwingTrigger)
 
+function mod:OnKnifeRemoving()
+	local players = PlayerManager.GetPlayers()
+	for _, player in ipairs(players) do
+        if not (player:HasCollectible(items.COLLECTIBLE_NAIL_BAT) or mod.IsAubrey(player, true)) then return end
+
+		OmoriMod.RemoveKnife(player, knifeType.NAIL_BAT)
+	end
+end
+mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.OnKnifeRemoving)
+
 ---comment
 ---@param player EntityPlayer
 function mod:GiveNailBat(player)

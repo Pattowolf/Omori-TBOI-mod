@@ -337,36 +337,38 @@ end
 ---@param Type KnifeType
 function OmoriMod.GiveKnife(player, Type)
 	local playerData = OmoriMod:GetData(player)
-		
+
 	if not playerData.KnifeData then
 		playerData.KnifeData = {}
-		
-		local knifeData = playerData.KnifeData
+	end		
+	
+	if OmoriMod.GetKnife(player, Type) then return end
 
-		local knife = Isaac.Spawn(
-			EntityType.ENTITY_EFFECT,
-			OmoriMod.Enums.EffectVariant.EFFECT_SHINY_KNIFE,
-			0,
-			player.Position,
-			Vector.Zero,
-			player
-		):ToEffect()
+	local knifeData = playerData.KnifeData
 
-		local knifeTypes = {
-			[knifeType.SHINY_KNIFE] = function() knifeData.ShinyKnife = knife end,
-			[knifeType.VIOLIN_BOW] = function() knifeData.ViolinBow = knife end,
-			[knifeType.MR_PLANT_EGG] = function() knifeData.MrPlantEgg = knife end,
-			[knifeType.NAIL_BAT] = function() knifeData.BaseballBat = knife end,
-		}
+	local knife = Isaac.Spawn(
+		EntityType.ENTITY_EFFECT,
+		OmoriMod.Enums.EffectVariant.EFFECT_SHINY_KNIFE,
+		0,
+		player.Position,
+		Vector.Zero,
+		player
+	):ToEffect()
 
-		if not knife then return end
+	local knifeTypes = {
+		[knifeType.SHINY_KNIFE] = function() knifeData.ShinyKnife = knife end,
+		[knifeType.VIOLIN_BOW] = function() knifeData.ViolinBow = knife end,
+		[knifeType.MR_PLANT_EGG] = function() knifeData.MrPlantEgg = knife end,
+		[knifeType.NAIL_BAT] = function() knifeData.BaseballBat = knife end,
+	}
 
-		KnifeData = OmoriMod:GetData(knife)
-		KnifeData.KnifeType = Type
+	if not knife then return end
 
-		OmoriMod:ReplaceKnifeSprite(player, knife, Type)
-		OmoriMod.WhenEval(Type, knifeTypes)
-	end
+	KnifeData = OmoriMod:GetData(knife)
+	KnifeData.KnifeType = Type
+
+	OmoriMod:ReplaceKnifeSprite(player, knife, Type)
+	OmoriMod.WhenEval(Type, knifeTypes)
 end
 
 ---Returns a mod's Knife entity depending on its type
@@ -397,19 +399,13 @@ function OmoriMod.RemoveKnife(player, type)
 	if not knifeData then return end
 
 	local cases = {
-		[knifeType.SHINY_KNIFE] = knifeData.ShinyKnife,
-		[knifeType.VIOLIN_BOW] = knifeData.ViolinBow,
-		[knifeType.MR_PLANT_EGG] = knifeData.MrPlantEgg,
-		[knifeType.NAIL_BAT] = knifeData.BaseballBat,
+		[knifeType.SHINY_KNIFE] = function() knifeData.ShinyKnife:Remove(); knifeData.ShinyKnife = nil end,
+		[knifeType.VIOLIN_BOW] = function() knifeData.ViolinBow:Remove(); knifeData.ViolinBow = nil end,
+		[knifeType.MR_PLANT_EGG] = function() knifeData.MrPlantEgg:Remove(); knifeData.MrPlantEgg = nil end,
+		[knifeType.NAIL_BAT] = function() knifeData.BaseballBat:Remove(); knifeData.BaseballBat = nil end,
 	}
 
-	local knife = OmoriMod.When(type, cases)
-
-	if not knife then return end
-
-	playerData.KnifeData = nil
-	knife:Remove()
-	knife = nil
+	OmoriMod.WhenEval(type, cases)
 end
 -- ---@param player EntityPlayer
 -- ---@param knifeType string

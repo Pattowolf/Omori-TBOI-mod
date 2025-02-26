@@ -4,28 +4,11 @@ local utils = enums.Utils
 local rng = utils.RNG
 local Callbacks = enums.Callbacks
 
+---comment
+---@param p EntityPlayer
+---@return number
 function OmoriMod:GetTPS(p)
     return (30 / (p.MaxFireDelay + 1))
-end
-
-local function GetNeptunusCharge(player)
-    local weapon = player:GetWeapon(1)
-    if not weapon then return end
-    
-    local weaponMod = weapon:GetModifiers()
-        
-    if weaponMod & weaponMod == WeaponModifier.NEPTUNUS ~= true then return end
-    local weaponFireDelay = weapon:GetMaxFireDelay()
-    
-    local maxFireDelay = weapon:GetMaxFireDelay()
-    local maxNepCharge = math.max(11 + 12 * maxFireDelay ,2) -- Thanks roary (taken from neptunus synergies)
-
-    local charge = weapon:GetCharge()
-    
-    local rawNepCharge = (charge / maxNepCharge) 
-    local NepCharge = (rawNepCharge)
-
-    return NepCharge
 end
 
 function mod:GetWeaponCharge(player)
@@ -56,9 +39,6 @@ function mod:GetWeaponCharge(player)
     end
 
     playerData.shinyKnifeCharge = (playerData.ChoccyCharge * 100)
-
-
-    print(playerData.shinyKnifeCharge)
 end
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.GetWeaponCharge)
 

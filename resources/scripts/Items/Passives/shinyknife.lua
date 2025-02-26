@@ -113,6 +113,8 @@ function mod:KnifeSmoothRotation(player)
 			end
 		end
 	end
+
+	print(OmoriMod.GetKnife(player, "ShinyKnife"))
 end
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.KnifeSmoothRotation)
 

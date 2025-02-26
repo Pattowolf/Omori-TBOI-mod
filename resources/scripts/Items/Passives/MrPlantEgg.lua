@@ -18,6 +18,7 @@ function mod:TriggerMrEggplantHit(player, ent)
     if not mod:IsPlayerAbleToCounterWithMrPlantEgg(player) then return end
 
     OmoriMod.GiveKnife(player, knifeType.MR_PLANT_EGG)
+
     local MrEggplant = OmoriMod.GetKnife(player, knifeType.MR_PLANT_EGG)
 
     local MrESprite = MrEggplant:GetSprite()
@@ -62,11 +63,12 @@ function mod:RemoveMrEggPlant(knife)
 
     local knifeData = mod:GetData(knife)
 
-    print(knifeData.KnifeType)
 
     if knifeData.KnifeType ~= knifeType.MR_PLANT_EGG then return end
 
     if sprite:IsFinished("Swing") then
+        print("a[odpoajdop]")
+
         OmoriMod.RemoveKnife(player, knifeType.MR_PLANT_EGG)
     end
 end
