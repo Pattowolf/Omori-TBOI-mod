@@ -54,6 +54,6 @@ function mod:PlaydoughKnifeHit(knife, entity)
             entity:AddBaited(EntityRef(player), 90)
         end,
 	}
-    OmoriMod.When(randSelect, randomEffects)()
+    OmoriMod.WhenEval(randSelect, randomEffects)
 end
 mod:AddCallback(Callbacks.KNIFE_HIT_ENEMY, mod.PlaydoughKnifeHit)

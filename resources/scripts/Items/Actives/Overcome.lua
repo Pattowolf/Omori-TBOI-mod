@@ -9,17 +9,22 @@ local items = enums.CollectibleType
 function mod:ReplaceCalmDown(player)
 	if not OmoriMod.IsOmori(player, true) then return end
 	
-	if player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
-		if player:HasCollectible(items.COLLECTIBLE_CALM_DOWN) then
-			player:RemoveCollectible(items.COLLECTIBLE_CALM_DOWN, false, ActiveSlot.SLOT_POCKET)
-			player:AddCollectible(items.COLLECTIBLE_OVERCOME, 2, true, ActiveSlot.SLOT_POCKET)
+	local hasBirthright = player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)
+	local calmDown = items.COLLECTIBLE_CALM_DOWN
+	local overcome = items.COLLECTIBLE_OVERCOME
+	local slot = ActiveSlot.SLOT_POCKET
+
+	if hasBirthright then
+		if player:HasCollectible(calmDown) then
+			player:RemoveCollectible(calmDown, false, slot)
+			player:AddCollectible(overcome, 2, true, slot)
 		end
 	else
-		if player:HasCollectible(items.COLLECTIBLE_OVERCOME) then
-			player:RemoveCollectible(items.COLLECTIBLE_OVERCOME, false, ActiveSlot.SLOT_POCKET)
-			player:AddCollectible(items.COLLECTIBLE_CALM_DOWN, 2, true, ActiveSlot.SLOT_POCKET)
+		if player:HasCollectible(overcome) then
+			player:RemoveCollectible(overcome, false, slot)
+			player:AddCollectible(calmDown, 2, true, slot)
 		end
-	end	
+	end
 end
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.ReplaceCalmDown)
 

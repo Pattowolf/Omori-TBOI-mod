@@ -8,18 +8,18 @@ function mod:TechnologyHit(knife, entity)
     if not player then return end
 
     if not player:HasCollectible(CollectibleType.COLLECTIBLE_TECHNOLOGY) then return end
-        local technology = player:FireTechLaser(
-            entity.Position,
-            1,
-            (entity.Position - player.Position),
-            false,
-            true,
-            player
-        ):ToLaser()
+    local technology = player:FireTechLaser(
+        entity.Position,
+        1,
+        (entity.Position - player.Position),
+        false,
+        true,
+        player
+    ):ToLaser()
 
-        if not technology then return end
+    if not technology then return end
 
-        technology:SetMaxDistance(player.TearRange / 3)
-        technology.CollisionDamage = player.Damage
+    technology:SetMaxDistance(player.TearRange / 3)
+    technology.CollisionDamage = player.Damage
 end
 mod:AddCallback(Callbacks.KNIFE_HIT_ENEMY, mod.TechnologyHit)

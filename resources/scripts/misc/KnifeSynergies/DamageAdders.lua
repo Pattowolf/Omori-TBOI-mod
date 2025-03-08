@@ -6,7 +6,7 @@ local Callbacks = enums.Callbacks
 
 function mod:KnifeDamageAdders(knife, _, damage)
     local player = OmoriMod:GetKnifeOwner(knife)
-    local knifeData = OmoriMod:GetData(knife)
+    local knifeData = OmoriMod.GetData(knife)
    
     local adders = {
         [CollectibleType.COLLECTIBLE_APPLE] = function()

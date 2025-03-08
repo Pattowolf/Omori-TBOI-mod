@@ -6,7 +6,6 @@ local Callbacks = enums.Callbacks
 
 ---comment
 ---@param knife EntityEffect
----@param _ any
 ---@param damage number
 function mod:TerraKnifeHit(knife, _, damage)
     local player = OmoriMod:GetKnifeOwner(knife)
@@ -14,7 +13,7 @@ function mod:TerraKnifeHit(knife, _, damage)
     if not player then return end
     if not player:HasCollectible(CollectibleType.COLLECTIBLE_TERRA) then return end
 
-    local knifeData = OmoriMod:GetData(knife)
+    local knifeData = OmoriMod.GetData(knife)
     local damageMult = OmoriMod.randomfloat(0.5, 2, rng)
 
     knifeData.Damage = damage * damageMult

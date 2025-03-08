@@ -11,6 +11,8 @@ function mod:OmoriInit(player)
 		player:AddNullCostume(costumes.ID_OMORI)
 		player:AddNullCostume(costumes.ID_EMOTION)
 		OmoriMod.SetEmotion(player, "Neutral")
+	
+		OmoriMod.AddEmotionGlow(player)
 	end
 end
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, mod.OmoriInit)
@@ -67,7 +69,7 @@ function mod:OmoUpdate(player)
 	
 	if weapon == nil then return end
 
-	local override = overrideWeapons[weapon:GetWeaponType()] or false
+	local override = OmoriMod.When(weapon:GetWeaponType(), overrideWeapons, false) 
 
 	if override == true then
 		local newWeapon = Isaac.CreateWeapon(WeaponType.WEAPON_TEARS, player)
@@ -82,7 +84,6 @@ function mod:OmoUpdate(player)
 end
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.OmoUpdate)
 
----comment
 ---@param player EntityPlayer
 ---@param flags CacheFlag
 function mod:OmoriStats(player, flags)
@@ -98,4 +99,3 @@ function mod:OmoriStats(player, flags)
 	end
 end
 mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.OmoriStats)
-

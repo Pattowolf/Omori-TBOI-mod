@@ -2,16 +2,12 @@ local mod = OmoriMod
 local enums = mod.Enums
 local Callbacks = enums.Callbacks
 
-local function hasGodHead(player)
-    return player:HasCollectible(CollectibleType.COLLECTIBLE_GODHEAD)
-end
-
 function mod:SpawnGodHeadAura(knife)
     local player = OmoriMod:GetKnifeOwner(knife)
 
     if not player then return end
-    if not hasGodHead(player) then return end
-    local knifeData = OmoriMod:GetData(knife)
+    if not player:HasCollectible(CollectibleType.COLLECTIBLE_GODHEAD) then return end
+    local knifeData = OmoriMod.GetData(knife)
     local VectorAdd = Vector.FromAngle(knife.SpriteRotation)    
 
     knifeData.Aura = nil
@@ -38,17 +34,17 @@ end
 mod:AddCallback(Callbacks.KNIFE_SWING_TRIGGER, mod.SpawnGodHeadAura)
 
 function mod:onKnifeGodheadSwing(knife)
-    local knifeData = OmoriMod:GetData(knife)
+    local knifeData = OmoriMod.GetData(knife)
     if not knifeData.Aura then return end
     local VectorAdd = Vector.FromAngle(knife.SpriteRotation)    
 
     knifeData.Aura.Position = knife.Position + VectorAdd:Resized(40)
 end
-mod:AddCallback(Callbacks.KNIFE_SWING, mod.onKnifeGodheadSwing)
+mod:AddCallback(Callbacks.KNIFE_SWING_UPDATE, mod.onKnifeGodheadSwing)
 
 
 function mod:onKnifeGodheadSwingFinish(knife)
-    local knifeData = OmoriMod:GetData(knife)
+    local knifeData = OmoriMod.GetData(knife)
 
     if not knifeData.Aura then return end
     knifeData.Aura:Remove()

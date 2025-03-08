@@ -53,4 +53,33 @@
 		quality="3"
 		tags="offensive summonable"
 	/>
+	<passive
+		id="7" 
+		name="Violin Bow" 
+		description="A rhythm of three" 
+		gfx="NailBat.png"
+		quality="3"
+		tags="offensive summonable"
+	/>
+	<active
+		id="8"
+		name="Sparkler"
+		description="Little fires"
+		tags="offensive summonable"
+		maxcharges="1"
+	/>
+	<active
+		id="9"
+		name="Poetry book"
+		description="Sad words strung together"
+		tags="offensive summonable"
+		maxcharges="1"
+	/>
+	<active
+		id="10"
+		name="Present"
+		description="It's not what you wanted..."
+		tags="offensive summonable"
+		maxcharges="1"
+	/>
 </items>

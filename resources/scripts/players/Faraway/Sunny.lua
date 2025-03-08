@@ -7,11 +7,16 @@ local misc = enums.Misc
 local sfx = utils.SFX
 local knifeType = enums.KnifeType
 
+local funcs = {
+    GiveKnife = mod.GiveKnife,
+    GetEmotion = mod.GetEmotion,
+}
+
 ---@param player EntityPlayer
 function mod:SunnyInit(player)
     if not OmoriMod.IsOmori(player, true) then return end
 
-	local playerData = OmoriMod:GetData(player)
+	local playerData = OmoriMod.GetData(player)
     
 	playerData.AfraidCounter = playerData.AfraidCounter or 90
     playerData.StressCounter = playerData.StressCounter or 150
@@ -42,14 +47,9 @@ function mod:SunnyStressingOut(player)
     if not OmoriMod.IsOmori(player, true) then return end
 
     OmoriMod.GiveKnife(player, knifeType.VIOLIN_BOW)
-
-    local bow = OmoriMod.GetKnife(player, knifeType.VIOLIN_BOW)
-    bow.Position = player.Position
     
-    print(bow.Position)
-
-    local emotion = OmoriMod.GetEmotion(player)
-	local playerData = OmoriMod:GetData(player)    
+    local emotion = funcs.GetEmotion(player)
+	local playerData = OmoriMod.GetData(player)    
     local areNearEnemies = mod:AreEnemiesNearby(player)
 
     if areNearEnemies then

@@ -41,6 +41,8 @@ OmoriMod.Enums = {
 		SOUND_HEART_HEAL = Isaac.GetSoundIdByName("Heart Heal"),
 		SOUND_AUBREY_SWING = Isaac.GetSoundIdByName("AubreySwing"),
 		SOUND_AUBREY_HIT = Isaac.GetSoundIdByName("AubreyHit"),
+		SOUND_HOMERUN = Isaac.GetSoundIdByName("HomeRun"),
+		SOUND_SAD_POEM = Isaac.GetSoundIdByName("SadPoem"),
 	},
 	EffectVariant = {
 		EFFECT_EMOTION_GLOW = Isaac.GetEntityVariantByName("Emotion Glow"),
@@ -54,6 +56,10 @@ OmoriMod.Enums = {
 		COLLECTIBLE_OVERCOME = Isaac.GetItemIdByName("Overcome"),
 		COLLECTIBLE_MR_PLANTEGG = Isaac.GetItemIdByName("Mr Plantegg"),
 		COLLECTIBLE_NAIL_BAT = Isaac.GetItemIdByName("Nail Bat"),
+		COLLECTIBLE_VIOLIN_BOW = Isaac.GetItemIdByName("Violin Bow"),
+		COLLECTIBLE_SPARKLER = Isaac.GetItemIdByName("Sparkler"),
+		COLLECTIBLE_POETRY_BOOK = Isaac.GetItemIdByName("Poetry book"),
+		COLLECTIBLE_PRESENT = Isaac.GetItemIdByName("Present"),
 	},
 	Utils = {
 		Game = Game(),
@@ -61,7 +67,7 @@ OmoriMod.Enums = {
 		RNG = RNG(),
 	},
 	Callbacks = {
-		KNIFE_SWING = "OmoriModCallbacks_KNIFE_SWING", -- Fires everytime Knife is swinging 
+		KNIFE_SWING_UPDATE = "OmoriModCallbacks_KNIFE_SWING_UPDATE", -- Fires every swing frame update
 		KNIFE_SWING_TRIGGER = "OmoriModCallbacks_KNIFE_SWING_TRIGGER", -- Fires on Swing's first frame
 		KNIFE_SWING_FINISH = "OmoriModCallbacks_KNIFE_SWING_FINISH", -- Fires on Swing's finishing
 		KNIFE_HIT_ENEMY = "OmoriModCallbacks_KNIFE_HIT_ENEMY",-- Fires on knife colliding with enemies
@@ -71,6 +77,8 @@ OmoriMod.Enums = {
 		PRE_KNIFE_CHARGE = "OmoriModCallbacks_PRE_KNIFE_CHARGE", -- Fires when knife is charging, return a number to change knife charge rythm 
 		POST_KNIFE_RENDER = "OmoriModCallbacks_POST_KNIFE_RENDER", -- Fires on every Knife render frame
 		POST_KNIFE_UPDATE = "OmoriModCallbacks_POST_KNIFE_UPDATE", -- Fires after Knife logic update
+		HEADBUTT_ENEMY_HIT = "OmoriModCallbacls_HEADBUTT_ENEMY_HIT", -- Fires on Headbutt hit
+		HEADBUTT_ENEMY_KILL = "OmoriModCallbacls_HEADBUTT_ENEMY_KILL", -- Fires on Headbutt kill
 	},
 	---@enum KnifeType
 	KnifeType = {
@@ -97,9 +105,9 @@ OmoriMod.Enums = {
 			["Manic"] = 30,
 		},
 		SadnessIgnoreDamageChance = {
-			["Sad"] = 25,
-			["Depressed"] = 35,
-			["Miserable"] = 50,
+			["Sad"] = 20,
+			["Depressed"] = 30,
+			["Miserable"] = 40,
 		},
 		AngerDoubleDamageChance = {
 			["Angry"] = 50,
@@ -271,6 +279,20 @@ OmoriMod.Enums = {
 				DamageMult = 1.5
 			},
 		},
+		PickupBlacklist = {
+			[PickupVariant.PICKUP_COLLECTIBLE] = true,
+			[PickupVariant.PICKUP_BROKEN_SHOVEL] = true,
+			[PickupVariant.PICKUP_TROPHY] = true,
+			[PickupVariant.PICKUP_BED] = true,
+			[PickupVariant.PICKUP_MOMSCHEST] = true,
+		},
+		BlacklistedFireplaces = {
+			[2] = true,
+			[3] = true,
+			[4] = true,
+			[12] = true,
+			[13] = true,
+		}
 	},
 	Misc = {
 		SelfHelpRenderPos = Vector(16, 16),

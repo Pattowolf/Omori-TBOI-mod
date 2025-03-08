@@ -1,17 +1,17 @@
 local mod = OmoriMod
 local enums = mod.Enums
+local utils = enums.Utils
+local sfx = utils.SFX
 local items = enums.CollectibleType
 local knifeType = enums.KnifeType
 local callbacks = enums.Callbacks
 
----comment
 ---@param player EntityPlayer
 ---@return boolean
 function mod:IsPlayerAbleToCounterWithMrPlantEgg(player)
     return player:GetDamageCooldown() == 0
 end
 
----comment
 ---@param player EntityPlayer
 ---@param ent Entity
 function mod:TriggerMrEggplantHit(player, ent)
@@ -22,7 +22,7 @@ function mod:TriggerMrEggplantHit(player, ent)
     local MrEggplant = OmoriMod.GetKnife(player, knifeType.MR_PLANT_EGG)
 
     local MrESprite = MrEggplant:GetSprite()
-    local MrEData = OmoriMod:GetData(MrEggplant)
+    local MrEData = OmoriMod.GetData(MrEggplant)
 
     local playerPos = player.Position
     local entPos = ent.Position
@@ -36,15 +36,12 @@ function mod:PlayerTriggerMrEggplant(entity, _, flags, source)
     local player = entity:ToPlayer()    
 
     if not player then return end
-
     if not (player:HasCollectible(items.COLLECTIBLE_MR_PLANTEGG) or mod.IsAubrey(player, false)) then return end
-
     if source.Type == 0 then return end
 
     local ent = source.Entity
 
-    if not ent then return end
-    if ent.Type == 0 then return end
+    if not ent or ent.Type == 0 then return end
 
     local enemy = ent:IsActiveEnemy() and ent:IsVulnerableEnemy()
 
@@ -56,19 +53,14 @@ mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, mod.PlayerTriggerMrEggplant)
 
 ---comment
 ---@param knife EntityEffect
-function mod:RemoveMrEggPlant(knife)
+---@param type KnifeType
+function mod:RemoveMrEggPlant(knife, type)
     local player = knife.SpawnerEntity:ToPlayer()
     if not player then return end
-    local sprite = knife:GetSprite() ---@type Sprite
-
-    local knifeData = mod:GetData(knife)
-
-
-    if knifeData.KnifeType ~= knifeType.MR_PLANT_EGG then return end
+    if type ~= knifeType.MR_PLANT_EGG then return end
+    local sprite = knife:GetSprite() 
 
     if sprite:IsFinished("Swing") then
-        print("a[odpoajdop]")
-
         OmoriMod.RemoveKnife(player, knifeType.MR_PLANT_EGG)
     end
 end

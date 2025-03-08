@@ -14,20 +14,17 @@ end
 function mod:GetWeaponCharge(player)
     local weapon = player:GetWeapon(1)
 
-    local playerData = OmoriMod:GetData(player)
-
+    local playerData = OmoriMod.GetData(player)
     if not weapon then return end
-
     local weaponMod = weapon:GetModifiers()
-
     if not OmoriMod:isFlagInBitmask(weaponMod, WeaponModifier.CHOCOLATE_MILK) then return end
+
+    local playerData = OmoriMod.GetData(player)
 
     playerData.ChoccyCharge = playerData.ChoccyCharge or 0
 
     local baseMaxCharge = 26.5
-
-    local chargeFactor = (2.7272727272727 / OmoriMod:GetTPS(player)) -- it's not exact but it works, i want to kill myself
-
+    local chargeFactor = (2.7272727272727 / OmoriMod:GetTPS(player)) -- it's not exact but it works
     local charge = weapon:GetCharge()
 
     if charge ~= 0 then
@@ -51,11 +48,11 @@ function mod:ChocolateDamage(knife, _, damage)
     local weapon = player:GetWeapon(1)
     if not weapon then return end
 
-    local playerData = OmoriMod:GetData(player)
+    local playerData = OmoriMod.GetData(player)
     local weaponMod = weapon:GetModifiers()
 
     if not OmoriMod:isFlagInBitmask(weaponMod, WeaponModifier.CHOCOLATE_MILK) then return end
-    local knifeData = OmoriMod:GetData(knife)
+    local knifeData = OmoriMod.GetData(knife)
     local mult = player:HasCollectible(CollectibleType.COLLECTIBLE_MOMS_KNIFE) and 1.1 or 4
 
     knifeData.Damage = (damage * playerData.ChoccyCharge) * mult

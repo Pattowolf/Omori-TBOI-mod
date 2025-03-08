@@ -16,7 +16,7 @@ local knifeType = enums.KnifeType
 function mod:InitFarawayAubrey(player)
     if not OmoriMod.IsAubrey(player, true) then return end
 
-    local playerData = OmoriMod:GetData(player)
+    local playerData = OmoriMod.GetData(player)
     
     player:AddNullCostume(costumes.ID_RW_AUBREY)
     player:AddNullCostume(costumes.ID_EMOTION)
@@ -60,17 +60,6 @@ local emotionToSet = {
     ["Angry"] = "Enraged"
 }
 
----comment
----@param entity Entity
-local function DisplayData(entity)
-    local data = OmoriMod:GetData(entity)
-
-    print("=====================")
-    for k, v in pairs(data) do
-        print(k, v)
-    end
-end
-
 local function thereAreEnemies()
     local bool = false
     for _, entity in ipairs(Isaac.GetRoomEntities()) do
@@ -84,7 +73,7 @@ end
 ---@param player EntityPlayer
 function mod:FarawayAubreyEffectUpdate(player)
     local emotion = OmoriMod.GetEmotion(player)
-    local playerData = OmoriMod:GetData(player)
+    local playerData = OmoriMod.GetData(player)
     local room = game:GetRoom()
 
     if not OmoriMod.IsAubrey(player, true) then return end
@@ -94,8 +83,14 @@ function mod:FarawayAubreyEffectUpdate(player)
     if (room:IsClear() or room:HasCurseMist() or thereAreEnemies() == false) then
         playerData.EmotionCounter = OmoriMod:SecsToFrames(emotionCounterMax)
         playerData.HeadButtCooldown = OmoriMod:SecsToFrames(4)
+
+        -- print("apsdjpasjdopasd")
         return 
     end
+
+    
+    print(playerData.EmotionCounter)
+    print(playerData.HeadButtCooldown)
 
     if emotion == "Angry" or emotion == "Enraged" then
         playerData.HeadButtCooldown = math.max(playerData.HeadButtCooldown - 1, 0)
@@ -134,54 +129,57 @@ function mod:FarawayAubreyEffectUpdate(player)
             end
         end
     end
+
+    print(playerData.HeadButt)
+
     player.Size = (playerData.HeadButt == true and thereAreEnemies()) and 20 or 10
 end
 mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.FarawayAubreyEffectUpdate)
 
 local HBParams = tables.AubreyHeadButtParams
 
----comment
----@param player EntityPlayer
----@param collider Entity
-function mod:OnFarawayAubreyCollide(player, collider)
-    local playerData = OmoriMod:GetData(player)
+-- -comment
+-- -@param player EntityPlayer
+-- -@param collider Entity
+-- function mod:OnFarawayAubreyCollide(player, collider)
+--     local playerData = OmoriMod.GetData(player)
 
-    if not OmoriMod.IsAubrey(player, true) then return end
+--     if not OmoriMod.IsAubrey(player, true) then return end
 
-    if playerData.HeadButt == false then return end
+--     if playerData.HeadButt == false then return end
     
-    local isEnemy = collider:IsActiveEnemy() and collider:IsVulnerableEnemy()
+--     local isEnemy = collider:IsActiveEnemy() and collider:IsVulnerableEnemy()
 
-    if not isEnemy then return end
+--     if not isEnemy then return end
 
-    local emotion = OmoriMod.GetEmotion(player)
+--     local emotion = OmoriMod.GetEmotion(player)
 
-    local minDamage = 10    
-    local damageMult = player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) and 4 or 3
+--     local minDamage = 10    
+--     local damageMult = player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) and 4 or 3
 
-    local rawFormula = (player.Damage * damageMult) * math.max(player.MoveSpeed, 1) * HBParams[emotion].DamageMult
+--     local rawFormula = (player.Damage * damageMult) * math.max(player.MoveSpeed, 1) * HBParams[emotion].DamageMult
 
-    local DamageFormula = math.max(rawFormula, minDamage)
+--     local DamageFormula = math.max(rawFormula, minDamage)
 
-    sfx:Play(sounds.SOUND_HEADBUTT_HIT)
+--     sfx:Play(sounds.SOUND_HEADBUTT_HIT)
 
-    for _, entity in ipairs(Isaac.FindInRadius(player.Position, 60, EntityPartition.ENEMY)) do
-        entity:TakeDamage(DamageFormula, 0, EntityRef(player), 0)
-        OmoriMod:TriggerPush(collider, player, 20)
-    end
+--     for _, entity in ipairs(Isaac.FindInRadius(player.Position, 60, EntityPartition.ENEMY)) do
+--         entity:TakeDamage(DamageFormula, 0, EntityRef(player), 0)
+--         OmoriMod.TriggerPush(collider, player, 20, 5, true)
+--     end
 
-    if collider.HitPoints <= DamageFormula then
-        player:AddHearts(1)
-    end
+--     if collider.HitPoints <= DamageFormula then
+--         player:AddHearts(1)
+--     end
 
-    player:SetMinDamageCooldown(40)
+--     player:SetMinDamageCooldown(40)
 
-    mod:TriggerHBParams(player)
+--     mod:TriggerHBParams(player)
 
-    OmoriMod.SetEmotion(player, "Neutral")
-    playerData.EmotionCounter = OmoriMod:SecsToFrames(6)
-end
-mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, mod.OnFarawayAubreyCollide)
+--     OmoriMod.SetEmotion(player, "Neutral")
+--     playerData.EmotionCounter = OmoriMod:SecsToFrames(6)
+-- end
+-- mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, mod.OnFarawayAubreyCollide)
 
 ---comment
 ---@param bat EntityEffect
@@ -201,7 +199,7 @@ function mod:NailbatHit(bat, entity)
         return math.huge
     end
     
-    OmoriMod:TriggerPush(entity, player, 20)
+    OmoriMod.TriggerPush(entity, player, 20, 5, false)
 end
 mod:AddCallback(callbacks.KNIFE_HIT_ENEMY, mod.NailbatHit)
 
@@ -221,7 +219,7 @@ function mod:NullFarawayHeadbuttDamage(entity, _, flags, source)
     if not player then return end
     if not OmoriMod.IsAubrey(player, true) then return end
 
-    local playerData = OmoriMod:GetData(player)
+    local playerData = OmoriMod.GetData(player)
     
     if playerData.HeadButt == true then
         return false 

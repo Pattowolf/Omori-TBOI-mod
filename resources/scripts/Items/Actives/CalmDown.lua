@@ -4,7 +4,6 @@ local sound = enums.SoundEffect
 local utils = enums.Utils
 local sfx = utils.SFX
 
----comment
 ---@param player EntityPlayer
 ---@return boolean
 function mod:ReliefSunny(_, _, player)
@@ -12,5 +11,4 @@ function mod:ReliefSunny(_, _, player)
 	sfx:Play(sound.SOUND_CALM_DOWN)
 	return true
 end
-
 mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.ReliefSunny, OmoriMod.Enums.CollectibleType.COLLECTIBLE_CALM_DOWN)

@@ -8,7 +8,6 @@ function mod:KnifeHolyLightHit(knife, entity, damage)
     local player = OmoriMod:GetKnifeOwner(knife)
 
     if not player then return end
-
     if not player:HasCollectible(CollectibleType.COLLECTIBLE_HOLY_LIGHT) then return end
 
     local castLightChance = OmoriMod.randomfloat(0, 1, rng)

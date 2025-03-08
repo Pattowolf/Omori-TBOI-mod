@@ -1,7 +1,6 @@
 local mod = OmoriMod
 local enums = mod.Enums
 local utils = enums.Utils
-local rng = utils.RNG
 local Callbacks = enums.Callbacks
 
 function mod:KnifeJacobsLadderHit(knife, entity, damage)

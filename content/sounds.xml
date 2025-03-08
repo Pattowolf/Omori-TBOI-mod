@@ -41,7 +41,12 @@
 	<sound name="AubreyHit">
 		<sample weight="1" path="BA_basic_attack_aubrey_hit.wav" />
 	</sound>
-
+	<sound name="SadPoem">
+		<sample weight="1" path="SadPoem.wav" />
+	</sound>
+	<sound name="HomeRun">
+		<sample weight="1" path="BA_homerun.wav" />
+	</sound>
 	
 	
 	<!-- Emotions -->

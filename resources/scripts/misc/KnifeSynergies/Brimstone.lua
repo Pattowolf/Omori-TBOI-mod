@@ -4,7 +4,7 @@ local Callbacks = enums.Callbacks
 
 function mod:BrimstoneKnifeSynergy(knife)
     local player = OmoriMod:GetKnifeOwner(knife)
-    local playerData = OmoriMod:GetData(player)
+    local playerData = OmoriMod.GetData(player)
 
     if not player then return end
     if not player:HasCollectible(CollectibleType.COLLECTIBLE_BRIMSTONE) then return end

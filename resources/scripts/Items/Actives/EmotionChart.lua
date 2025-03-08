@@ -18,35 +18,25 @@ local EmotionChartSetFrame = {
 	["Furious"] = emotionFrame.Angry,
 }
 
-local SelfSprite = Sprite()
-SelfSprite:Load('gfx/items/emotionChart.anm2', true)
+local ChartSprite = Sprite()
+ChartSprite:Load('gfx/items/emotionChart.anm2', true)
 
----comment
----@param p EntityPlayer
----@param slot ActiveSlot
----@param offset Vector
-function mod:RenderSelfGuideMode(p, slot, offset)
-	local item = p:GetActiveItem(slot) 
-	local emotion = OmoriMod.GetEmotion(p)
-	local renderPos = misc.SelfHelpRenderPos
-	local renderScale = misc.SelfHelpRenderScale
+HudHelper.RegisterHUDElement({
+	ItemID = items.COLLECTIBLE_EMOTION_CHART,
+	Condition = function(player)
+		return OmoriMod.GetEmotion(player) ~= nil
+	end,
+	OnRender = function(player, playerHUDIndex, hudLayout, position, alpha, scale, itemID, slot)
+		local emotion = OmoriMod.GetEmotion(player)
+		local frame = OmoriMod.When(emotion, EmotionChartSetFrame, 0)
 
-	if item == items.COLLECTIBLE_EMOTION_CHART and p:IsCoopGhost() == false then
-		local SelfHelpAnimFrame = EmotionChartSetFrame[emotion] or 0
-		local pkitem = p:GetPocketItem(0) 
-		local ispocketactive = (pkitem:GetSlot() == ActiveSlot.SLOT_POCKET2 and pkitem:GetType() == PocketItemType.ACTIVE_ITEM)
+		local offset = scale == 1 and Vector(16, 16) or Vector(8,8)
 
-		if slot == ActiveSlot.SLOT_SECONDARY or (OmoriMod.IsOmori(p, false) and not ispocketactive) then
-			renderPos = renderPos / 2
-			renderScale = renderScale / 2
-		end
-		
-		SelfSprite:SetFrame("Idle", SelfHelpAnimFrame)
-		SelfSprite.Scale = renderScale
-		SelfSprite:Render(renderPos + offset, Vector.Zero, Vector.Zero)
+		ChartSprite.Scale = Vector.One * scale
+		ChartSprite:SetFrame("Idle", frame)
+        ChartSprite:Render((position) + offset, Vector.Zero, Vector.Zero)
 	end
-end
-mod:AddCallback(ModCallbacks.MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM, mod.RenderSelfGuideMode)
+}, HudHelper.HUDType.ACTIVE_ID)
 
 ---comment
 ---@param player EntityPlayer

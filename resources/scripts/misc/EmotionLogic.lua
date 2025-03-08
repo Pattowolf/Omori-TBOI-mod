@@ -63,7 +63,6 @@ function mod:EmotionDamageManager(player, damage, flags, source, cooldown)
 end
 mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_TAKE_DMG, mod.EmotionDamageManager)
 
----comment
 ---@param tear EntityTear
 function mod:SetSadnessKnockback(tear)
 	if tear.FrameCount ~= 1 then return end

@@ -8,22 +8,11 @@ local game = utils.Game
 local rng = utils.RNG
 local tables = enums.Tables
 local HBParams = tables.AubreyHeadButtParams
-local Callbacks = enums.Callbacks
+local OmoriCallbacks = enums.Callbacks
 local misc = enums.Misc
-local knifeType = enums.KnifeType
 
-local HeadButtAOE = 60
+local HeadButtAOE = 40
 local NeutralColor = Color(1, 1, 1, 1, 0.2, 0.2, 0.2)
-
-local function thereAreEnemies()
-    local bool = false
-    for _, entity in ipairs(Isaac.GetRoomEntities()) do
-        if entity:IsActiveEnemy() and entity:IsVulnerableEnemy() then
-            bool = true
-        end
-    end
-    return bool
-end
 
 ---comment
 ---@param player EntityPlayer
@@ -32,7 +21,7 @@ function mod:InitAubrey(player)
     player:AddNullCostume(costumes.ID_DW_AUBREY)
     player:AddNullCostume(costumes.ID_EMOTION)
 
-    local playerData = OmoriMod:GetData(player)
+    local playerData = OmoriMod.GetData(player)
 
     playerData.HeadButt = false
     playerData.FixedDir = nil
@@ -56,35 +45,45 @@ function mod:AubreyStats(player, flags)
 end
 mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.AubreyStats)
 
+---comment
 ---@param player EntityPlayer
-function mod:AubreyInputs(player)
-    if not OmoriMod.IsAubrey(player, false) then return end
-    local playerData = OmoriMod:GetData(player) ---@type table
-    if playerData.HeadButtCounter ~= 0 then return end
-
-    if OmoriMod:IsEmotionChangeTriggered(player) then 
-        if not OmoriMod:IsPlayerMoving(player) then return end
-        mod:InitHeadbutt(player)
-    end
-
-    if player:CollidesWithGrid() then
-        if playerData.HeadButt == true then
-            mod:TriggerHBParams(player, true, true)
-            game:ShakeScreen(10)
-            sfx:Play(sounds.SOUND_HEADBUTT_KILL)
-            player:SetMinDamageCooldown(40)
-        end       
-    end
-    player.Size = (playerData.HeadButt == true and thereAreEnemies()) and 20 or 10
+---@param Damage number
+---@param headButtArea number
+local function HeadButtUpdate(player, Damage, headButtArea)
+    
 end
-mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.AubreyInputs)
+
+function mod:MainHeadButtLogic()
+    
+end
+
+---@param player EntityPlayer
+function mod:OnAubreyHBHit(player)
+    local emotion = mod.GetEmotion(player)
+    local playerData = mod.GetData(player)
+
+    local Damage = (player.Damage * 2) * math.max(player.MoveSpeed, 1) * HBParams[emotion].DamageMult
+
+    playerData.HeadButtDamage = Damage
+
+end
+mod:AddCallback(OmoriCallbacks.HEADBUTT_ENEMY_HIT, mod.OnAubreyHBHit)
+
+---@param player EntityPlayer
+function mod:OnAubreyHBKill(player)
+    if not player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then return end
+    player:AddHearts(1)
+end
+mod:AddCallback(OmoriCallbacks.HEADBUTT_ENEMY_KILL, mod.OnAubreyHBKill)
 
 ---comment
 ---@param player EntityPlayer
 function mod:AubreyButthead(player)
     if not OmoriMod.IsAubrey(player, false) then return end
-    local playerData = OmoriMod:GetData(player) ---@type table
+    local playerData = OmoriMod.GetData(player) ---@type table
     local room = game:GetRoom()
+
+    local emotion = OmoriMod.GetEmotion(player)
 
     if not playerData.HeadButt then
         local counters = {
@@ -102,7 +101,7 @@ function mod:AubreyButthead(player)
                 end
             
                 if counterName == "EmotionCounter" then
-                    if OmoriMod.GetEmotion(player) ~= "Neutral" then
+                    if emotion ~= "Neutral" then
                         if playerData[counterName] <= 30 and playerData[counterName] % 10 == 0 then
                             player:SetColor(NeutralColor, 8, -1, true, true)
                             if playerData[counterName] > 0 then
@@ -126,51 +125,18 @@ function mod:AubreyButthead(player)
             end
         end
     end     
-
-    if player:GetDamageCooldown() == 0 then
-        playerData.TriggerMrEggplant = true
-    end
 end
 mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.AubreyButthead)
+
 
 ---@param player EntityPlayer
 ---@param collider Entity
 ---@return boolean?
 function mod:AubreyHittingButthead(player, collider)
-    local playerData = OmoriMod:GetData(player)
-    local emotion = OmoriMod.GetEmotion(player)
-
-    if not OmoriMod.IsAubrey(player, false) then return end
-    if not (collider:IsActiveEnemy() and collider:IsVulnerableEnemy()) then return end
-    if playerData.HeadButt == false then return end
-
-    sfx:Play(sounds.SOUND_HEADBUTT_HIT)
-    local DamageFormula = (player.Damage * 2) * math.max(player.MoveSpeed, 1) * HBParams[emotion].DamageMult
-
-    if collider:IsBoss() then
-        player:SetMinDamageCooldown(30)
-    end
-
-    for _, entity in ipairs(Isaac.FindInRadius(player.Position, HeadButtAOE, EntityPartition.ENEMY)) do
-        entity:TakeDamage(DamageFormula, 0, EntityRef(player), 0)
-        collider.Velocity = (collider.Position - player.Position) * 1.5
- 
-        if entity.HitPoints <= DamageFormula then
-            if player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
-                player:AddHearts(1)
-            end
-            player:SetMinDamageCooldown(20)
-        else
-            playerData.TriggerMrEggplant = false
-        end
-    end
-
-    mod:TriggerHBParams(player, false, false)
-    collider.Velocity = (collider.Position - player.Position)
+    
 end
 mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, mod.AubreyHittingButthead)
 
----comment
 ---@param entity Entity
 ---@param source EntityRef
 ---@param flags DamageFlag
@@ -181,7 +147,7 @@ function mod:NullHeadbuttDamage(entity, _, flags, source)
     if not player then return end
     if not OmoriMod.IsAubrey(player, false) then return end
 
-    local playerData = OmoriMod:GetData(player)
+    local playerData = OmoriMod.GetData(player)
     local emotion = OmoriMod.GetEmotion(player)
     local emotionChangeTrigger = OmoriMod.randomNumber(1, 100, rng)
     local SpikeAcidFlags = DamageFlag.DAMAGE_ACID | DamageFlag.DAMAGE_SPIKES | DamageFlag.DAMAGE_CURSED_DOOR
@@ -217,7 +183,7 @@ mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, mod.NullHeadbuttDamage)
 function mod:OnAubreyNewRoom()
     local players = PlayerManager.GetPlayers()
     for _, player in ipairs(players) do
-        local playerData = OmoriMod:GetData(player)
+        local playerData = OmoriMod.GetData(player)
         if playerData.HeadButt then
             playerData.HeadButt = false
             playerData.FixedDir = nil
@@ -226,22 +192,10 @@ function mod:OnAubreyNewRoom()
 end
 mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.OnAubreyNewRoom)
 
-function mod:MrEggplantBehavior(knife)
-    local player = knife.SpawnerEntity:ToPlayer()
-    if not OmoriMod.IsAubrey(player, false) then return end
-    local playerData = OmoriMod:GetData(player)
-    local sprite = knife:GetSprite()
-
-    if sprite:IsFinished("Swing") then
-        OmoriMod.RemoveKnife(player, knifeType.MR_PLANT_EGG)
-    end
-end
-mod:AddCallback(Callbacks.PRE_KNIFE_UPDATE, mod.MrEggplantBehavior)
-
 local healChance = {
-    ["Neutral"] = 30,
-    ["Angry"] = 35,
-    ["Enraged"] = 45,
+    ["Neutral"] = 50,
+    ["Angry"] = 60,
+    ["Enraged"] = 70,
 }
 
 ---@param Eggplant EntityEffect
@@ -257,7 +211,7 @@ function mod:OnMrEggplantKill(Eggplant)
         maxChance = 30
     end
 
-    local birthrightMult = player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) and 1.5 or 1
+    local birthrightMult = player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) and 1.2 or 1
     local healMaxChance = math.ceil(maxChance * birthrightMult)
     local healRoll = OmoriMod.randomNumber(1, 100, rng)
 
@@ -265,4 +219,4 @@ function mod:OnMrEggplantKill(Eggplant)
         player:AddHearts(2)
     end
 end
-mod:AddCallback(Callbacks.KNIFE_KILL_ENEMY, mod.OnMrEggplantKill)
+mod:AddCallback(OmoriCallbacks.KNIFE_KILL_ENEMY, mod.OnMrEggplantKill)

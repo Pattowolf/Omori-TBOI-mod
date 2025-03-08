@@ -12,7 +12,7 @@ function mod:MomsKnifeDamage(knife, _, damage)
     local player = OmoriMod:GetKnifeOwner(knife)
     if not player then return end
     if not player:HasCollectible(CollectibleType.COLLECTIBLE_MOMS_KNIFE) then return end
-    local knifeData = OmoriMod:GetData(knife)
+    local knifeData = OmoriMod.GetData(knife)
 
     knifeData.Damage = knifeData.Damage * 0.75
 end
