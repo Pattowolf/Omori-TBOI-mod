@@ -15,7 +15,7 @@ local scriptTable = {
 	"misc/EmotionRender",
 	"misc/EmotionLogic",
 	"misc/HeadButtLogic",
-	"translations",
+	
 	passives .. "shinyknife",
 	passives .. "MrPlantEgg",
 	passives .. "NailBat",
